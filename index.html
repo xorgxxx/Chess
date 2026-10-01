@@ -449,7 +449,7 @@ footer { text-align:center; color:#797681; font-size:11px; padding:0 20px 25px }
     <div class="analysis-head">
       <div>
         <h2 style="margin-bottom:4px">تحليل المباراة</h2>
-        <div class="engine-status" id="engineStatus">CRIMSON Local · تجهيز المحرك…</div><div class="engine-note">المحرك محلي بالكامل داخل Web Worker، مع إعادة تشغيل تلقائية عند التعطل وعدم ترك دور المحرك معلقًا.</div>
+        <div class="engine-status" id="engineStatus">المحرك المحلي جاهز · يعمل بدون إنترنت</div><div class="engine-note">المحرك يعمل ببحث متسلسل: لا يبدأ تحليلًا جديدًا قبل انتهاء السابق، ومعه مؤقّت أمان يمنع تجمّد اللعبة.</div>
       </div>
       <span class="badge" id="grade">بانتظار تحليل المباراة</span>
     </div>
@@ -495,7 +495,7 @@ footer { text-align:center; color:#797681; font-size:11px; padding:0 20px 25px }
     </div>
 
     <p class="note">
-      التحليل يستخدم CRIMSON Local داخل Worker مع بحث مستقل للنقلة الأفضل والنقلة التي لُعبت، ثم يحسب خسارة التقييم والتصنيف.
+      التحليل يستخدم محرك CRIMSON المحلي مع بحث مستقل للنقلة الأفضل والنقلة التي لُعبت، ثم يحسب خسارة التقييم والتصنيف.
       التصنيفات والدقة مؤشرات تحليلية وليست أرقام Elo.
     </p>
   </section>
@@ -546,13 +546,1739 @@ footer { text-align:center; color:#797681; font-size:11px; padding:0 20px 25px }
 
 <footer>CRIMSON · محرك محلي داخل المتصفح · تحليل المباراة يبدأ يدويًا بعد النهاية · لا تُرسل المباراة إلى خادم</footer>
 
+<script id="chessLib">
 
+
+/* minified license below  */
+
+/* @license
+ * Copyright (c) 2018, Jeff Hlywa (jhlywa@gmail.com)
+ * Released under the BSD license
+ * https://github.com/jhlywa/chess.js/blob/master/LICENSE
+ */
+
+var Chess = function(fen) {
+  var BLACK = 'b'
+  var WHITE = 'w'
+
+  var EMPTY = -1
+
+  var PAWN = 'p'
+  var KNIGHT = 'n'
+  var BISHOP = 'b'
+  var ROOK = 'r'
+  var QUEEN = 'q'
+  var KING = 'k'
+
+  var SYMBOLS = 'pnbrqkPNBRQK'
+
+  var DEFAULT_POSITION =
+    'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+
+  var POSSIBLE_RESULTS = ['1-0', '0-1', '1/2-1/2', '*']
+
+  var PAWN_OFFSETS = {
+    b: [16, 32, 17, 15],
+    w: [-16, -32, -17, -15]
+  }
+
+  var PIECE_OFFSETS = {
+    n: [-18, -33, -31, -14, 18, 33, 31, 14],
+    b: [-17, -15, 17, 15],
+    r: [-16, 1, 16, -1],
+    q: [-17, -16, -15, 1, 17, 16, 15, -1],
+    k: [-17, -16, -15, 1, 17, 16, 15, -1]
+  }
+
+  // prettier-ignore
+  var ATTACKS = [
+    20, 0, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0, 0,20, 0,
+     0,20, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0,20, 0, 0,
+     0, 0,20, 0, 0, 0, 0, 24,  0, 0, 0, 0,20, 0, 0, 0,
+     0, 0, 0,20, 0, 0, 0, 24,  0, 0, 0,20, 0, 0, 0, 0,
+     0, 0, 0, 0,20, 0, 0, 24,  0, 0,20, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0,20, 2, 24,  2,20, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 2,53, 56, 53, 2, 0, 0, 0, 0, 0, 0,
+    24,24,24,24,24,24,56,  0, 56,24,24,24,24,24,24, 0,
+     0, 0, 0, 0, 0, 2,53, 56, 53, 2, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0,20, 2, 24,  2,20, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0,20, 0, 0, 24,  0, 0,20, 0, 0, 0, 0, 0,
+     0, 0, 0,20, 0, 0, 0, 24,  0, 0, 0,20, 0, 0, 0, 0,
+     0, 0,20, 0, 0, 0, 0, 24,  0, 0, 0, 0,20, 0, 0, 0,
+     0,20, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0,20, 0, 0,
+    20, 0, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0, 0,20
+  ];
+
+  // prettier-ignore
+  var RAYS = [
+     17,  0,  0,  0,  0,  0,  0, 16,  0,  0,  0,  0,  0,  0, 15, 0,
+      0, 17,  0,  0,  0,  0,  0, 16,  0,  0,  0,  0,  0, 15,  0, 0,
+      0,  0, 17,  0,  0,  0,  0, 16,  0,  0,  0,  0, 15,  0,  0, 0,
+      0,  0,  0, 17,  0,  0,  0, 16,  0,  0,  0, 15,  0,  0,  0, 0,
+      0,  0,  0,  0, 17,  0,  0, 16,  0,  0, 15,  0,  0,  0,  0, 0,
+      0,  0,  0,  0,  0, 17,  0, 16,  0, 15,  0,  0,  0,  0,  0, 0,
+      0,  0,  0,  0,  0,  0, 17, 16, 15,  0,  0,  0,  0,  0,  0, 0,
+      1,  1,  1,  1,  1,  1,  1,  0, -1, -1,  -1,-1, -1, -1, -1, 0,
+      0,  0,  0,  0,  0,  0,-15,-16,-17,  0,  0,  0,  0,  0,  0, 0,
+      0,  0,  0,  0,  0,-15,  0,-16,  0,-17,  0,  0,  0,  0,  0, 0,
+      0,  0,  0,  0,-15,  0,  0,-16,  0,  0,-17,  0,  0,  0,  0, 0,
+      0,  0,  0,-15,  0,  0,  0,-16,  0,  0,  0,-17,  0,  0,  0, 0,
+      0,  0,-15,  0,  0,  0,  0,-16,  0,  0,  0,  0,-17,  0,  0, 0,
+      0,-15,  0,  0,  0,  0,  0,-16,  0,  0,  0,  0,  0,-17,  0, 0,
+    -15,  0,  0,  0,  0,  0,  0,-16,  0,  0,  0,  0,  0,  0,-17
+  ];
+
+  var SHIFTS = { p: 0, n: 1, b: 2, r: 3, q: 4, k: 5 }
+
+  var FLAGS = {
+    NORMAL: 'n',
+    CAPTURE: 'c',
+    BIG_PAWN: 'b',
+    EP_CAPTURE: 'e',
+    PROMOTION: 'p',
+    KSIDE_CASTLE: 'k',
+    QSIDE_CASTLE: 'q'
+  }
+
+  var BITS = {
+    NORMAL: 1,
+    CAPTURE: 2,
+    BIG_PAWN: 4,
+    EP_CAPTURE: 8,
+    PROMOTION: 16,
+    KSIDE_CASTLE: 32,
+    QSIDE_CASTLE: 64
+  }
+
+  var RANK_1 = 7
+  var RANK_2 = 6
+  var RANK_3 = 5
+  var RANK_4 = 4
+  var RANK_5 = 3
+  var RANK_6 = 2
+  var RANK_7 = 1
+  var RANK_8 = 0
+
+  // prettier-ignore
+  var SQUARES = {
+    a8:   0, b8:   1, c8:   2, d8:   3, e8:   4, f8:   5, g8:   6, h8:   7,
+    a7:  16, b7:  17, c7:  18, d7:  19, e7:  20, f7:  21, g7:  22, h7:  23,
+    a6:  32, b6:  33, c6:  34, d6:  35, e6:  36, f6:  37, g6:  38, h6:  39,
+    a5:  48, b5:  49, c5:  50, d5:  51, e5:  52, f5:  53, g5:  54, h5:  55,
+    a4:  64, b4:  65, c4:  66, d4:  67, e4:  68, f4:  69, g4:  70, h4:  71,
+    a3:  80, b3:  81, c3:  82, d3:  83, e3:  84, f3:  85, g3:  86, h3:  87,
+    a2:  96, b2:  97, c2:  98, d2:  99, e2: 100, f2: 101, g2: 102, h2: 103,
+    a1: 112, b1: 113, c1: 114, d1: 115, e1: 116, f1: 117, g1: 118, h1: 119
+  };
+
+  var ROOKS = {
+    w: [
+      { square: SQUARES.a1, flag: BITS.QSIDE_CASTLE },
+      { square: SQUARES.h1, flag: BITS.KSIDE_CASTLE }
+    ],
+    b: [
+      { square: SQUARES.a8, flag: BITS.QSIDE_CASTLE },
+      { square: SQUARES.h8, flag: BITS.KSIDE_CASTLE }
+    ]
+  }
+
+  var board = new Array(128)
+  var kings = { w: EMPTY, b: EMPTY }
+  var turn = WHITE
+  var castling = { w: 0, b: 0 }
+  var ep_square = EMPTY
+  var half_moves = 0
+  var move_number = 1
+  var history = []
+  var header = {}
+
+  /* if the user passes in a fen string, load it, else default to
+   * starting position
+   */
+  if (typeof fen === 'undefined') {
+    load(DEFAULT_POSITION)
+  } else {
+    load(fen)
+  }
+
+  function clear(keep_headers) {
+    if (typeof keep_headers === 'undefined') {
+      keep_headers = false
+    }
+
+    board = new Array(128)
+    kings = { w: EMPTY, b: EMPTY }
+    turn = WHITE
+    castling = { w: 0, b: 0 }
+    ep_square = EMPTY
+    half_moves = 0
+    move_number = 1
+    history = []
+    if (!keep_headers) header = {}
+    update_setup(generate_fen())
+  }
+
+  function reset() {
+    load(DEFAULT_POSITION)
+  }
+
+  function load(fen, keep_headers) {
+    if (typeof keep_headers === 'undefined') {
+      keep_headers = false
+    }
+
+    var tokens = fen.split(/\s+/)
+    var position = tokens[0]
+    var square = 0
+
+    if (!validate_fen(fen).valid) {
+      return false
+    }
+
+    clear(keep_headers)
+
+    for (var i = 0; i < position.length; i++) {
+      var piece = position.charAt(i)
+
+      if (piece === '/') {
+        square += 8
+      } else if (is_digit(piece)) {
+        square += parseInt(piece, 10)
+      } else {
+        var color = piece < 'a' ? WHITE : BLACK
+        put({ type: piece.toLowerCase(), color: color }, algebraic(square))
+        square++
+      }
+    }
+
+    turn = tokens[1]
+
+    if (tokens[2].indexOf('K') > -1) {
+      castling.w |= BITS.KSIDE_CASTLE
+    }
+    if (tokens[2].indexOf('Q') > -1) {
+      castling.w |= BITS.QSIDE_CASTLE
+    }
+    if (tokens[2].indexOf('k') > -1) {
+      castling.b |= BITS.KSIDE_CASTLE
+    }
+    if (tokens[2].indexOf('q') > -1) {
+      castling.b |= BITS.QSIDE_CASTLE
+    }
+
+    ep_square = tokens[3] === '-' ? EMPTY : SQUARES[tokens[3]]
+    half_moves = parseInt(tokens[4], 10)
+    move_number = parseInt(tokens[5], 10)
+
+    update_setup(generate_fen())
+
+    return true
+  }
+
+  /* TODO: this function is pretty much crap - it validates structure but
+   * completely ignores content (e.g. doesn't verify that each side has a king)
+   * ... we should rewrite this, and ditch the silly error_number field while
+   * we're at it
+   */
+  function validate_fen(fen) {
+    var errors = {
+      0: 'No errors.',
+      1: 'FEN string must contain six space-delimited fields.',
+      2: '6th field (move number) must be a positive integer.',
+      3: '5th field (half move counter) must be a non-negative integer.',
+      4: '4th field (en-passant square) is invalid.',
+      5: '3rd field (castling availability) is invalid.',
+      6: '2nd field (side to move) is invalid.',
+      7: "1st field (piece positions) does not contain 8 '/'-delimited rows.",
+      8: '1st field (piece positions) is invalid [consecutive numbers].',
+      9: '1st field (piece positions) is invalid [invalid piece].',
+      10: '1st field (piece positions) is invalid [row too large].',
+      11: 'Illegal en-passant square'
+    }
+
+    /* 1st criterion: 6 space-seperated fields? */
+    var tokens = fen.split(/\s+/)
+    if (tokens.length !== 6) {
+      return { valid: false, error_number: 1, error: errors[1] }
+    }
+
+    /* 2nd criterion: move number field is a integer value > 0? */
+    if (isNaN(tokens[5]) || parseInt(tokens[5], 10) <= 0) {
+      return { valid: false, error_number: 2, error: errors[2] }
+    }
+
+    /* 3rd criterion: half move counter is an integer >= 0? */
+    if (isNaN(tokens[4]) || parseInt(tokens[4], 10) < 0) {
+      return { valid: false, error_number: 3, error: errors[3] }
+    }
+
+    /* 4th criterion: 4th field is a valid e.p.-string? */
+    if (!/^(-|[abcdefgh][36])$/.test(tokens[3])) {
+      return { valid: false, error_number: 4, error: errors[4] }
+    }
+
+    /* 5th criterion: 3th field is a valid castle-string? */
+    if (!/^(KQ?k?q?|Qk?q?|kq?|q|-)$/.test(tokens[2])) {
+      return { valid: false, error_number: 5, error: errors[5] }
+    }
+
+    /* 6th criterion: 2nd field is "w" (white) or "b" (black)? */
+    if (!/^(w|b)$/.test(tokens[1])) {
+      return { valid: false, error_number: 6, error: errors[6] }
+    }
+
+    /* 7th criterion: 1st field contains 8 rows? */
+    var rows = tokens[0].split('/')
+    if (rows.length !== 8) {
+      return { valid: false, error_number: 7, error: errors[7] }
+    }
+
+    /* 8th criterion: every row is valid? */
+    for (var i = 0; i < rows.length; i++) {
+      /* check for right sum of fields AND not two numbers in succession */
+      var sum_fields = 0
+      var previous_was_number = false
+
+      for (var k = 0; k < rows[i].length; k++) {
+        if (!isNaN(rows[i][k])) {
+          if (previous_was_number) {
+            return { valid: false, error_number: 8, error: errors[8] }
+          }
+          sum_fields += parseInt(rows[i][k], 10)
+          previous_was_number = true
+        } else {
+          if (!/^[prnbqkPRNBQK]$/.test(rows[i][k])) {
+            return { valid: false, error_number: 9, error: errors[9] }
+          }
+          sum_fields += 1
+          previous_was_number = false
+        }
+      }
+      if (sum_fields !== 8) {
+        return { valid: false, error_number: 10, error: errors[10] }
+      }
+    }
+
+    if (
+      (tokens[3][1] == '3' && tokens[1] == 'w') ||
+      (tokens[3][1] == '6' && tokens[1] == 'b')
+    ) {
+      return { valid: false, error_number: 11, error: errors[11] }
+    }
+
+    /* everything's okay! */
+    return { valid: true, error_number: 0, error: errors[0] }
+  }
+
+  function generate_fen() {
+    var empty = 0
+    var fen = ''
+
+    for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
+      if (board[i] == null) {
+        empty++
+      } else {
+        if (empty > 0) {
+          fen += empty
+          empty = 0
+        }
+        var color = board[i].color
+        var piece = board[i].type
+
+        fen += color === WHITE ? piece.toUpperCase() : piece.toLowerCase()
+      }
+
+      if ((i + 1) & 0x88) {
+        if (empty > 0) {
+          fen += empty
+        }
+
+        if (i !== SQUARES.h1) {
+          fen += '/'
+        }
+
+        empty = 0
+        i += 8
+      }
+    }
+
+    var cflags = ''
+    if (castling[WHITE] & BITS.KSIDE_CASTLE) {
+      cflags += 'K'
+    }
+    if (castling[WHITE] & BITS.QSIDE_CASTLE) {
+      cflags += 'Q'
+    }
+    if (castling[BLACK] & BITS.KSIDE_CASTLE) {
+      cflags += 'k'
+    }
+    if (castling[BLACK] & BITS.QSIDE_CASTLE) {
+      cflags += 'q'
+    }
+
+    /* do we have an empty castling flag? */
+    cflags = cflags || '-'
+    var epflags = ep_square === EMPTY ? '-' : algebraic(ep_square)
+
+    return [fen, turn, cflags, epflags, half_moves, move_number].join(' ')
+  }
+
+  function set_header(args) {
+    for (var i = 0; i < args.length; i += 2) {
+      if (typeof args[i] === 'string' && typeof args[i + 1] === 'string') {
+        header[args[i]] = args[i + 1]
+      }
+    }
+    return header
+  }
+
+  /* called when the initial board setup is changed with put() or remove().
+   * modifies the SetUp and FEN properties of the header object.  if the FEN is
+   * equal to the default position, the SetUp and FEN are deleted
+   * the setup is only updated if history.length is zero, ie moves haven't been
+   * made.
+   */
+  function update_setup(fen) {
+    if (history.length > 0) return
+
+    if (fen !== DEFAULT_POSITION) {
+      header['SetUp'] = '1'
+      header['FEN'] = fen
+    } else {
+      delete header['SetUp']
+      delete header['FEN']
+    }
+  }
+
+  function get(square) {
+    var piece = board[SQUARES[square]]
+    return piece ? { type: piece.type, color: piece.color } : null
+  }
+
+  function put(piece, square) {
+    /* check for valid piece object */
+    if (!('type' in piece && 'color' in piece)) {
+      return false
+    }
+
+    /* check for piece */
+    if (SYMBOLS.indexOf(piece.type.toLowerCase()) === -1) {
+      return false
+    }
+
+    /* check for valid square */
+    if (!(square in SQUARES)) {
+      return false
+    }
+
+    var sq = SQUARES[square]
+
+    /* don't let the user place more than one king */
+    if (
+      piece.type == KING &&
+      !(kings[piece.color] == EMPTY || kings[piece.color] == sq)
+    ) {
+      return false
+    }
+
+    board[sq] = { type: piece.type, color: piece.color }
+    if (piece.type === KING) {
+      kings[piece.color] = sq
+    }
+
+    update_setup(generate_fen())
+
+    return true
+  }
+
+  function remove(square) {
+    var piece = get(square)
+    board[SQUARES[square]] = null
+    if (piece && piece.type === KING) {
+      kings[piece.color] = EMPTY
+    }
+
+    update_setup(generate_fen())
+
+    return piece
+  }
+
+  function build_move(board, from, to, flags, promotion) {
+    var move = {
+      color: turn,
+      from: from,
+      to: to,
+      flags: flags,
+      piece: board[from].type
+    }
+
+    if (promotion) {
+      move.flags |= BITS.PROMOTION
+      move.promotion = promotion
+    }
+
+    if (board[to]) {
+      move.captured = board[to].type
+    } else if (flags & BITS.EP_CAPTURE) {
+      move.captured = PAWN
+    }
+    return move
+  }
+
+  function generate_moves(options) {
+    function add_move(board, moves, from, to, flags) {
+      /* if pawn promotion */
+      if (
+        board[from].type === PAWN &&
+        (rank(to) === RANK_8 || rank(to) === RANK_1)
+      ) {
+        var pieces = [QUEEN, ROOK, BISHOP, KNIGHT]
+        for (var i = 0, len = pieces.length; i < len; i++) {
+          moves.push(build_move(board, from, to, flags, pieces[i]))
+        }
+      } else {
+        moves.push(build_move(board, from, to, flags))
+      }
+    }
+
+    var moves = []
+    var us = turn
+    var them = swap_color(us)
+    var second_rank = { b: RANK_7, w: RANK_2 }
+
+    var first_sq = SQUARES.a8
+    var last_sq = SQUARES.h1
+    var single_square = false
+
+    /* do we want legal moves? */
+    var legal =
+      typeof options !== 'undefined' && 'legal' in options
+        ? options.legal
+        : true
+
+    /* are we generating moves for a single square? */
+    if (typeof options !== 'undefined' && 'square' in options) {
+      if (options.square in SQUARES) {
+        first_sq = last_sq = SQUARES[options.square]
+        single_square = true
+      } else {
+        /* invalid square */
+        return []
+      }
+    }
+
+    for (var i = first_sq; i <= last_sq; i++) {
+      /* did we run off the end of the board */
+      if (i & 0x88) {
+        i += 7
+        continue
+      }
+
+      var piece = board[i]
+      if (piece == null || piece.color !== us) {
+        continue
+      }
+
+      if (piece.type === PAWN) {
+        /* single square, non-capturing */
+        var square = i + PAWN_OFFSETS[us][0]
+        if (board[square] == null) {
+          add_move(board, moves, i, square, BITS.NORMAL)
+
+          /* double square */
+          var square = i + PAWN_OFFSETS[us][1]
+          if (second_rank[us] === rank(i) && board[square] == null) {
+            add_move(board, moves, i, square, BITS.BIG_PAWN)
+          }
+        }
+
+        /* pawn captures */
+        for (j = 2; j < 4; j++) {
+          var square = i + PAWN_OFFSETS[us][j]
+          if (square & 0x88) continue
+
+          if (board[square] != null && board[square].color === them) {
+            add_move(board, moves, i, square, BITS.CAPTURE)
+          } else if (square === ep_square) {
+            add_move(board, moves, i, ep_square, BITS.EP_CAPTURE)
+          }
+        }
+      } else {
+        for (var j = 0, len = PIECE_OFFSETS[piece.type].length; j < len; j++) {
+          var offset = PIECE_OFFSETS[piece.type][j]
+          var square = i
+
+          while (true) {
+            square += offset
+            if (square & 0x88) break
+
+            if (board[square] == null) {
+              add_move(board, moves, i, square, BITS.NORMAL)
+            } else {
+              if (board[square].color === us) break
+              add_move(board, moves, i, square, BITS.CAPTURE)
+              break
+            }
+
+            /* break, if knight or king */
+            if (piece.type === 'n' || piece.type === 'k') break
+          }
+        }
+      }
+    }
+
+    /* check for castling if: a) we're generating all moves, or b) we're doing
+     * single square move generation on the king's square
+     */
+    if (!single_square || last_sq === kings[us]) {
+      /* king-side castling */
+      if (castling[us] & BITS.KSIDE_CASTLE) {
+        var castling_from = kings[us]
+        var castling_to = castling_from + 2
+
+        if (
+          board[castling_from + 1] == null &&
+          board[castling_to] == null &&
+          !attacked(them, kings[us]) &&
+          !attacked(them, castling_from + 1) &&
+          !attacked(them, castling_to)
+        ) {
+          add_move(board, moves, kings[us], castling_to, BITS.KSIDE_CASTLE)
+        }
+      }
+
+      /* queen-side castling */
+      if (castling[us] & BITS.QSIDE_CASTLE) {
+        var castling_from = kings[us]
+        var castling_to = castling_from - 2
+
+        if (
+          board[castling_from - 1] == null &&
+          board[castling_from - 2] == null &&
+          board[castling_from - 3] == null &&
+          !attacked(them, kings[us]) &&
+          !attacked(them, castling_from - 1) &&
+          !attacked(them, castling_to)
+        ) {
+          add_move(board, moves, kings[us], castling_to, BITS.QSIDE_CASTLE)
+        }
+      }
+    }
+
+    /* return all pseudo-legal moves (this includes moves that allow the king
+     * to be captured)
+     */
+    if (!legal) {
+      return moves
+    }
+
+    /* filter out illegal moves */
+    var legal_moves = []
+    for (var i = 0, len = moves.length; i < len; i++) {
+      make_move(moves[i])
+      if (!king_attacked(us)) {
+        legal_moves.push(moves[i])
+      }
+      undo_move()
+    }
+
+    return legal_moves
+  }
+
+  /* convert a move from 0x88 coordinates to Standard Algebraic Notation
+   * (SAN)
+   *
+   * @param {boolean} sloppy Use the sloppy SAN generator to work around over
+   * disambiguation bugs in Fritz and Chessbase.  See below:
+   *
+   * r1bqkbnr/ppp2ppp/2n5/1B1pP3/4P3/8/PPPP2PP/RNBQK1NR b KQkq - 2 4
+   * 4. ... Nge7 is overly disambiguated because the knight on c6 is pinned
+   * 4. ... Ne7 is technically the valid SAN
+   */
+  function move_to_san(move, sloppy) {
+    var output = ''
+
+    if (move.flags & BITS.KSIDE_CASTLE) {
+      output = 'O-O'
+    } else if (move.flags & BITS.QSIDE_CASTLE) {
+      output = 'O-O-O'
+    } else {
+      var disambiguator = get_disambiguator(move, sloppy)
+
+      if (move.piece !== PAWN) {
+        output += move.piece.toUpperCase() + disambiguator
+      }
+
+      if (move.flags & (BITS.CAPTURE | BITS.EP_CAPTURE)) {
+        if (move.piece === PAWN) {
+          output += algebraic(move.from)[0]
+        }
+        output += 'x'
+      }
+
+      output += algebraic(move.to)
+
+      if (move.flags & BITS.PROMOTION) {
+        output += '=' + move.promotion.toUpperCase()
+      }
+    }
+
+    make_move(move)
+    if (in_check()) {
+      if (in_checkmate()) {
+        output += '#'
+      } else {
+        output += '+'
+      }
+    }
+    undo_move()
+
+    return output
+  }
+
+  // parses all of the decorators out of a SAN string
+  function stripped_san(move) {
+    return move.replace(/=/, '').replace(/[+#]?[?!]*$/, '')
+  }
+
+  function attacked(color, square) {
+    for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
+      /* did we run off the end of the board */
+      if (i & 0x88) {
+        i += 7
+        continue
+      }
+
+      /* if empty square or wrong color */
+      if (board[i] == null || board[i].color !== color) continue
+
+      var piece = board[i]
+      var difference = i - square
+      var index = difference + 119
+
+      if (ATTACKS[index] & (1 << SHIFTS[piece.type])) {
+        if (piece.type === PAWN) {
+          if (difference > 0) {
+            if (piece.color === WHITE) return true
+          } else {
+            if (piece.color === BLACK) return true
+          }
+          continue
+        }
+
+        /* if the piece is a knight or a king */
+        if (piece.type === 'n' || piece.type === 'k') return true
+
+        var offset = RAYS[index]
+        var j = i + offset
+
+        var blocked = false
+        while (j !== square) {
+          if (board[j] != null) {
+            blocked = true
+            break
+          }
+          j += offset
+        }
+
+        if (!blocked) return true
+      }
+    }
+
+    return false
+  }
+
+  function king_attacked(color) {
+    return attacked(swap_color(color), kings[color])
+  }
+
+  function in_check() {
+    return king_attacked(turn)
+  }
+
+  function in_checkmate() {
+    return in_check() && generate_moves().length === 0
+  }
+
+  function in_stalemate() {
+    return !in_check() && generate_moves().length === 0
+  }
+
+  function insufficient_material() {
+    var pieces = {}
+    var bishops = []
+    var num_pieces = 0
+    var sq_color = 0
+
+    for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
+      sq_color = (sq_color + 1) % 2
+      if (i & 0x88) {
+        i += 7
+        continue
+      }
+
+      var piece = board[i]
+      if (piece) {
+        pieces[piece.type] = piece.type in pieces ? pieces[piece.type] + 1 : 1
+        if (piece.type === BISHOP) {
+          bishops.push(sq_color)
+        }
+        num_pieces++
+      }
+    }
+
+    /* k vs. k */
+    if (num_pieces === 2) {
+      return true
+    } else if (
+      /* k vs. kn .... or .... k vs. kb */
+      num_pieces === 3 &&
+      (pieces[BISHOP] === 1 || pieces[KNIGHT] === 1)
+    ) {
+      return true
+    } else if (num_pieces === pieces[BISHOP] + 2) {
+      /* kb vs. kb where any number of bishops are all on the same color */
+      var sum = 0
+      var len = bishops.length
+      for (var i = 0; i < len; i++) {
+        sum += bishops[i]
+      }
+      if (sum === 0 || sum === len) {
+        return true
+      }
+    }
+
+    return false
+  }
+
+  function in_threefold_repetition() {
+    /* TODO: while this function is fine for casual use, a better
+     * implementation would use a Zobrist key (instead of FEN). the
+     * Zobrist key would be maintained in the make_move/undo_move functions,
+     * avoiding the costly that we do below.
+     */
+    var moves = []
+    var positions = {}
+    var repetition = false
+
+    while (true) {
+      var move = undo_move()
+      if (!move) break
+      moves.push(move)
+    }
+
+    while (true) {
+      /* remove the last two fields in the FEN string, they're not needed
+       * when checking for draw by rep */
+      var fen = generate_fen()
+        .split(' ')
+        .slice(0, 4)
+        .join(' ')
+
+      /* has the position occurred three or move times */
+      positions[fen] = fen in positions ? positions[fen] + 1 : 1
+      if (positions[fen] >= 3) {
+        repetition = true
+      }
+
+      if (!moves.length) {
+        break
+      }
+      make_move(moves.pop())
+    }
+
+    return repetition
+  }
+
+  function push(move) {
+    history.push({
+      move: move,
+      kings: { b: kings.b, w: kings.w },
+      turn: turn,
+      castling: { b: castling.b, w: castling.w },
+      ep_square: ep_square,
+      half_moves: half_moves,
+      move_number: move_number
+    })
+  }
+
+  function make_move(move) {
+    var us = turn
+    var them = swap_color(us)
+    push(move)
+
+    board[move.to] = board[move.from]
+    board[move.from] = null
+
+    /* if ep capture, remove the captured pawn */
+    if (move.flags & BITS.EP_CAPTURE) {
+      if (turn === BLACK) {
+        board[move.to - 16] = null
+      } else {
+        board[move.to + 16] = null
+      }
+    }
+
+    /* if pawn promotion, replace with new piece */
+    if (move.flags & BITS.PROMOTION) {
+      board[move.to] = { type: move.promotion, color: us }
+    }
+
+    /* if we moved the king */
+    if (board[move.to].type === KING) {
+      kings[board[move.to].color] = move.to
+
+      /* if we castled, move the rook next to the king */
+      if (move.flags & BITS.KSIDE_CASTLE) {
+        var castling_to = move.to - 1
+        var castling_from = move.to + 1
+        board[castling_to] = board[castling_from]
+        board[castling_from] = null
+      } else if (move.flags & BITS.QSIDE_CASTLE) {
+        var castling_to = move.to + 1
+        var castling_from = move.to - 2
+        board[castling_to] = board[castling_from]
+        board[castling_from] = null
+      }
+
+      /* turn off castling */
+      castling[us] = ''
+    }
+
+    /* turn off castling if we move a rook */
+    if (castling[us]) {
+      for (var i = 0, len = ROOKS[us].length; i < len; i++) {
+        if (
+          move.from === ROOKS[us][i].square &&
+          castling[us] & ROOKS[us][i].flag
+        ) {
+          castling[us] ^= ROOKS[us][i].flag
+          break
+        }
+      }
+    }
+
+    /* turn off castling if we capture a rook */
+    if (castling[them]) {
+      for (var i = 0, len = ROOKS[them].length; i < len; i++) {
+        if (
+          move.to === ROOKS[them][i].square &&
+          castling[them] & ROOKS[them][i].flag
+        ) {
+          castling[them] ^= ROOKS[them][i].flag
+          break
+        }
+      }
+    }
+
+    /* if big pawn move, update the en passant square */
+    if (move.flags & BITS.BIG_PAWN) {
+      if (turn === 'b') {
+        ep_square = move.to - 16
+      } else {
+        ep_square = move.to + 16
+      }
+    } else {
+      ep_square = EMPTY
+    }
+
+    /* reset the 50 move counter if a pawn is moved or a piece is captured */
+    if (move.piece === PAWN) {
+      half_moves = 0
+    } else if (move.flags & (BITS.CAPTURE | BITS.EP_CAPTURE)) {
+      half_moves = 0
+    } else {
+      half_moves++
+    }
+
+    if (turn === BLACK) {
+      move_number++
+    }
+    turn = swap_color(turn)
+  }
+
+  function undo_move() {
+    var old = history.pop()
+    if (old == null) {
+      return null
+    }
+
+    var move = old.move
+    kings = old.kings
+    turn = old.turn
+    castling = old.castling
+    ep_square = old.ep_square
+    half_moves = old.half_moves
+    move_number = old.move_number
+
+    var us = turn
+    var them = swap_color(turn)
+
+    board[move.from] = board[move.to]
+    board[move.from].type = move.piece // to undo any promotions
+    board[move.to] = null
+
+    if (move.flags & BITS.CAPTURE) {
+      board[move.to] = { type: move.captured, color: them }
+    } else if (move.flags & BITS.EP_CAPTURE) {
+      var index
+      if (us === BLACK) {
+        index = move.to - 16
+      } else {
+        index = move.to + 16
+      }
+      board[index] = { type: PAWN, color: them }
+    }
+
+    if (move.flags & (BITS.KSIDE_CASTLE | BITS.QSIDE_CASTLE)) {
+      var castling_to, castling_from
+      if (move.flags & BITS.KSIDE_CASTLE) {
+        castling_to = move.to + 1
+        castling_from = move.to - 1
+      } else if (move.flags & BITS.QSIDE_CASTLE) {
+        castling_to = move.to - 2
+        castling_from = move.to + 1
+      }
+
+      board[castling_to] = board[castling_from]
+      board[castling_from] = null
+    }
+
+    return move
+  }
+
+  /* this function is used to uniquely identify ambiguous moves */
+  function get_disambiguator(move, sloppy) {
+    var moves = generate_moves({ legal: !sloppy })
+
+    var from = move.from
+    var to = move.to
+    var piece = move.piece
+
+    var ambiguities = 0
+    var same_rank = 0
+    var same_file = 0
+
+    for (var i = 0, len = moves.length; i < len; i++) {
+      var ambig_from = moves[i].from
+      var ambig_to = moves[i].to
+      var ambig_piece = moves[i].piece
+
+      /* if a move of the same piece type ends on the same to square, we'll
+       * need to add a disambiguator to the algebraic notation
+       */
+      if (piece === ambig_piece && from !== ambig_from && to === ambig_to) {
+        ambiguities++
+
+        if (rank(from) === rank(ambig_from)) {
+          same_rank++
+        }
+
+        if (file(from) === file(ambig_from)) {
+          same_file++
+        }
+      }
+    }
+
+    if (ambiguities > 0) {
+      /* if there exists a similar moving piece on the same rank and file as
+       * the move in question, use the square as the disambiguator
+       */
+      if (same_rank > 0 && same_file > 0) {
+        return algebraic(from)
+      } else if (same_file > 0) {
+        /* if the moving piece rests on the same file, use the rank symbol as the
+         * disambiguator
+         */
+        return algebraic(from).charAt(1)
+      } else {
+        /* else use the file symbol */
+        return algebraic(from).charAt(0)
+      }
+    }
+
+    return ''
+  }
+
+  function ascii() {
+    var s = '   +------------------------+\n'
+    for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
+      /* display the rank */
+      if (file(i) === 0) {
+        s += ' ' + '87654321'[rank(i)] + ' |'
+      }
+
+      /* empty piece */
+      if (board[i] == null) {
+        s += ' . '
+      } else {
+        var piece = board[i].type
+        var color = board[i].color
+        var symbol = color === WHITE ? piece.toUpperCase() : piece.toLowerCase()
+        s += ' ' + symbol + ' '
+      }
+
+      if ((i + 1) & 0x88) {
+        s += '|\n'
+        i += 8
+      }
+    }
+    s += '   +------------------------+\n'
+    s += '     a  b  c  d  e  f  g  h\n'
+
+    return s
+  }
+
+  // convert a move from Standard Algebraic Notation (SAN) to 0x88 coordinates
+  function move_from_san(move, sloppy) {
+    // strip off any move decorations: e.g Nf3+?!
+    var clean_move = stripped_san(move)
+
+    // if we're using the sloppy parser run a regex to grab piece, to, and from
+    // this should parse invalid SAN like: Pe2-e4, Rc1c4, Qf3xf7
+    if (sloppy) {
+      var matches = clean_move.match(
+        /([pnbrqkPNBRQK])?([a-h][1-8])x?-?([a-h][1-8])([qrbnQRBN])?/
+      )
+      if (matches) {
+        var piece = matches[1]
+        var from = matches[2]
+        var to = matches[3]
+        var promotion = matches[4]
+      }
+    }
+
+    var moves = generate_moves()
+    for (var i = 0, len = moves.length; i < len; i++) {
+      // try the strict parser first, then the sloppy parser if requested
+      // by the user
+      if (
+        clean_move === stripped_san(move_to_san(moves[i])) ||
+        (sloppy && clean_move === stripped_san(move_to_san(moves[i], true)))
+      ) {
+        return moves[i]
+      } else {
+        if (
+          matches &&
+          (!piece || piece.toLowerCase() == moves[i].piece) &&
+          SQUARES[from] == moves[i].from &&
+          SQUARES[to] == moves[i].to &&
+          (!promotion || promotion.toLowerCase() == moves[i].promotion)
+        ) {
+          return moves[i]
+        }
+      }
+    }
+
+    return null
+  }
+
+  /*****************************************************************************
+   * UTILITY FUNCTIONS
+   ****************************************************************************/
+  function rank(i) {
+    return i >> 4
+  }
+
+  function file(i) {
+    return i & 15
+  }
+
+  function algebraic(i) {
+    var f = file(i),
+      r = rank(i)
+    return 'abcdefgh'.substring(f, f + 1) + '87654321'.substring(r, r + 1)
+  }
+
+  function swap_color(c) {
+    return c === WHITE ? BLACK : WHITE
+  }
+
+  function is_digit(c) {
+    return '0123456789'.indexOf(c) !== -1
+  }
+
+  /* pretty = external move object */
+  function make_pretty(ugly_move) {
+    var move = clone(ugly_move)
+    move.san = move_to_san(move, false)
+    move.to = algebraic(move.to)
+    move.from = algebraic(move.from)
+
+    var flags = ''
+
+    for (var flag in BITS) {
+      if (BITS[flag] & move.flags) {
+        flags += FLAGS[flag]
+      }
+    }
+    move.flags = flags
+
+    return move
+  }
+
+  function clone(obj) {
+    var dupe = obj instanceof Array ? [] : {}
+
+    for (var property in obj) {
+      if (typeof property === 'object') {
+        dupe[property] = clone(obj[property])
+      } else {
+        dupe[property] = obj[property]
+      }
+    }
+
+    return dupe
+  }
+
+  function trim(str) {
+    return str.replace(/^\s+|\s+$/g, '')
+  }
+
+  /*****************************************************************************
+   * DEBUGGING UTILITIES
+   ****************************************************************************/
+  function perft(depth) {
+    var moves = generate_moves({ legal: false })
+    var nodes = 0
+    var color = turn
+
+    for (var i = 0, len = moves.length; i < len; i++) {
+      make_move(moves[i])
+      if (!king_attacked(color)) {
+        if (depth - 1 > 0) {
+          var child_nodes = perft(depth - 1)
+          nodes += child_nodes
+        } else {
+          nodes++
+        }
+      }
+      undo_move()
+    }
+
+    return nodes
+  }
+
+  return {
+    /***************************************************************************
+     * PUBLIC CONSTANTS (is there a better way to do this?)
+     **************************************************************************/
+    WHITE: WHITE,
+    BLACK: BLACK,
+    PAWN: PAWN,
+    KNIGHT: KNIGHT,
+    BISHOP: BISHOP,
+    ROOK: ROOK,
+    QUEEN: QUEEN,
+    KING: KING,
+    SQUARES: (function() {
+      /* from the ECMA-262 spec (section 12.6.4):
+       * "The mechanics of enumerating the properties ... is
+       * implementation dependent"
+       * so: for (var sq in SQUARES) { keys.push(sq); } might not be
+       * ordered correctly
+       */
+      var keys = []
+      for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
+        if (i & 0x88) {
+          i += 7
+          continue
+        }
+        keys.push(algebraic(i))
+      }
+      return keys
+    })(),
+    FLAGS: FLAGS,
+
+    /***************************************************************************
+     * PUBLIC API
+     **************************************************************************/
+    load: function(fen) {
+      return load(fen)
+    },
+
+    reset: function() {
+      return reset()
+    },
+
+    moves: function(options) {
+      /* The internal representation of a chess move is in 0x88 format, and
+       * not meant to be human-readable.  The code below converts the 0x88
+       * square coordinates to algebraic coordinates.  It also prunes an
+       * unnecessary move keys resulting from a verbose call.
+       */
+
+      var ugly_moves = generate_moves(options)
+      var moves = []
+
+      for (var i = 0, len = ugly_moves.length; i < len; i++) {
+        /* does the user want a full move object (most likely not), or just
+         * SAN
+         */
+        if (
+          typeof options !== 'undefined' &&
+          'verbose' in options &&
+          options.verbose
+        ) {
+          moves.push(make_pretty(ugly_moves[i]))
+        } else {
+          moves.push(move_to_san(ugly_moves[i], false))
+        }
+      }
+
+      return moves
+    },
+
+    in_check: function() {
+      return in_check()
+    },
+
+    in_checkmate: function() {
+      return in_checkmate()
+    },
+
+    in_stalemate: function() {
+      return in_stalemate()
+    },
+
+    in_draw: function() {
+      return (
+        half_moves >= 100 ||
+        in_stalemate() ||
+        insufficient_material() ||
+        in_threefold_repetition()
+      )
+    },
+
+    insufficient_material: function() {
+      return insufficient_material()
+    },
+
+    in_threefold_repetition: function() {
+      return in_threefold_repetition()
+    },
+
+    game_over: function() {
+      return (
+        half_moves >= 100 ||
+        in_checkmate() ||
+        in_stalemate() ||
+        insufficient_material() ||
+        in_threefold_repetition()
+      )
+    },
+
+    validate_fen: function(fen) {
+      return validate_fen(fen)
+    },
+
+    fen: function() {
+      return generate_fen()
+    },
+
+    board: function() {
+      var output = [],
+        row = []
+
+      for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
+        if (board[i] == null) {
+          row.push(null)
+        } else {
+          row.push({ type: board[i].type, color: board[i].color })
+        }
+        if ((i + 1) & 0x88) {
+          output.push(row)
+          row = []
+          i += 8
+        }
+      }
+
+      return output
+    },
+
+    pgn: function(options) {
+      /* using the specification from http://www.chessclub.com/help/PGN-spec
+       * example for html usage: .pgn({ max_width: 72, newline_char: "<br />" })
+       */
+      var newline =
+        typeof options === 'object' && typeof options.newline_char === 'string'
+          ? options.newline_char
+          : '\n'
+      var max_width =
+        typeof options === 'object' && typeof options.max_width === 'number'
+          ? options.max_width
+          : 0
+      var result = []
+      var header_exists = false
+
+      /* add the PGN header headerrmation */
+      for (var i in header) {
+        /* TODO: order of enumerated properties in header object is not
+         * guaranteed, see ECMA-262 spec (section 12.6.4)
+         */
+        result.push('[' + i + ' "' + header[i] + '"]' + newline)
+        header_exists = true
+      }
+
+      if (header_exists && history.length) {
+        result.push(newline)
+      }
+
+      /* pop all of history onto reversed_history */
+      var reversed_history = []
+      while (history.length > 0) {
+        reversed_history.push(undo_move())
+      }
+
+      var moves = []
+      var move_string = ''
+
+      /* build the list of moves.  a move_string looks like: "3. e3 e6" */
+      while (reversed_history.length > 0) {
+        var move = reversed_history.pop()
+
+        /* if the position started with black to move, start PGN with 1. ... */
+        if (!history.length && move.color === 'b') {
+          move_string = move_number + '. ...'
+        } else if (move.color === 'w') {
+          /* store the previous generated move_string if we have one */
+          if (move_string.length) {
+            moves.push(move_string)
+          }
+          move_string = move_number + '.'
+        }
+
+        move_string = move_string + ' ' + move_to_san(move, false)
+        make_move(move)
+      }
+
+      /* are there any other leftover moves? */
+      if (move_string.length) {
+        moves.push(move_string)
+      }
+
+      /* is there a result? */
+      if (typeof header.Result !== 'undefined') {
+        moves.push(header.Result)
+      }
+
+      /* history should be back to what is was before we started generating PGN,
+       * so join together moves
+       */
+      if (max_width === 0) {
+        return result.join('') + moves.join(' ')
+      }
+
+      /* wrap the PGN output at max_width */
+      var current_width = 0
+      for (var i = 0; i < moves.length; i++) {
+        /* if the current move will push past max_width */
+        if (current_width + moves[i].length > max_width && i !== 0) {
+          /* don't end the line with whitespace */
+          if (result[result.length - 1] === ' ') {
+            result.pop()
+          }
+
+          result.push(newline)
+          current_width = 0
+        } else if (i !== 0) {
+          result.push(' ')
+          current_width++
+        }
+        result.push(moves[i])
+        current_width += moves[i].length
+      }
+
+      return result.join('')
+    },
+
+    load_pgn: function(pgn, options) {
+      // allow the user to specify the sloppy move parser to work around over
+      // disambiguation bugs in Fritz and Chessbase
+      var sloppy =
+        typeof options !== 'undefined' && 'sloppy' in options
+          ? options.sloppy
+          : false
+
+      function mask(str) {
+        return str.replace(/\\/g, '\\')
+      }
+
+      function has_keys(object) {
+        for (var key in object) {
+          return true
+        }
+        return false
+      }
+
+      function parse_pgn_header(header, options) {
+        var newline_char =
+          typeof options === 'object' &&
+          typeof options.newline_char === 'string'
+            ? options.newline_char
+            : '\r?\n'
+        var header_obj = {}
+        var headers = header.split(new RegExp(mask(newline_char)))
+        var key = ''
+        var value = ''
+
+        for (var i = 0; i < headers.length; i++) {
+          key = headers[i].replace(/^\[([A-Z][A-Za-z]*)\s.*\]$/, '$1')
+          value = headers[i].replace(/^\[[A-Za-z]+\s"(.*)"\]$/, '$1')
+          if (trim(key).length > 0) {
+            header_obj[key] = value
+          }
+        }
+
+        return header_obj
+      }
+
+      var newline_char =
+        typeof options === 'object' && typeof options.newline_char === 'string'
+          ? options.newline_char
+          : '\r?\n'
+
+      // RegExp to split header. Takes advantage of the fact that header and movetext
+      // will always have a blank line between them (ie, two newline_char's).
+      // With default newline_char, will equal: /^(\[((?:\r?\n)|.)*\])(?:\r?\n){2}/
+      var header_regex = new RegExp(
+        '^(\\[((?:' +
+          mask(newline_char) +
+          ')|.)*\\])' +
+          '(?:' +
+          mask(newline_char) +
+          '){2}'
+      )
+
+      // If no header given, begin with moves.
+      var header_string = header_regex.test(pgn)
+        ? header_regex.exec(pgn)[1]
+        : ''
+
+      // Put the board in the starting position
+      reset()
+
+      /* parse PGN header */
+      var headers = parse_pgn_header(header_string, options)
+      for (var key in headers) {
+        set_header([key, headers[key]])
+      }
+
+      /* load the starting position indicated by [Setup '1'] and
+       * [FEN position] */
+      if (headers['SetUp'] === '1') {
+        if (!('FEN' in headers && load(headers['FEN'], true))) {
+          // second argument to load: don't clear the headers
+          return false
+        }
+      }
+
+      /* delete header to get the moves */
+      var ms = pgn
+        .replace(header_string, '')
+        .replace(new RegExp(mask(newline_char), 'g'), ' ')
+
+      /* delete comments */
+      ms = ms.replace(/(\{[^}]+\})+?/g, '')
+
+      /* delete recursive annotation variations */
+      var rav_regex = /(\([^\(\)]+\))+?/g
+      while (rav_regex.test(ms)) {
+        ms = ms.replace(rav_regex, '')
+      }
+
+      /* delete move numbers */
+      ms = ms.replace(/\d+\.(\.\.)?/g, '')
+
+      /* delete ... indicating black to move */
+      ms = ms.replace(/\.\.\./g, '')
+
+      /* delete numeric annotation glyphs */
+      ms = ms.replace(/\$\d+/g, '')
+
+      /* trim and get array of moves */
+      var moves = trim(ms).split(new RegExp(/\s+/))
+
+      /* delete empty entries */
+      moves = moves
+        .join(',')
+        .replace(/,,+/g, ',')
+        .split(',')
+      var move = ''
+
+      for (var half_move = 0; half_move < moves.length - 1; half_move++) {
+        move = move_from_san(moves[half_move], sloppy)
+
+        /* move not possible! (don't clear the board to examine to show the
+         * latest valid position)
+         */
+        if (move == null) {
+          return false
+        } else {
+          make_move(move)
+        }
+      }
+
+      /* examine last move */
+      move = moves[moves.length - 1]
+      if (POSSIBLE_RESULTS.indexOf(move) > -1) {
+        if (has_keys(header) && typeof header.Result === 'undefined') {
+          set_header(['Result', move])
+        }
+      } else {
+        move = move_from_san(move, sloppy)
+        if (move == null) {
+          return false
+        } else {
+          make_move(move)
+        }
+      }
+      return true
+    },
+
+    header: function() {
+      return set_header(arguments)
+    },
+
+    ascii: function() {
+      return ascii()
+    },
+
+    turn: function() {
+      return turn
+    },
+
+    move: function(move, options) {
+      /* The move function can be called with in the following parameters:
+       *
+       * .move('Nxb7')      <- where 'move' is a case-sensitive SAN string
+       *
+       * .move({ from: 'h7', <- where the 'move' is a move object (additional
+       *         to :'h8',      fields are ignored)
+       *         promotion: 'q',
+       *      })
+       */
+
+      // allow the user to specify the sloppy move parser to work around over
+      // disambiguation bugs in Fritz and Chessbase
+      var sloppy =
+        typeof options !== 'undefined' && 'sloppy' in options
+          ? options.sloppy
+          : false
+
+      var move_obj = null
+
+      if (typeof move === 'string') {
+        move_obj = move_from_san(move, sloppy)
+      } else if (typeof move === 'object') {
+        var moves = generate_moves()
+
+        /* convert the pretty move object to an ugly move object */
+        for (var i = 0, len = moves.length; i < len; i++) {
+          if (
+            move.from === algebraic(moves[i].from) &&
+            move.to === algebraic(moves[i].to) &&
+            (!('promotion' in moves[i]) ||
+              move.promotion === moves[i].promotion)
+          ) {
+            move_obj = moves[i]
+            break
+          }
+        }
+      }
+
+      /* failed to find move */
+      if (!move_obj) {
+        return null
+      }
+
+      /* need to make a copy of move because we can't generate SAN after the
+       * move is made
+       */
+      var pretty_move = make_pretty(move_obj)
+
+      make_move(move_obj)
+
+      return pretty_move
+    },
+
+    undo: function() {
+      var move = undo_move()
+      return move ? make_pretty(move) : null
+    },
+
+    clear: function() {
+      return clear()
+    },
+
+    put: function(piece, square) {
+      return put(piece, square)
+    },
+
+    get: function(square) {
+      return get(square)
+    },
+
+    remove: function(square) {
+      return remove(square)
+    },
+
+    perft: function(depth) {
+      return perft(depth)
+    },
+
+    square_color: function(square) {
+      if (square in SQUARES) {
+        var sq_0x88 = SQUARES[square]
+        return (rank(sq_0x88) + file(sq_0x88)) % 2 === 0 ? 'light' : 'dark'
+      }
+
+      return null
+    },
+
+    history: function(options) {
+      var reversed_history = []
+      var move_history = []
+      var verbose =
+        typeof options !== 'undefined' &&
+        'verbose' in options &&
+        options.verbose
+
+      while (history.length > 0) {
+        reversed_history.push(undo_move())
+      }
+
+      while (reversed_history.length > 0) {
+        var move = reversed_history.pop()
+        if (verbose) {
+          move_history.push(make_pretty(move))
+        } else {
+          move_history.push(move_to_san(move))
+        }
+        make_move(move)
+      }
+
+      return move_history
+    }
+  }
+}
+
+/* export Chess object if using node or any other CommonJS compatible
+ * environment */
+if (typeof exports !== 'undefined') exports.Chess = Chess
+/* export Chess object for any RequireJS compatible environment */
+if (typeof define !== 'undefined')
+  define(function() {
+    return Chess
+  })
+
+</script>
 <script>
 "use strict";
 
 if (typeof Chess === "undefined") {
   document.getElementById("status").textContent =
-    "تعذّر تحميل مكتبة القواعد. تحقق من الإنترنت ثم أعد تحميل الصفحة.";
+    "تعذّر تحميل مكتبة القواعد. أعد تحميل الصفحة.";
   throw new Error("Chess rules library unavailable");
 }
 
@@ -562,88 +2288,6 @@ const PIECE_NAME = {
   k:"ملك", q:"وزير", r:"رخ", b:"فيل", n:"حصان", p:"بيدق"
 };
 const STORE = "crimson-chess-v3";
-/* CRIMSON Offline Chess Core: self-contained legal move generator. */
-class Chess {
-  constructor(fen){ this.reset(fen); }
-  reset(fen){
-    this.board=Array(64).fill(null); this.turnColor='w'; this.castle={K:true,Q:true,k:true,q:true};
-    this.ep='-'; this.half=0; this.full=1; this.hist=[]; this.headers={}; this.startFEN=fen||null;
-    this.load(fen||'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'); return this;
-  }
-  clone(){ return new Chess(this.fen()); }
-  load(f){
-    const a=f.trim().split(/\s+/); if(a.length<4) throw Error('Invalid FEN');
-    this.board.fill(null); let r=7;
-    for(const ch of a[0]){ if(ch==='/'){r--;continue;} if(/[1-8]/.test(ch)){ for(let n=+ch;n--;){/*skip*/} } }
-    let sq=56; for(const ch of a[0]){ if(ch==='/'){sq-=16;continue;} if(/[1-8]/.test(ch)){sq+=+ch;continue;} if(!/[prnbqkPRNBQK]/.test(ch)) throw Error('Invalid FEN'); this.board[sq++]=ch; }
-    this.turnColor=a[1]; this.castle={K:a[2].includes('K'),Q:a[2].includes('Q'),k:a[2].includes('k'),q:a[2].includes('q')};
-    this.ep=a[3]||'-'; this.half=+(a[4]||0); this.full=+(a[5]||1); this.hist=[]; return true;
-  }
-  fen(){ let out=''; for(let r=7;r>=0;r--){let e=0;for(let f=0;f<8;f++){let p=this.board[r*8+f];if(!p)e++;else{if(e){out+=e;e=0}out+=p}}if(e)out+=e;if(r)out+='/';} let c='';for(const x of ['K','Q','k','q'])if(this.castle[x])c+=x;return out+' '+this.turnColor+' '+(c||'-')+' '+this.ep+' '+this.half+' '+this.full; }
-  turn(){return this.turnColor;}
-  get(s){const i=this.si(s);const p=this.board[i];return p?{type:p.toLowerCase(),color:p===p.toUpperCase()?'w':'b'}:null;}
-  si(s){return (s.charCodeAt(0)-97)+(s.charCodeAt(1)-49)*8;}
-  sn(i){return String.fromCharCode(97+i%8)+String.fromCharCode(49+Math.floor(i/8));}
-  attacked(i,by){
-    const f=i%8,r=Math.floor(i/8), opp=by==='w'?'W':'B';
-    for(const df of [-1,1]) for(const dr of [1,2]){const rr=r+(by==='w'?dr:-dr),ff=f+df;if(rr>=0&&rr<8&&ff>=0&&ff<8&&this.board[rr*8+ff]===(by==='w'?'P':'p')) return true;}
-    const ns=[[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]]; for(const [df,dr] of ns){let ff=f+df,rr=r+dr;if(ff>=0&&ff<8&&rr>=0&&rr<8){let p=this.board[rr*8+ff];if(p===(by==='w'?'N':'n'))return true;}}
-    const dirs=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]];
-    for(let d=0;d<8;d++){let [df,dr]=dirs[d],ff=f+df,rr=r+dr;while(ff>=0&&ff<8&&rr>=0&&rr<8){let p=this.board[rr*8+ff];if(p){if(p===(by==='w'?(d<4?'R':'B'):(d<4?'r':'b'))||p===(by==='w'?'Q':'q'))return true;break;}ff+=df;rr+=dr;}}
-    for(let df=-1;df<=1;df++)for(let dr=-1;dr<=1;dr++){if(!df&&!dr)continue;let ff=f+df,rr=r+dr;if(ff>=0&&ff<8&&rr>=0&&rr<8&&this.board[rr*8+ff]===(by==='w'?'K':'k'))return true;}
-    return false;
-  }
-  in_check(color=this.turnColor){const k=color==='w'?'K':'k',i=this.board.indexOf(k);return i>=0&&this.attacked(i,color==='w'?'b':'w');}
-  _pseudo(verbose=false){
-    const res=[], us=this.turnColor, enemy=us==='w'?'b':'w';
-    const add=(from,to,promo,captured,flags='')=>{const piece=this.board[from].toLowerCase();res.push({color:us,from:this.sn(from),to:this.sn(to),piece,captured:captured?captured.toLowerCase():undefined,promotion:promo,flags});};
-    for(let i=0;i<64;i++){const p=this.board[i];if(!p||(p===p.toUpperCase()?'w':'b')!==us)continue;const type=p.toLowerCase(),f=i%8,r=Math.floor(i/8);
-      if(type==='p'){const dir=us==='w'?1:-1, start=us==='w'?1:6, prom=us==='w'?7:0, one=r+dir;if(one>=0&&one<8&&!this.board[one*8+f]){if(one===prom)for(const q of ['q','r','b','n'])add(i,one*8+f,q);else add(i,one*8+f);if(r===start&&!this.board[(r+2*dir)*8+f])add(i,(r+2*dir)*8+f,undefined,undefined,'b');}for(const df of [-1,1]){const ff=f+df;if(ff<0||ff>7)continue;const to=one*8+ff,p2=this.board[to];if(one>=0&&one<8&&p2&& (p2===p2.toUpperCase()?'w':'b')===enemy){if(one===prom)for(const q of ['q','r','b','n'])add(i,to,q,p2,'c');else add(i,to,undefined,p2,'c');}if(this.ep===this.sn(to))add(i,to,undefined,us==='w'?'p':'P','e');}}
-      else if(type==='n'){for(const [df,dr] of [[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]]){const ff=f+df,rr=r+dr;if(ff<0||ff>7||rr<0||rr>7)continue;const to=rr*8+ff,p2=this.board[to];if(!p2||(p2===p2.toUpperCase()?'w':'b')===enemy)add(i,to,undefined,p2,p2?'c':'');}}
-      else {const dirs=type==='b'?[[1,1],[-1,1],[1,-1],[-1,-1]]:type==='r'?[[1,0],[-1,0],[0,1],[0,-1]]:[[1,1],[-1,1],[1,-1],[-1,-1],[1,0],[-1,0],[0,1],[0,-1]];for(const [df,dr] of dirs){let ff=f+df,rr=r+dr;while(ff>=0&&ff<8&&rr>=0&&rr<8){const to=rr*8+ff,p2=this.board[to];if(!p2)add(i,to);else{if((p2===p2.toUpperCase()?'w':'b')===enemy)add(i,to,undefined,p2,'c');break;}if(type==='k')break;ff+=df;rr+=dr;}}if(type==='k'&&r===(us==='w'?0:7)&&f===4&&!this.in_check(us)){const rank=r; if(this.castle[us==='w'?'K':'k']&&!this.board[rank*8+5]&&!this.board[rank*8+6]&&!this.attacked(rank*8+5,enemy)&&!this.attacked(rank*8+6,enemy))add(i,rank*8+6,undefined,undefined,'k');if(this.castle[us==='w'?'Q':'q']&&!this.board[rank*8+1]&&!this.board[rank*8+2]&&!this.board[rank*8+3]&&!this.attacked(rank*8+3,enemy)&&!this.attacked(rank*8+2,enemy))add(i,rank*8+2,undefined,undefined,'q');}}
-    } return res;
-  }
-  _apply(m,record=true){
-    const from=this.si(m.from),to=this.si(m.to),p=this.board[from],cap=m.flags==='e'?(this.turnColor==='w'?'p':'P'):this.board[to];
-    const snap={fen:this.fen(),headers:{...this.headers}};
-    if(record)this.hist.push(snap);
-    this.board[from]=null; this.board[to]=m.promotion?(this.turnColor==='w'?m.promotion.toUpperCase():m.promotion):p;
-    if(m.flags==='e')this.board[to+(this.turnColor==='w'?-8:8)]=null;
-    if(m.flags==='k'){this.board[to-1]=this.board[to+1];this.board[to+1]=null;} if(m.flags==='q'){this.board[to+1]=this.board[to-2];this.board[to-2]=null;}
-    if(p==='K'){this.castle.K=this.castle.Q=false;} if(p==='k'){this.castle.k=this.castle.q=false;}
-    if(from===0||to===0)this.castle.Q=false;if(from===7||to===7)this.castle.K=false;if(from===56||to===56)this.castle.q=false;if(from===63||to===63)this.castle.k=false;
-    this.ep='-';if(p.toLowerCase()==='p'&&Math.abs(to-from)===16)this.ep=this.sn((from+to)/2);
-    if(p.toLowerCase()==='p'||cap)this.half=0;else this.half++; if(this.turnColor==='b')this.full++;this.turnColor=this.turnColor==='w'?'b':'w'; return true;
-  }
-  _snapshot(){return {board:this.board.slice(),turn:this.turnColor,castle:{...this.castle},ep:this.ep,half:this.half,full:this.full};}
-  _restore(x){this.board=x.board.slice();this.turnColor=x.turn;this.castle={...x.castle};this.ep=x.ep;this.half=x.half;this.full=x.full;}
-  _legalMoves(){const out=[];for(const m of this._pseudo()){const snap=this._snapshot();this._apply(m,false);const ok=!this.in_check(snap.turn);this._restore(snap);if(ok)out.push(m);}return out;}
-  moves(opts={}){let ms=this._legalMoves();if(opts.square){ms=ms.filter(m=>m.from===opts.square);}if(opts.verbose)return ms.map(m=>({...m,san:this._san(m,ms)}));return ms.map(m=>this._san(m,ms));}
-  _san(m,all){const p=this.board[this.si(m.from)].toUpperCase(),capture=!!m.captured||m.flags==='e';let s=p==='P'?'':p;if(p==='P'&&capture)s+=m.from[0];if(capture)s+='x';s+=m.to;if(m.promotion)s+='='+m.promotion.toUpperCase();if(m.flags==='k')s='O-O';if(m.flags==='q')s='O-O-O';const snap=this._snapshot();this._apply(m,false);const chk=this.in_check(this.turnColor),mate=chk&&this._legalMoves().length===0;this._restore(snap);if(mate)s+='#';else if(chk)s+='+';return s;}
-  move(m){let ms=this._legalMoves(), chosen=null;if(typeof m==='string'){chosen=ms.find(x=>this._san(x,ms)===m||x.from+x.to+(x.promotion||'')===m);}else chosen=ms.find(x=>x.from===m.from&&x.to===m.to&&(!m.promotion||x.promotion===m.promotion));if(!chosen)return null;const san=this._san(chosen,ms);this._apply(chosen,true);chosen.san=san;return chosen;}
-  undo(record=true){if(!this.hist.length)return null;const snap=this.hist.pop();this.load(snap.fen);this.headers=snap.headers;return true;}
-  history(opts={}){const arr=this.hist.map((h,i)=>h);if(!opts.verbose){return this.hist.map((h)=>{const temp=new Chess(h.fen);return '';}).filter(Boolean);} // rebuilt below
-    // verbose history is stored as FEN transitions in _moveLog when available
-    return this.moveLog||[];
-  }
-  _ensureLog(){if(!this.moveLog)this.moveLog=[];}
-  game_over(){return this.in_checkmate()||this.in_draw();}
-  in_checkmate(){return this.in_check()&&this._legalMoves().length===0;}
-  in_stalemate(){return !this.in_check()&&this._legalMoves().length===0;}
-  insufficient_material(){const pcs=this.board.filter(Boolean).map(x=>x.toLowerCase());if(pcs.some(x=>x==='p'||x==='r'||x==='q'))return false;const minors=pcs.filter(x=>x==='b'||x==='n');return minors.length<=1;}
-  in_threefold_repetition(){const cur=this.fen().split(' ').slice(0,4).join(' ');let n=1;for(const h of this.hist)if(h.fen.split(' ').slice(0,4).join(' ')===cur)n++;return n>=3;}
-  in_draw(){return this.half>=100||this.in_threefold_repetition()||this.insufficient_material()||this.in_stalemate();}
-  header(...a){for(let i=0;i<a.length;i+=2)this.headers[a[i]]=a[i+1];}
-  pgn(){return (this.headers.Event?'[Event "'+this.headers.Event+'"]\n':'')+(this.headers.Result?'[Result "'+this.headers.Result+'"]\n\n':'')+(this.moveLog||[]).map((m,i)=>(i%2===0?(Math.floor(i/2)+1)+'. ':'')+m.san).join(' ');}
-}
-// patch move/undo history logging
-const _cmove=Chess.prototype.move,_cundo=Chess.prototype.undo;
-Chess.prototype.move=function(m){this._ensureLog();const before=this.hist.length,res=_cmove.call(this,m);if(res){this.moveLog.push({...res});}return res;};
-Chess.prototype.undo=function(record=true){const r=_cundo.call(this,record);if(r&&this.moveLog&&this.moveLog.length)this.moveLog.pop();return r;};
-
-
-Chess.prototype.history=function(opts={}){this._ensureLog();return opts.verbose?this.moveLog.map(x=>({...x})):this.moveLog.map(x=>x.san);};
-
 let game = new Chess();
 let human = "w";
 let flipped = false;
@@ -727,257 +2371,284 @@ function displayGame(){
   if(!analysisMode||analysisIndex<0)return game;
   return positionAtPly(analysisIndex+1);
 }
-/* محرك CRIMSON Local متقدم.
-   قواعد الشرعية والمات والتعادل تديرها chess.js. */
+/* محرك CRIMSON المحلي: مستقل تمامًا وبدون إنترنت. */
 function engineWorker() {
-/* CRIMSON Offline Chess Core: self-contained legal move generator. */
-class Chess {
-  constructor(fen){ this.reset(fen); }
-  reset(fen){
-    this.board=Array(64).fill(null); this.turnColor='w'; this.castle={K:true,Q:true,k:true,q:true};
-    this.ep='-'; this.half=0; this.full=1; this.hist=[]; this.headers={}; this.startFEN=fen||null;
-    this.load(fen||'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'); return this;
+  /* CRIMSON Engine 3 — محرك مستقل: لوحة 0x88 + PVS + جدول تحويل + Null move + LMR + بحث هدوء.
+     لا يعتمد على أي مكتبة خارجية ولا على الإنترنت. */
+  const VAL=[0,100,320,335,500,900,0], MATE=100000, INF=1000000, TIMEOUT={};
+  const PST = {
+    p:[0,0,0,0,0,0,0,0, 5,10,10,-20,-20,10,10,5, 5,-5,-10,0,0,-10,-5,5, 0,0,0,20,20,0,0,0, 5,5,10,25,25,10,5,5, 10,10,20,30,30,20,10,10, 50,50,50,50,50,50,50,50, 0,0,0,0,0,0,0,0],
+    n:[-50,-40,-30,-30,-30,-30,-40,-50, -40,-20,0,5,5,0,-20,-40, -30,5,10,15,15,10,5,-30, -30,0,15,20,20,15,0,-30, -30,5,15,20,20,15,5,-30, -30,0,10,15,15,10,0,-30, -40,-20,0,0,0,0,-20,-40, -50,-40,-30,-30,-30,-30,-40,-50],
+    b:[-20,-10,-10,-10,-10,-10,-10,-20, -10,5,0,0,0,0,5,-10, -10,10,10,10,10,10,10,-10, -10,0,10,10,10,10,0,-10, -10,5,5,10,10,5,5,-10, -10,0,5,10,10,5,0,-10, -10,0,0,0,0,0,0,-10, -20,-10,-10,-10,-10,-10,-10,-20],
+    r:[0,0,0,5,5,0,0,0, -5,0,0,0,0,0,0,-5, -5,0,0,0,0,0,0,-5, -5,0,0,0,0,0,0,-5, -5,0,0,0,0,0,0,-5, 5,10,10,10,10,10,10,5, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0],
+    q:[-20,-10,-10,-5,-5,-10,-10,-20, -10,0,0,0,0,0,0,-10, -10,0,5,5,5,5,0,-10, -5,0,5,5,5,5,0,-5, 0,0,5,5,5,5,0,0, -10,5,5,5,5,5,0,-10, -10,0,5,0,0,0,0,-10, -20,-10,-10,-5,-5,-10,-10,-20],
+    k:[20,30,10,0,0,10,30,20, 20,20,0,0,0,0,20,20, -10,-20,-20,-20,-20,-20,-20,-10, -20,-30,-30,-40,-40,-30,-30,-20, -30,-40,-40,-50,-50,-40,-40,-30, -30,-40,-40,-50,-50,-40,-40,-30, -30,-40,-40,-50,-50,-40,-40,-30]
+  };
+  const PSTA=[null,PST.p,PST.n,PST.b,PST.r,PST.q,PST.k];
+  const ND=[33,31,18,14,-33,-31,-18,-14], KD=[1,-1,16,-16,17,15,-17,-15], BD=[17,15,-17,-15], RD=[16,-16,1,-1];
+  const bd=new Int8Array(128), ksq=[0,0];
+  let side=0,castle=0,ep=-1,hm=0,hlo=0,hhi=0,deadline=0,nodes=0,sp=0;
+  let seed=88172645;const rnd=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return seed|0;};
+  const ZL=[],ZH=[];
+  for(let p=0;p<16;p++){const a=new Int32Array(128),b=new Int32Array(128);for(let s=0;s<128;s++){a[s]=rnd();b[s]=rnd();}ZL.push(a);ZH.push(b);}
+  const CM=new Uint8Array(128).fill(15);CM[0]=13;CM[4]=12;CM[7]=14;CM[0x70]=7;CM[0x74]=3;CM[0x77]=11;
+  const TS=1<<19,TM=TS-1,ttK=new Int32Array(TS),ttS=new Int32Array(TS),ttM=new Int32Array(TS),ttD=new Int8Array(TS),ttF=new Int8Array(TS),ttU=new Uint8Array(TS);
+  const uM=[],uC=[],uCs=[],uE=[],uH=[],uL=[],uHi=[];
+  let killers=[],hist=new Int32Array(1<<14);
+  const off=s=>s&0x88;
+  function hashAll(){
+    hlo=0;hhi=0;
+    for(let s=0;s<128;s++){if(s&0x88)continue;const p=bd[s];if(p){hlo^=ZL[p][s];hhi^=ZH[p][s];}}
+    hlo^=ZL[7][castle];hhi^=ZH[7][castle];
+    if(ep>=0){hlo^=ZL[0][ep];hhi^=ZH[0][ep];}
+    if(side){hlo^=ZL[15][0];hhi^=ZH[15][0];}
   }
-  clone(){ return new Chess(this.fen()); }
-  load(f){
-    const a=f.trim().split(/\s+/); if(a.length<4) throw Error('Invalid FEN');
-    this.board.fill(null); let r=7;
-    for(const ch of a[0]){ if(ch==='/'){r--;continue;} if(/[1-8]/.test(ch)){ for(let n=+ch;n--;){/*skip*/} } }
-    let sq=56; for(const ch of a[0]){ if(ch==='/'){sq-=16;continue;} if(/[1-8]/.test(ch)){sq+=+ch;continue;} if(!/[prnbqkPRNBQK]/.test(ch)) throw Error('Invalid FEN'); this.board[sq++]=ch; }
-    this.turnColor=a[1]; this.castle={K:a[2].includes('K'),Q:a[2].includes('Q'),k:a[2].includes('k'),q:a[2].includes('q')};
-    this.ep=a[3]||'-'; this.half=+(a[4]||0); this.full=+(a[5]||1); this.hist=[]; return true;
+  function setFen(fen){
+    const [pp,s,c,e,h]=fen.split(" ");bd.fill(0);let r=7,f=0;
+    for(const ch of pp){
+      if(ch==="/"){r--;f=0;}
+      else if(ch>="1"&&ch<="8")f+=+ch;
+      else{const t="pnbrqk".indexOf(ch.toLowerCase())+1,p=t|(ch===ch.toLowerCase()?8:0),sq=r*16+f;bd[sq]=p;if(t===6)ksq[p>>3]=sq;f++;}
+    }
+    side=s==="b"?1:0;castle=0;
+    if(c)for(const ch of c)castle|=({K:1,Q:2,k:4,q:8})[ch]||0;
+    ep=(e&&e!=="-")?(e.charCodeAt(0)-97)+(+e[1]-1)*16:-1;hm=+h||0;sp=0;hashAll();
   }
-  fen(){ let out=''; for(let r=7;r>=0;r--){let e=0;for(let f=0;f<8;f++){let p=this.board[r*8+f];if(!p)e++;else{if(e){out+=e;e=0}out+=p}}if(e)out+=e;if(r)out+='/';} let c='';for(const x of ['K','Q','k','q'])if(this.castle[x])c+=x;return out+' '+this.turnColor+' '+(c||'-')+' '+this.ep+' '+this.half+' '+this.full; }
-  turn(){return this.turnColor;}
-  get(s){const i=this.si(s);const p=this.board[i];return p?{type:p.toLowerCase(),color:p===p.toUpperCase()?'w':'b'}:null;}
-  si(s){return (s.charCodeAt(0)-97)+(s.charCodeAt(1)-49)*8;}
-  sn(i){return String.fromCharCode(97+i%8)+String.fromCharCode(49+Math.floor(i/8));}
-  attacked(i,by){
-    const f=i%8,r=Math.floor(i/8), opp=by==='w'?'W':'B';
-    for(const df of [-1,1]) for(const dr of [1,2]){const rr=r+(by==='w'?dr:-dr),ff=f+df;if(rr>=0&&rr<8&&ff>=0&&ff<8&&this.board[rr*8+ff]===(by==='w'?'P':'p')) return true;}
-    const ns=[[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]]; for(const [df,dr] of ns){let ff=f+df,rr=r+dr;if(ff>=0&&ff<8&&rr>=0&&rr<8){let p=this.board[rr*8+ff];if(p===(by==='w'?'N':'n'))return true;}}
-    const dirs=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]];
-    for(let d=0;d<8;d++){let [df,dr]=dirs[d],ff=f+df,rr=r+dr;while(ff>=0&&ff<8&&rr>=0&&rr<8){let p=this.board[rr*8+ff];if(p){if(p===(by==='w'?(d<4?'R':'B'):(d<4?'r':'b'))||p===(by==='w'?'Q':'q'))return true;break;}ff+=df;rr+=dr;}}
-    for(let df=-1;df<=1;df++)for(let dr=-1;dr<=1;dr++){if(!df&&!dr)continue;let ff=f+df,rr=r+dr;if(ff>=0&&ff<8&&rr>=0&&rr<8&&this.board[rr*8+ff]===(by==='w'?'K':'k'))return true;}
+  function attacked(sq,by){
+    const pc=by<<3,a1=by?sq+15:sq-15,a2=by?sq+17:sq-17;
+    if(!off(a1)&&bd[a1]===(pc|1))return true;
+    if(!off(a2)&&bd[a2]===(pc|1))return true;
+    for(let i=0;i<8;i++){const s=sq+ND[i];if(!off(s)&&bd[s]===(pc|2))return true;}
+    for(let i=0;i<8;i++){const s=sq+KD[i];if(!off(s)&&bd[s]===(pc|6))return true;}
+    for(let i=0;i<4;i++){const d=BD[i];let s=sq+d;while(!off(s)){const p=bd[s];if(p){if(p===(pc|3)||p===(pc|5))return true;break;}s+=d;}}
+    for(let i=0;i<4;i++){const d=RD[i];let s=sq+d;while(!off(s)){const p=bd[s];if(p){if(p===(pc|4)||p===(pc|5))return true;break;}s+=d;}}
     return false;
   }
-  in_check(color=this.turnColor){const k=color==='w'?'K':'k',i=this.board.indexOf(k);return i>=0&&this.attacked(i,color==='w'?'b':'w');}
-  _pseudo(verbose=false){
-    const res=[], us=this.turnColor, enemy=us==='w'?'b':'w';
-    const add=(from,to,promo,captured,flags='')=>{const piece=this.board[from].toLowerCase();res.push({color:us,from:this.sn(from),to:this.sn(to),piece,captured:captured?captured.toLowerCase():undefined,promotion:promo,flags});};
-    for(let i=0;i<64;i++){const p=this.board[i];if(!p||(p===p.toUpperCase()?'w':'b')!==us)continue;const type=p.toLowerCase(),f=i%8,r=Math.floor(i/8);
-      if(type==='p'){const dir=us==='w'?1:-1, start=us==='w'?1:6, prom=us==='w'?7:0, one=r+dir;if(one>=0&&one<8&&!this.board[one*8+f]){if(one===prom)for(const q of ['q','r','b','n'])add(i,one*8+f,q);else add(i,one*8+f);if(r===start&&!this.board[(r+2*dir)*8+f])add(i,(r+2*dir)*8+f,undefined,undefined,'b');}for(const df of [-1,1]){const ff=f+df;if(ff<0||ff>7)continue;const to=one*8+ff,p2=this.board[to];if(one>=0&&one<8&&p2&& (p2===p2.toUpperCase()?'w':'b')===enemy){if(one===prom)for(const q of ['q','r','b','n'])add(i,to,q,p2,'c');else add(i,to,undefined,p2,'c');}if(this.ep===this.sn(to))add(i,to,undefined,us==='w'?'p':'P','e');}}
-      else if(type==='n'){for(const [df,dr] of [[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]]){const ff=f+df,rr=r+dr;if(ff<0||ff>7||rr<0||rr>7)continue;const to=rr*8+ff,p2=this.board[to];if(!p2||(p2===p2.toUpperCase()?'w':'b')===enemy)add(i,to,undefined,p2,p2?'c':'');}}
-      else {const dirs=type==='b'?[[1,1],[-1,1],[1,-1],[-1,-1]]:type==='r'?[[1,0],[-1,0],[0,1],[0,-1]]:[[1,1],[-1,1],[1,-1],[-1,-1],[1,0],[-1,0],[0,1],[0,-1]];for(const [df,dr] of dirs){let ff=f+df,rr=r+dr;while(ff>=0&&ff<8&&rr>=0&&rr<8){const to=rr*8+ff,p2=this.board[to];if(!p2)add(i,to);else{if((p2===p2.toUpperCase()?'w':'b')===enemy)add(i,to,undefined,p2,'c');break;}if(type==='k')break;ff+=df;rr+=dr;}}if(type==='k'&&r===(us==='w'?0:7)&&f===4&&!this.in_check(us)){const rank=r; if(this.castle[us==='w'?'K':'k']&&!this.board[rank*8+5]&&!this.board[rank*8+6]&&!this.attacked(rank*8+5,enemy)&&!this.attacked(rank*8+6,enemy))add(i,rank*8+6,undefined,undefined,'k');if(this.castle[us==='w'?'Q':'q']&&!this.board[rank*8+1]&&!this.board[rank*8+2]&&!this.board[rank*8+3]&&!this.attacked(rank*8+3,enemy)&&!this.attacked(rank*8+2,enemy))add(i,rank*8+2,undefined,undefined,'q');}}
-    } return res;
-  }
-  _apply(m,record=true){
-    const from=this.si(m.from),to=this.si(m.to),p=this.board[from],cap=m.flags==='e'?(this.turnColor==='w'?'p':'P'):this.board[to];
-    const snap={fen:this.fen(),headers:{...this.headers}};
-    if(record)this.hist.push(snap);
-    this.board[from]=null; this.board[to]=m.promotion?(this.turnColor==='w'?m.promotion.toUpperCase():m.promotion):p;
-    if(m.flags==='e')this.board[to+(this.turnColor==='w'?-8:8)]=null;
-    if(m.flags==='k'){this.board[to-1]=this.board[to+1];this.board[to+1]=null;} if(m.flags==='q'){this.board[to+1]=this.board[to-2];this.board[to-2]=null;}
-    if(p==='K'){this.castle.K=this.castle.Q=false;} if(p==='k'){this.castle.k=this.castle.q=false;}
-    if(from===0||to===0)this.castle.Q=false;if(from===7||to===7)this.castle.K=false;if(from===56||to===56)this.castle.q=false;if(from===63||to===63)this.castle.k=false;
-    this.ep='-';if(p.toLowerCase()==='p'&&Math.abs(to-from)===16)this.ep=this.sn((from+to)/2);
-    if(p.toLowerCase()==='p'||cap)this.half=0;else this.half++; if(this.turnColor==='b')this.full++;this.turnColor=this.turnColor==='w'?'b':'w'; return true;
-  }
-  _snapshot(){return {board:this.board.slice(),turn:this.turnColor,castle:{...this.castle},ep:this.ep,half:this.half,full:this.full};}
-  _restore(x){this.board=x.board.slice();this.turnColor=x.turn;this.castle={...x.castle};this.ep=x.ep;this.half=x.half;this.full=x.full;}
-  _legalMoves(){const out=[];for(const m of this._pseudo()){const snap=this._snapshot();this._apply(m,false);const ok=!this.in_check(snap.turn);this._restore(snap);if(ok)out.push(m);}return out;}
-  moves(opts={}){let ms=this._legalMoves();if(opts.square){ms=ms.filter(m=>m.from===opts.square);}if(opts.verbose)return ms.map(m=>({...m,san:this._san(m,ms)}));return ms.map(m=>this._san(m,ms));}
-  _san(m,all){const p=this.board[this.si(m.from)].toUpperCase(),capture=!!m.captured||m.flags==='e';let s=p==='P'?'':p;if(p==='P'&&capture)s+=m.from[0];if(capture)s+='x';s+=m.to;if(m.promotion)s+='='+m.promotion.toUpperCase();if(m.flags==='k')s='O-O';if(m.flags==='q')s='O-O-O';const snap=this._snapshot();this._apply(m,false);const chk=this.in_check(this.turnColor),mate=chk&&this._legalMoves().length===0;this._restore(snap);if(mate)s+='#';else if(chk)s+='+';return s;}
-  move(m){let ms=this._legalMoves(), chosen=null;if(typeof m==='string'){chosen=ms.find(x=>this._san(x,ms)===m||x.from+x.to+(x.promotion||'')===m);}else chosen=ms.find(x=>x.from===m.from&&x.to===m.to&&(!m.promotion||x.promotion===m.promotion));if(!chosen)return null;const san=this._san(chosen,ms);this._apply(chosen,true);chosen.san=san;return chosen;}
-  undo(record=true){if(!this.hist.length)return null;const snap=this.hist.pop();this.load(snap.fen);this.headers=snap.headers;return true;}
-  history(opts={}){const arr=this.hist.map((h,i)=>h);if(!opts.verbose){return this.hist.map((h)=>{const temp=new Chess(h.fen);return '';}).filter(Boolean);} // rebuilt below
-    // verbose history is stored as FEN transitions in _moveLog when available
-    return this.moveLog||[];
-  }
-  _ensureLog(){if(!this.moveLog)this.moveLog=[];}
-  game_over(){return this.in_checkmate()||this.in_draw();}
-  in_checkmate(){return this.in_check()&&this._legalMoves().length===0;}
-  in_stalemate(){return !this.in_check()&&this._legalMoves().length===0;}
-  insufficient_material(){const pcs=this.board.filter(Boolean).map(x=>x.toLowerCase());if(pcs.some(x=>x==='p'||x==='r'||x==='q'))return false;const minors=pcs.filter(x=>x==='b'||x==='n');return minors.length<=1;}
-  in_threefold_repetition(){const cur=this.fen().split(' ').slice(0,4).join(' ');let n=1;for(const h of this.hist)if(h.fen.split(' ').slice(0,4).join(' ')===cur)n++;return n>=3;}
-  in_draw(){return this.half>=100||this.in_threefold_repetition()||this.insufficient_material()||this.in_stalemate();}
-  header(...a){for(let i=0;i<a.length;i+=2)this.headers[a[i]]=a[i+1];}
-  pgn(){return (this.headers.Event?'[Event "'+this.headers.Event+'"]\n':'')+(this.headers.Result?'[Result "'+this.headers.Result+'"]\n\n':'')+(this.moveLog||[]).map((m,i)=>(i%2===0?(Math.floor(i/2)+1)+'. ':'')+m.san).join(' ');}
-}
-// patch move/undo history logging
-const _cmove=Chess.prototype.move,_cundo=Chess.prototype.undo;
-Chess.prototype.move=function(m){this._ensureLog();const before=this.hist.length,res=_cmove.call(this,m);if(res){this.moveLog.push({...res});}return res;};
-Chess.prototype.undo=function(record=true){const r=_cundo.call(this,record);if(r&&this.moveLog&&this.moveLog.length)this.moveLog.pop();return r;};
-
-
-  // CRIMSON LOCAL ENGINE v10
-  // Pure JavaScript Web Worker. No CRIMSON Local/WASM engine.
-  // Iterative deepening + PVS + alpha-beta + TT + quiescence + null move
-  // + killer/history heuristics + extensions + positional evaluation.
-  const V={p:100,n:320,b:335,r:500,q:900,k:0};
-  const MATE=100000, INF=1000000, TIMEOUT={};
-  let deadline=0,nodes=0,tt=new Map(),history=new Map();
-  const killers=Array.from({length:64},()=>[]);
-
-  const PST={
-    p:[0,0,0,0,0,0,0,0, 5,10,10,-20,-20,10,10,5, 5,-5,-10,0,0,-10,-5,5, 0,0,0,20,20,0,0,0, 5,5,10,25,25,10,5,5, 10,10,20,30,30,20,10,10, 50,50,50,50,50,50,50,50, 0,0,0,0,0,0,0,0],
-    n:[-50,-40,-30,-30,-30,-30,-40,-50,-40,-20,0,5,5,0,-20,-40,-30,5,10,15,15,10,5,-30,-30,0,15,20,20,15,0,-30,-30,5,15,20,20,15,5,-30,-30,0,10,15,15,10,0,-30,-40,-20,0,0,0,0,-20,-40,-50,-40,-30,-30,-30,-30,-40,-50],
-    b:[-20,-10,-10,-10,-10,-10,-10,-20,-10,5,0,0,0,0,5,-10,-10,10,10,10,10,10,10,-10,-10,0,10,10,10,10,0,-10,-10,5,5,10,10,5,5,-10,-10,0,5,10,10,5,0,-10,-10,0,0,0,0,0,0,-10,-20,-10,-10,-10,-10,-10,-10,-20],
-    r:[0,0,0,5,5,0,0,0,-5,0,0,0,0,0,0,-5,-5,0,0,0,0,0,0,-5,-5,0,0,0,0,0,0,-5,-5,0,0,0,0,0,0,-5,5,10,10,10,10,10,10,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    q:[-20,-10,-10,-5,-5,-10,-10,-20,-10,0,0,0,0,0,0,-10,-10,0,5,5,5,5,0,-10,-5,0,5,5,5,5,0,-5,0,0,5,5,5,5,0,0,-10,5,5,5,5,5,0,-10,-10,0,5,0,0,0,0,-10,-20,-10,-10,-5,-5,-10,-10,-20],
-    k:[20,30,10,0,0,10,30,20,20,20,0,0,0,0,20,20,-10,-20,-20,-20,-20,-20,-20,-10,-20,-30,-30,-40,-40,-30,-30,-20,-30,-40,-40,-50,-50,-40,-40,-30,-30,-40,-40,-50,-50,-40,-40,-30,-30,-40,-40,-50,-50,-40,-40,-30,-30,-40,-40,-50,-50,-40,-40,-30]
-  };
-
-  function tick(){if((++nodes&255)===0&&performance.now()>=deadline)throw TIMEOUT;}
-  const id=m=>m.from+m.to+(m.promotion||"");
-  function pst(type,color,row,col){const r=color==='w'?row:7-row;return PST[type][r*8+col]||0;}
-
-  function evaluate(c){
-    let s=0,wb=0,bb=0,wp=0,bp=0,wr=0,br=0;
-    const board=c.board();
-    const pawns={w:new Set(),b:new Set()};
-    for(let r=0;r<8;r++)for(let col=0;col<8;col++){
-      const p=board[r][col];if(!p)continue;
-      let v=V[p.type]+pst(p.type,p.color,r,col);
-      if(p.type==='p'){
-        const adv=p.color==='w'?6-r:r-1; v+=adv*8;
-        pawns[p.color].add(col); p.color==='w'?wp++:bp++;
-      }
-      if(p.type==='b')p.color==='w'?wb++:bb++;
-      if(p.type==='r')p.color==='w'?wr++:br++;
-      s+=p.color==='w'?v:-v;
-    }
-    if(wb>=2)s+=30;if(bb>=2)s-=30;
-    // Rooks on open/semi-open files and basic pawn-structure penalties.
-    for(const color of ['w','b']){
-      for(let f=0;f<8;f++){
-        const own=pawns[color].has(f),opp=pawns[color==='w'?'b':'w'].has(f);
-        if(!own){
-          if(color==='w')s+=(wr?10:0); else s-=(br?10:0);
-          if(opp){if(color==='w')s+=(wr?8:0);else s-=(br?8:0);}
+  function gen(qs){
+    const mv=[],us=side,fw=us?-16:16,start=us?6:1,pr=us?1:6;
+    for(let sq=0;sq<128;sq++){
+      if(sq&0x88){sq+=7;continue;}
+      const p=bd[sq];if(!p||(p>>3)!==us)continue;const t=p&7;
+      if(t===1){
+        const r=sq>>4;let to=sq+fw;
+        if(!bd[to]){
+          if(r===pr){for(let q=5;q>=2;q--)mv.push(sq|to<<7|q<<14);}
+          else if(!qs){mv.push(sq|to<<7);if(r===start&&!bd[to+fw])mv.push(sq|(to+fw)<<7|4<<17);}
+        }
+        for(let k=-1;k<=1;k+=2){
+          to=sq+fw+k;if(off(to))continue;const c=bd[to];
+          if(c&&(c>>3)!==us){if(r===pr){for(let q=5;q>=2;q--)mv.push(sq|to<<7|q<<14);}else mv.push(sq|to<<7);}
+          else if(to===ep)mv.push(sq|to<<7|1<<17);
+        }
+      }else if(t===2||t===6){
+        const D=t===2?ND:KD;
+        for(let i=0;i<8;i++){const to=sq+D[i];if(off(to))continue;const c=bd[to];if(!c){if(!qs)mv.push(sq|to<<7);}else if((c>>3)!==us)mv.push(sq|to<<7);}
+      }else{
+        const D=t===3?BD:t===4?RD:KD,n=t===5?8:4,o=t===5?0:0;
+        for(let i=0;i<n;i++){
+          const d=t===5?KD[i]:D[i];let to=sq+d;
+          while(!off(to)){const c=bd[to];if(!c){if(!qs)mv.push(sq|to<<7);}else{if((c>>3)!==us)mv.push(sq|to<<7);break;}to+=d;}
         }
       }
     }
-    const mobility=c.moves({verbose:true}).length;
-    s+=(c.turn()==='w'?1:-1)*mobility*3;
-    // Slight king-safety term: exposed king loses value in middlegame.
-    const wk=kingSquare(board,'w'),bk=kingSquare(board,'b');
-    if(wk>=0)s-=kingExposure(board,wk,'w');
-    if(bk>=0)s+=kingExposure(board,bk,'b');
-    return c.turn()==='w'?s:-s;
+    if(!qs){
+      const b=us?0x70:0,e=b+4,rt=1+us*3;
+      if(bd[e]===(6|us<<3)&&!attacked(e,us^1)){
+        if((castle&(1<<(us*2)))&&!bd[b+5]&&!bd[b+6]&&!attacked(b+5,us^1)&&!attacked(b+6,us^1))mv.push(e|(b+6)<<7|2<<17);
+        if((castle&(2<<(us*2)))&&!bd[b+3]&&!bd[b+2]&&!bd[b+1]&&!attacked(b+3,us^1)&&!attacked(b+2,us^1))mv.push(e|(b+2)<<7|2<<17);
+      }
+    }
+    return mv;
   }
-  function kingSquare(board,color){for(let r=0;r<8;r++)for(let f=0;f<8;f++)if(board[r][f]?.type==='k'&&board[r][f].color===color)return r*8+f;return -1;}
-  function kingExposure(board,sq,color){if(sq<0)return 0;const r=Math.floor(sq/8),f=sq%8;let e=0;for(let df=-1;df<=1;df++){const x=f+df;if(x<0||x>7)continue;const p=board[r][x];if(!p||p.color!==color)e+=4;}return e;}
-
-  function moveScore(m,ply){
-    let s=0, mv=id(m);
-    if(m.captured)s+=12000+12*V[m.captured]-V[m.piece];
-    if(m.promotion)s+=10000+V[m.promotion]*2;
-    if(m.san.includes('#'))s+=30000; else if(m.san.includes('+'))s+=5000;
-    const ks=killers[Math.min(ply,63)];if(ks[0]===mv)s+=7000;else if(ks[1]===mv)s+=4500;
-    s+=history.get(mv)||0;
-    return s;
+  function make(m){
+    const from=m&127,to=(m>>7)&127,pr=(m>>14)&7,fl=m>>17,us=side,p=bd[from];let cap=bd[to];
+    uM[sp]=m;uCs[sp]=castle;uE[sp]=ep;uH[sp]=hm;uL[sp]=hlo;uHi[sp]=hhi;
+    if(ep>=0){hlo^=ZL[0][ep];hhi^=ZH[0][ep];}
+    hlo^=ZL[7][castle];hhi^=ZH[7][castle];
+    if(cap){hlo^=ZL[cap][to];hhi^=ZH[cap][to];}
+    if(fl&1){const cs=to+(us?16:-16);cap=bd[cs];bd[cs]=0;hlo^=ZL[cap][cs];hhi^=ZH[cap][cs];}
+    uC[sp]=cap;sp++;
+    const np=pr?(pr|us<<3):p;
+    bd[from]=0;bd[to]=np;
+    hlo^=ZL[p][from]^ZL[np][to];hhi^=ZH[p][from]^ZH[np][to];
+    if(fl&2){
+      let rf,rt;if(to>from){rf=from+3;rt=from+1;}else{rf=from-4;rt=from-1;}
+      const rk=bd[rf];bd[rf]=0;bd[rt]=rk;hlo^=ZL[rk][rf]^ZL[rk][rt];hhi^=ZH[rk][rf]^ZH[rk][rt];
+    }
+    if((p&7)===6)ksq[us]=to;
+    castle&=CM[from]&CM[to];
+    ep=(fl&4)?(from+to)>>1:-1;
+    hm=((p&7)===1||cap)?0:hm+1;
+    hlo^=ZL[7][castle];hhi^=ZH[7][castle];
+    if(ep>=0){hlo^=ZL[0][ep];hhi^=ZH[0][ep];}
+    side^=1;hlo^=ZL[15][0];hhi^=ZH[15][0];
   }
-  function ordered(moves,ply){return moves.sort((a,b)=>moveScore(b,ply)-moveScore(a,ply));}
-  function terminal(c,ply){if(c.in_checkmate())return -MATE+ply;if(c.in_draw())return 0;return null;}
-  function key(c,depth){return c.fen().split(' ').slice(0,4).join(' ')+'|'+depth;}
-
-  function quiescence(c,alpha,beta,qdepth,ply){
-    tick();const end=terminal(c,ply);if(end!==null)return end;
-    const stand=evaluate(c);if(stand>=beta)return stand;if(stand>alpha)alpha=stand;if(qdepth<=0)return alpha;
-    let moves=c.moves({verbose:true});
-    if(!c.in_check())moves=moves.filter(m=>m.captured||m.promotion||m.san.includes('+')||m.san.includes('#'));
-    for(const m of ordered(moves,ply)){
-      c.move(m);let sc;try{sc=-quiescence(c,-beta,-alpha,qdepth-1,ply+1);}finally{c.undo();}
-      if(sc>=beta)return sc;if(sc>alpha)alpha=sc;
+  function unmake(){
+    sp--;const m=uM[sp],from=m&127,to=(m>>7)&127,fl=m>>17;
+    side^=1;const us=side;let p=bd[to];
+    if((m>>14)&7)p=1|us<<3;
+    bd[from]=p;
+    if(fl&1){bd[to]=0;bd[to+(us?16:-16)]=uC[sp];}else bd[to]=uC[sp];
+    if(fl&2){if(to>from){bd[from+3]=bd[from+1];bd[from+1]=0;}else{bd[from-4]=bd[from-1];bd[from-1]=0;}}
+    if((p&7)===6)ksq[us]=from;
+    castle=uCs[sp];ep=uE[sp];hm=uH[sp];hlo=uL[sp];hhi=uHi[sp];
+  }
+  function evaluate(){
+    let t=0,mat=0,wb=0,bb=0,kw=0,kb=0;
+    for(let sq=0;sq<128;sq++){
+      if(sq&0x88){sq+=7;continue;}
+      const p=bd[sq];if(!p)continue;
+      const ty=p&7,w=!(p&8),rk=sq>>4,i=(w?rk:7-rk)*8+(sq&7);
+      if(ty===6){if(w)kw=sq;else kb=sq;continue;}
+      let v=VAL[ty]+PSTA[ty][i];
+      if(ty===1)v+=(w?rk-1:6-rk)*7;else{mat+=VAL[ty];if(ty===3){if(w)wb++;else bb++;}}
+      t+=w?v:-v;
+    }
+    const eg=mat<2400;
+    for(let c=0;c<2;c++){
+      const sq=c?kb:kw,rk=sq>>4,f=sq&7;
+      const v=eg?40-(Math.abs(rk-3.5)+Math.abs(f-3.5))*12:PST.k[(c?7-rk:rk)*8+f];
+      t+=c?-v:v;
+    }
+    if(wb>1)t+=25;if(bb>1)t-=25;
+    return (side?-t:t)+8;
+  }
+  function pick(mv,sc,j){let b=j;for(let k=j+1;k<mv.length;k++)if(sc[k]>sc[b])b=k;
+    if(b!==j){let x=mv[j];mv[j]=mv[b];mv[b]=x;x=sc[j];sc[j]=sc[b];sc[b]=x;}}
+  function score(mv,ttm,ply){
+    const sc=new Array(mv.length),kl=killers[ply]||[];
+    for(let i=0;i<mv.length;i++){
+      const m=mv[i],to=(m>>7)&127,cap=bd[to],pr=(m>>14)&7;let s=0;
+      if(m===ttm)s=1e7;
+      else{
+        if(cap)s=10000+10*VAL[cap&7]-VAL[bd[m&127]&7];else if((m>>17)&1)s=10100;
+        if(pr)s+=9000+VAL[pr];
+        if(!cap&&!pr){if(m===kl[0])s=5000;else if(m===kl[1])s=4900;else s=hist[(bd[m&127]&15)<<7|to]|0;}
+      }
+      sc[i]=s;
+    }
+    return sc;
+  }
+  function qs(alpha,beta,ply){
+    if((++nodes&2047)===0&&performance.now()>deadline)throw TIMEOUT;
+    const st=evaluate();
+    if(st>=beta||ply>64)return st;
+    if(st>alpha)alpha=st;
+    const mv=gen(true),sc=score(mv,0,0);
+    for(let j=0;j<mv.length;j++){
+      pick(mv,sc,j);make(mv[j]);
+      if(attacked(ksq[side^1],side)){unmake();continue;}
+      let s;try{s=-qs(-beta,-alpha,ply+1);}finally{unmake();}
+      if(s>=beta)return s;if(s>alpha)alpha=s;
     }
     return alpha;
   }
-
-  function search(c,depth,alpha,beta,ply,allowNull=true){
-    tick();const end=terminal(c,ply);if(end!==null)return end;
-    const inCheck=c.in_check();if(depth<=0)return quiescence(c,alpha,beta,8,ply);
-    const k=key(c,depth),cached=tt.get(k);
-    if(cached&&cached.depth>=depth){if(cached.flag===0)return cached.score;if(cached.flag===1)alpha=Math.max(alpha,cached.score);else beta=Math.min(beta,cached.score);if(alpha>=beta)return cached.score;}
-    const orig=alpha;let best=-INF,bestMove='';
-    // Null-move pruning. Disabled in check and near leaves.
-    if(allowNull&&!inCheck&&depth>=3){
-      const nm=c.moves({verbose:true}).filter(m=>m.piece!=='p'&&m.piece!=='k');
-      if(nm.length){
-        const side=c.turn();
-        // chess.js has no null move, so use a safe reduced search only on a copy.
-        // Skipping null move avoids corrupting castling/en-passant state.
-      }
+  function hasPieces(c){for(let s=0;s<128;s++){if(s&0x88){s+=7;continue;}const p=bd[s];if(p&&(p>>3)===c&&(p&7)>1&&(p&7)<6)return true;}return false;}
+  function search(depth,alpha,beta,ply,nullOk){
+    if((++nodes&2047)===0&&performance.now()>deadline)throw TIMEOUT;
+    const inChk=attacked(ksq[side],side^1);
+    if(inChk&&ply<40)depth++;
+    if(depth<=0)return qs(alpha,beta,ply);
+    if(ply>0){
+      if(hm>=100)return 0;
+      for(let i=sp-2;i>=0&&i>=sp-hm;i-=2)if(uL[i]===hlo&&uHi[i]===hhi)return 0;
     }
-    let moves=ordered(c.moves({verbose:true}),ply);if(!moves.length)return inCheck?-MATE+ply:0;
-    let first=true;
-    for(const m of moves){
-      const mv=id(m);c.move(m);let sc;
+    const ti=hlo&TM;let ttm=0;
+    if(ttU[ti]&&ttK[ti]===hhi){
+      ttm=ttM[ti];
+      if(ply>0&&ttD[ti]>=depth){const s=ttS[ti],f=ttF[ti];if(f===0||(f===1&&s>=beta)||(f===2&&s<=alpha))return s;}
+    }
+    if(nullOk&&!inChk&&depth>=3&&beta<MATE-1000&&hasPieces(side)){
+      const sEp=ep,sl=hlo,sh=hhi;
+      if(ep>=0){hlo^=ZL[0][ep];hhi^=ZH[0][ep];ep=-1;}
+      side^=1;hlo^=ZL[15][0];hhi^=ZH[15][0];uM[sp]=0;uL[sp]=sl;uHi[sp]=sh;sp++;
+      let s;try{s=-search(depth-3,-beta,-beta+1,ply+1,false);}finally{sp--;side^=1;ep=sEp;hlo=sl;hhi=sh;}
+      if(s>=beta)return beta;
+    }
+    const mv=gen(false),sc=score(mv,ttm,ply);
+    let best=-INF,bm=0,legal=0;const a0=alpha;
+    for(let j=0;j<mv.length;j++){
+      pick(mv,sc,j);const m=mv[j];make(m);
+      if(attacked(ksq[side^1],side)){unmake();continue;}
+      const quiet=!uC[sp-1]&&!((m>>14)&7);
+      let s;
       try{
-        const extension=(c.in_check()&&depth<=4)?1:0;
-        if(first){sc=-search(c,depth-1+extension,-beta,-alpha,ply+1,true);first=false;}
+        if(legal===0)s=-search(depth-1,-beta,-alpha,ply+1,true);
         else{
-          // Principal variation search: cheap null-window probe, then re-search only if needed.
-          sc=-search(c,depth-1+extension,-alpha-1,-alpha,ply+1,true);
-          if(sc>alpha&&sc<beta)sc=-search(c,depth-1+extension,-beta,-alpha,ply+1,true);
+          const r=(legal>3&&depth>2&&quiet&&!inChk)?1+(legal>8?1:0):0;
+          s=-search(depth-1-r,-alpha-1,-alpha,ply+1,true);
+          if(s>alpha&&r)s=-search(depth-1,-alpha-1,-alpha,ply+1,true);
+          if(s>alpha&&s<beta)s=-search(depth-1,-beta,-alpha,ply+1,true);
         }
-      }finally{c.undo();}
-      if(sc>best){best=sc;bestMove=mv;}if(sc>alpha)alpha=sc;
+      }finally{unmake();}
+      legal++;
+      if(s>best){best=s;bm=m;}
+      if(s>alpha)alpha=s;
       if(alpha>=beta){
-        if(!m.captured&&!m.promotion){const a=killers[Math.min(ply,63)];if(a[0]!==mv){a.unshift(mv);if(a.length>2)a.pop();}history.set(mv,Math.min(20000,(history.get(mv)||0)+depth*depth));}
+        if(quiet){
+          const kl=killers[ply]||(killers[ply]=[]);
+          if(kl[0]!==m){kl[1]=kl[0];kl[0]=m;}
+          hist[(bd[m&127]&15)<<7|((m>>7)&127)]+=depth*depth;
+        }
         break;
       }
     }
-    let flag=best<=orig?2:best>=beta?1:0;
-    tt.set(k,{depth,score:best,flag,bestMove});if(tt.size>120000){const keep=new Map();let n=0;for(const [kk,v] of tt){if(v.depth>=depth-1&&n++<60000)keep.set(kk,v);}tt=keep;}
+    if(!legal)return inChk?-MATE+ply:0;
+    ttK[ti]=hhi;ttS[ti]=best;ttM[ti]=bm;ttD[ti]=depth;ttF[ti]=best<=a0?2:best>=beta?1:0;ttU[ti]=1;
     return best;
   }
-
-  function rootSearch(c,depth,previous){
-    const roots=ordered(c.moves({verbose:true}),0);let best=-INF,bestMove='',alpha=-INF,beta=INF,lines=[];let first=true;
-    for(const m of roots){tick();const mv=id(m);c.move(m);let sc;
-      try{
-        if(first){sc=-search(c,depth-1,-beta,-alpha,1,true);first=false;}
-        else{sc=-search(c,depth-1,-alpha-1,-alpha,1,true);if(sc>alpha&&sc<beta)sc=-search(c,depth-1,-beta,-alpha,1,true);}
-      }finally{c.undo();}
-      lines.push({move:mv,san:m.san,score:sc});if(sc>best){best=sc;bestMove=mv;}if(sc>alpha)alpha=sc;
-    }
-    lines.sort((a,b)=>b.score-a.score);return {lines,bestMove};
-  }
+  const NAMES="abcdefgh";
+  const uci=m=>{const f=m&127,t=(m>>7)&127,p=(m>>14)&7;return NAMES[f&7]+((f>>4)+1)+NAMES[t&7]+((t>>4)+1)+(p?"nbrq"[p-2]:"");};
+  function perft(d){if(!d)return 1;let n=0;for(const m of gen(false)){make(m);if(!attacked(ksq[side^1],side))n+=perft(d-1);unmake();}return n;}
+  self.perft=(fen,d)=>{setFen(fen);return perft(d);};
 
   function analyse(fen,maxDepth,ms,played){
-    const c=new Chess(fen),roots=c.moves({verbose:true});nodes=0;tt=new Map();history=new Map();for(const a of killers)a.length=0;
-    deadline=performance.now()+Math.max(40,ms-12);
+    setFen(fen);nodes=0;killers=[];hist.fill(0);
+    deadline=performance.now()+ms;
+    const all=gen(false),roots=[];
+    for(const m of all){make(m);if(!attacked(ksq[side^1],side))roots.push(m);unmake();}
     if(!roots.length)return {lines:[],depth:0,nodes:0,sacrifice:false,forcedCapture:false};
-    // Safe fallback ordering before any timed deep search.
-    let lines=ordered(roots,0).map(m=>({move:id(m),san:m.san,score:m.captured?V[m.captured]-V[m.piece]:0}));
-    let completed=0;
-    for(let d=1;d<=maxDepth;d++){
+    const isc=score(roots,0,0);
+    let lines=roots.map((m,i)=>({m,move:uci(m),score:isc[i],depth:0,pv:[uci(m)]})).sort((a,b)=>b.score-a.score);
+    let completed=0;const cap=roots.length===1?1:Math.min(maxDepth,60);
+    for(let depth=1;depth<=cap;depth++){
+      const it=[];let timedOut=false;
       try{
-        const r=rootSearch(c,d,lines);if(r.lines.length){lines=r.lines;completed=d;}
-      }catch(e){if(e!==TIMEOUT)throw e;break;}
-      if(performance.now()>=deadline)break;
+        for(const prev of lines){
+          if(it.length&&performance.now()>deadline)throw TIMEOUT;
+          make(prev.m);let s;
+          try{
+            if(!it.length)s=-search(depth-1,-INF,INF,1,true);
+            else{const lo=it.reduce((a,x)=>Math.max(a,x.score),-INF)-150;s=-search(depth-1,-INF,-lo,1,true);}
+          }finally{unmake();}
+          it.push({m:prev.m,move:prev.move,score:s,depth,pv:[prev.move]});
+        }
+      }catch(e){if(e!==TIMEOUT)throw e;timedOut=true;}
+      if(it.length){
+        it.sort((a,b)=>b.score-a.score);
+        if(timedOut){const d=new Set(it.map(x=>x.move));lines=it.concat(lines.filter(x=>!d.has(x.move)));completed=Math.max(completed,depth-1);}
+        else{lines=it;completed=depth;}
+      }
+      if(timedOut||Math.abs(lines[0].score)>MATE-200||performance.now()>deadline)break;
     }
-    const chosen=roots.find(m=>id(m)===played);let sacrifice=false,forcedCapture=false;
-    if(chosen){c.move(chosen);try{const replies=c.moves({verbose:true});forcedCapture=replies.some(x=>x.captured&&x.to===chosen.to);sacrifice=!!chosen.captured||forcedCapture;}finally{c.undo();}}
-    return {lines:lines.slice(0,8),depth:completed,nodes,sacrifice,forcedCapture};
+    let sacrifice=false,forcedCapture=false;
+    const ch=roots.find(m=>uci(m)===played);
+    if(ch&&!((ch>>14)&7)&&VAL[bd[ch&127]&7]>=500){
+      const to=(ch>>7)&127;make(ch);
+      try{for(const r of gen(true)){if(((r>>7)&127)===to&&bd[to]){make(r);const ok=!attacked(ksq[side^1],side);unmake();if(ok){forcedCapture=true;break;}}}}finally{unmake();}
+      sacrifice=forcedCapture;
+    }
+    return {lines:lines.map(({m,...x})=>x),depth:completed,nodes,sacrifice,forcedCapture,engine:"CRIMSON"};
   }
-
-  self.onmessage=e=>{
-    const d=e.data||{};if(!d.id)return;
-    try{self.postMessage({id:d.id,result:analyse(d.fen,d.depth,d.ms,d.played||'')});}
-    catch(err){
-      try{const c=new Chess(d.fen),m=c.moves({verbose:true})[0];self.postMessage({id:d.id,result:{lines:m?[{move:id(m),san:m.san,score:0}]:[],depth:0,nodes,emergency:true,sacrifice:false,forcedCapture:false}});}catch(_){self.postMessage({id:d.id,error:'engine-fatal'});}
-    }
+  self.onmessage=event=>{
+    const {id,fen,depth,ms,played}=event.data;
+    try{self.postMessage({id,result:analyse(fen,depth,ms,played)});}
+    catch(_){self.postMessage({id,error:"engine-search-failed"});}
   };
 }
 
 
-/*
-  CRIMSON LOCAL ENGINE
-  No CRIMSON Local. No WASM chess engine. The search itself is local.
-  The search runs in a dedicated local Web Worker.
-*/
+function setEngineStatus(text){const el=$("engineStatus");if(el)el.textContent=text;}
 function uciToSanLine(fen,pv){
   const g=new Chess(fen),out=[];
   for(const u of (pv||[])){
@@ -987,48 +2658,370 @@ function uciToSanLine(fen,pv){
   }
   return out;
 }
-let workerUrl=null;
-let workerGeneration=0;
-
+let workerSeq=0;
 function restartWorker(){
-  if(worker){try{worker.terminate();}catch(_){} worker=null;}
+  if(worker){try{worker.terminate();}catch(_){}}
   for(const [id,p] of pending){clearTimeout(p.timer);p.reject(new Error("worker-restarted"));}
   pending.clear();workerFailed=false;
   try{
     const blob=new Blob(["("+engineWorker.toString()+")()"],{type:"application/javascript"});
-    worker=new Worker(URL.createObjectURL(blob));
+    const url=URL.createObjectURL(blob);
+    worker=new Worker(url);
+    setTimeout(()=>URL.revokeObjectURL(url),5000);
     worker.onmessage=e=>{
       const d=e.data||{},p=pending.get(d.id);if(!p)return;
       pending.delete(d.id);clearTimeout(p.timer);
       if(d.error)p.reject(new Error(d.error));else p.resolve(d.result);
     };
-    worker.onerror=()=>{
-      workerFailed=true;
-      for(const [id,p] of pending){clearTimeout(p.timer);p.reject(new Error("fallback-worker-error"));}
-      pending.clear();
-      setTimeout(()=>{if(workerFailed)restartWorker();},50);
+    worker.onerror=ev=>{
+      if(ev&&ev.preventDefault)ev.preventDefault();
+      for(const [id,p] of pending){clearTimeout(p.timer);p.reject(new Error("worker-error"));}
+      pending.clear();worker=null;
     };
-  }catch(_){worker=null;workerFailed=true;setTimeout(()=>restartWorker(),100);}
+    setEngineStatus("المحرك المحلي جاهز · يعمل بدون إنترنت");
+  }catch(_){worker=null;}
+}
+function askWorker(fen,depth,ms,played){
+  return new Promise((resolve,reject)=>{
+    if(!worker)restartWorker();
+    if(!worker){reject(new Error("no-worker"));return;}
+    const id=++requestId;
+    const timer=setTimeout(()=>{
+      pending.delete(id);
+      try{worker.terminate();}catch(_){}
+      worker=null;reject(new Error("engine-timeout"));
+    },ms+5000);
+    pending.set(id,{resolve,reject,timer});
+    worker.postMessage({id,fen,depth,ms,played});
+  }).then(r=>{
+    const g=new Chess(fen);
+    for(const l of r.lines){const m=g.move({from:l.move.slice(0,2),to:l.move.slice(2,4),promotion:l.move[4]});if(m){l.san=m.san;g.undo();}}
+    return r;
+  });
+}
+/* آخر ملاذ: نقلة سريعة على الخيط الرئيسي (التقاط أو عشوائية) حتى لا تتوقف اللعبة أبدًا */
+function emergencyResult(fen){
+  const g=new Chess(fen),ms=g.moves({verbose:true});
+  if(!ms.length)return {lines:[],depth:0,nodes:0,sacrifice:false,forcedCapture:false};
+  const val={p:1,n:3,b:3,r:5,q:9};
+  const sc=m=>(m.captured?val[m.captured]*10-val[m.piece]:0)+(m.san.includes("#")?1000:m.san.includes("+")?3:0)+Math.random();
+  const lines=ms.map(m=>({move:m.from+m.to+(m.promotion||""),san:m.san,score:sc(m)*10,depth:0,nodes:0,pv:[]})).sort((a,b)=>b.score-a.score);
+  return {lines,depth:0,nodes:0,sacrifice:false,forcedCapture:false};
+}
+async function askEngine(fen,depth,ms,played=""){
+  try{return await askWorker(fen,depth,ms,played);}
+  catch(_){
+    try{return await askWorker(fen,Math.min(depth,4),Math.min(ms,1200),played);}
+    catch(__){setEngineStatus("تعذّر المحرك — نقلة طوارئ");return emergencyResult(fen);}
+  }
 }
 
-function askEngine(fen,depth,ms,played=""){
-  return new Promise((resolve,reject)=>{
-    const attempt=(retry)=>{
-      if(!worker||workerFailed)restartWorker();
-      const id=++requestId;
-      const limit=Math.max(5000,Math.min(120000,ms*4+2500));
-      const timer=setTimeout(()=>{
-        pending.delete(id);
-        if(retry<1){restartWorker();attempt(retry+1);}else reject(new Error("local-engine-timeout"));
-      },limit);
-      pending.set(id,{resolve,reject,timer});
-      try{worker.postMessage({id,fen,depth,ms,played});}
-      catch(e){clearTimeout(timer);pending.delete(id);if(retry<1){restartWorker();attempt(retry+1);}else reject(e);}
-    };
-    attempt(0);
+function engineMove(fen,depth,ms){
+  return askEngine(fen,depth,ms).then(result=>{
+    const best=result.lines?.[0];
+    if(!best || !best.move)throw new Error("no-engine-move");
+    return {uci:best.move,result};
   });
 }
 
+const LEVELS = [
+  {depth:1,ms:180,noise:700},
+  {depth:2,ms:350,noise:430},
+  {depth:3,ms:550,noise:260},
+  {depth:4,ms:900,noise:150},
+  {depth:4,ms:1400,noise:80},
+  {depth:5,ms:2200,noise:35},
+  {depth:6,ms:3500,noise:15},
+  {depth:9,ms:5500,noise:5},
+  {depth:12,ms:9000,noise:0},
+  {depth:15,ms:18000,noise:0}
+];
+
+function chooseAI(lines, noise) {
+  if (!lines.length) return null;
+  return lines.map(line=>({
+    ...line,
+    adjusted:line.score+Math.random()*noise
+  })).sort((a,b)=>b.adjusted-a.adjusted)[0].move;
+}
+
+function moveObject(uci) {
+  const move = {from:uci.slice(0,2),to:uci.slice(2,4)};
+  if (uci[4]) move.promotion=uci[4];
+  return move;
+}
+
+function classify(result,played,playedAfterScore=null,context=null){
+  const best=result.lines?.[0];if(!best)return null;
+  const line=result.lines?.find(x=>x.move===played);
+  let loss=playedAfterScore!=null?Math.max(0,best.score-(-playedAfterScore)):
+    line?Math.max(0,best.score-line.score):0;
+  const gap=result.lines?.length>1?Math.max(0,best.score-result.lines[1].score):0;
+  const acc=accuracyFromLoss(loss);
+  const sacrifice=!!context?.sacrifice,forcing=!!context?.forcing;
+  let title,kind,description;
+  if(sacrifice&&forcing&&loss<=35){title="Brilliant!";kind="brilliant";description="بريلينت: تضحية/فكرة تكتيكية مع الحفاظ على تقييم الموقف ضمن هامش صغير.";}
+  else if(loss<=8&&gap>=70){title="Great!";kind="great";description="نقلة قوية جدًا؛ البدائل الرئيسية أضعف بوضوح.";}
+  else if(loss<=12){title="Best";kind="best";description="النقلة قريبة جدًا من أفضل اختيار للمحرك.";}
+  else if(loss<=25){title="Excellent";kind="excellent";description="نقلة ممتازة مع خسارة تقييم صغيرة.";}
+  else if(loss<=55){title="Good";kind="good";description="نقلة جيدة مع تنازل محدود.";}
+  else if(loss<=110){title="Inaccuracy";kind="inaccuracy";description="عدم دقة: كان هناك خيار أقوى بوضوح.";}
+  else if(loss<=240){title="Mistake";kind="mistake";description="خطأ: خسارة ملحوظة في التقييم.";}
+  else{title="Blunder";kind="blunder";description="خطأ فادح: خسارة كبيرة في التقييم أو تغيير حاسم في نتيجة الموقف.";}
+  return {title,kind,description,loss,accuracy:acc,score:playedAfterScore!=null?-playedAfterScore:(line?.score??best.score),
+    best:best.san,depth:result.depth,nodes:result.nodes,candidates:(result.lines||[]).slice(0,5).map(x=>x.san),pv:best.pv||[],
+    sacrifice,forcing,materialDelta:context?.materialDelta||0};
+}
+
+function accuracyFromLoss(loss){
+  return Math.max(0,Math.min(100,100*Math.exp(-Math.max(0,loss)/95)));
+}
+
+function colorName(c) { return c==="w" ? "الأحمر" : "الأسود" }
+
+function save(){
+  try{localStorage.setItem(STORE,JSON.stringify({
+    moves:game.history(),human,flipped,level:$("level").value,timeMinutes,startFen,customPosition
+  }));}catch(_){}
+}
+function restore(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(STORE)||"null");
+    if(!saved||!Array.isArray(saved.moves))return;
+    const candidate=new Chess(saved.startFen||undefined);
+    for(const san of saved.moves){if(typeof san!=="string"||!candidate.move(san))return;}
+    game=candidate; startFen=saved.startFen||null; customPosition=!!saved.customPosition;
+    human=saved.human==="b"?"b":"w"; flipped=!!saved.flipped;
+    $("side").value=human;
+    const level=Number(saved.level); if(Number.isInteger(level)&&level>=1&&level<=10)$("level").value=String(level);
+    timeMinutes=Number(saved.timeMinutes)||10;
+    $("timeControl").value=String(Math.min(60,Math.max(1,timeMinutes)));
+    $("timeValue").textContent=formatClock(timeMinutes*60);
+    resetClock(timeMinutes);
+  }catch(_){}
+}
+function statusText(){
+  if(timedOut)return "انتهى الوقت — فاز "+colorName(game.turn()==="w"?"b":"w")+"!";
+  if(game.in_checkmate())return "كش مات — فاز "+colorName(game.turn()==="w"?"b":"w")+"!";
+  if(game.in_stalemate())return "تعادل — الملك غير مهدد ولا توجد نقلة قانونية.";
+  if(game.insufficient_material())return "تعادل — قطع غير كافية للمات.";
+  if(game.in_threefold_repetition())return "تعادل — تكرر الموقف ثلاث مرات.";
+  if(game.in_draw())return "تعادل وفق قواعد المكتبة المستخدمة.";
+  if(analysisRunning)return phase;
+  if(busy)return phase;
+  return game.turn()===human?"دورك، اختر قطعة.":"دور المحرك.";
+}
+function renderAnalysis(){
+  const r=analysisData[analysisIndex>=0?analysisIndex:analysisData.length-1];
+  $("grade").textContent=r?.title||"بانتظار تحليل المباراة";
+  $("grade").className="badge "+(r?.kind||"");
+  $("moveLabel").textContent=r?.san||"—";
+  $("analysisText").textContent=r
+    ? (r.description||"")+(r.best?" أفضل نقلة: "+r.best+".":"")
+    : (analysisRunning?"جارٍ تحليل المباراة بعمق…":"بعد انتهاء المباراة اضغط «تحليل المباراة» لبدء التحليل.");
+
+  $("loss").textContent=r?.loss!=null?(r.loss>10000?"حاسمة":(r.loss/100).toFixed(2)+" بيدق"):"—";
+  $("depth").textContent=r?.depth??"—";
+  $("nodes").textContent=r?.nodes?Number(r.nodes).toLocaleString():"—";
+  $("moveAccuracy").textContent=r?.accuracy!=null?r.accuracy.toFixed(1)+"%":"—";
+
+  const mine=human;
+  const relevant=analysisData.filter(x=>x && x.color===mine && typeof x.accuracy==="number");
+  const avg=relevant.length?relevant.reduce((a,x)=>a+x.accuracy,0)/relevant.length:null;
+  $("gameAccuracy").textContent=avg==null?"—":avg.toFixed(1)+"%";
+
+  let ev=r?.whiteScore;
+  $("evalBig").textContent=ev==null?"—":(Math.abs(ev)>=9000?(ev>0?"M":"−M"):(ev>0?"+":"")+((ev||0)/100).toFixed(2));
+  $("pvBox").textContent=r?.pvSan?.length?r.pvSan.join("  "):(r?.candidates?.length?"أفضل الخيارات: "+r.candidates.join("  ·  "):"الخط الأفضل سيظهر هنا بعد التحليل.");
+
+  const graph=$("evalGraph"); graph.replaceChildren();
+  analysisData.forEach((x,i)=>{
+    const bar=document.createElement("div");
+    bar.className="eval-bar"+(x.whiteScore<0?" neg ":" ")+(i===analysisIndex?"current":"");
+    const magnitude=Math.min(5,Math.abs(x.whiteScore||0)/100);
+    const fill=document.createElement("div");
+    fill.className="eval-fill";
+    fill.style.height=Math.max(3,magnitude/5*50)+"%";
+    bar.append(fill);
+    bar.onclick=()=>{analysisIndex=i;analysisMode=true;render();};
+    graph.append(bar);
+  });
+
+  const counts={brilliant:0,great:0,best:0,excellent:0,good:0,inaccuracy:0,mistake:0,blunder:0};
+  for(const x of analysisData)if(x?.kind)counts[x.kind]=(counts[x.kind]||0)+1;
+  const labels=[
+    ["brilliant","Brilliant"],["great","Great"],["best","Best"],["excellent","Excellent"],
+    ["good","Good"],["inaccuracy","Inaccuracy"],["mistake","Mistake"],["blunder","Blunder"]
+  ];
+  $("classificationGrid").replaceChildren(...labels.map(([k,l])=>{
+    const d=document.createElement("div");d.className="class-stat";
+    const b=document.createElement("b");b.textContent=counts[k]||0;
+    const sp=document.createElement("span");sp.textContent=l;
+    d.append(b,sp);return d;
+  }));
+}
+
+function renderHistory(){
+  const target=$("history");target.replaceChildren();
+  const moves=game.history({verbose:true});
+  moves.forEach((m,i)=>{
+    const row=document.createElement("tr");row.className="clickable"+(i===analysisIndex?" current-move":"");
+    row.onclick=()=>{if(analysisData.length){analysisIndex=i;analysisMode=true;render();}};
+    const n=document.createElement("td");n.textContent=(Math.floor(i/2)+1)+" · "+colorName(m.color);
+    const san=document.createElement("td");san.className="san";san.textContent=m.san;
+    const g=document.createElement("td");g.textContent=analysisData[i]?.title||"—";row.append(n,san,g);target.append(row);
+  });
+  if(!moves.length){const row=document.createElement("tr"),cell=document.createElement("td");cell.colSpan=3;cell.textContent="لا توجد نقلات بعد.";row.append(cell);target.append(row);}
+}
+function renderBoard(){
+  const board=$("board");board.replaceChildren();
+  const g=displayGame();
+  const files=flipped?"hgfedcba":"abcdefgh",ranks=flipped?[1,2,3,4,5,6,7,8]:[8,7,6,5,4,3,2,1];
+  const last=g.history({verbose:true}).slice(-1)[0];
+  const legal=!analysisMode&&selected?g.moves({square:selected,verbose:true}):[];
+  for(let row=0;row<8;row++)for(let col=0;col<8;col++){
+    const square=files[col]+ranks[row],piece=g.get(square),button=document.createElement("button");
+    button.className="sq"+(((square.charCodeAt(0)-97+Number(square[1]))%2===1)?" dark":"");
+    if(last&&(square===last.from||square===last.to))button.classList.add("last");
+    if(!analysisMode&&selected===square)button.classList.add("selected");
+    if(!analysisMode&&hintSquares.includes(square))button.classList.add("hint");
+    if(piece?.type==="k"&&piece.color===g.turn()&&g.in_check())button.classList.add("check");
+    button.onclick=()=>{if(!analysisMode)onSquare(square);};
+    if(piece){const glyph=document.createElement("span");glyph.className="piece "+(piece.color==="w"?"red":"black");glyph.textContent=GLYPH[piece.type];button.append(glyph);}
+    if(legal.some(m=>m.to===square)){const dot=document.createElement("span");dot.className=piece?"capture-ring":"dot";button.append(dot);}
+    if(row===7){const label=document.createElement("span");label.className="coord file";label.textContent=files[col];button.append(label);}
+    if(col===0){const label=document.createElement("span");label.className="coord rank";label.textContent=ranks[row];button.append(label);}
+    board.append(button);
+  }
+}
+function render(){
+  renderBoard();renderAnalysis();renderHistory();renderClocks();
+  $("status").textContent=statusText();
+  $("hintBtn").disabled=busy||game.game_over()||timedOut||game.turn()!==human||analysisMode;
+  $("undoBtn").disabled=busy||analysisMode||game.history().length<=(human==="b"?1:0);
+  $("exportBtn").disabled=!game.history().length;
+  $("analysisBtn").style.display=(game.game_over()||timedOut)?"inline-flex":"none";
+  $("deepAnalysisBtn").disabled=analysisRunning||!(game.game_over()||timedOut)||!game.history().length;
+  const bottom=flipped?"b":"w",top=bottom==="w"?"b":"w";
+  for(const [pos,color] of [["top",top],["bottom",bottom]]){
+    const mine=color===human;
+    $(pos+"Name").textContent=mine?"أنت · "+colorName(color):"المحرك · "+colorName(color);
+    $(pos+"Info").textContent=mine?"لاعب":"المستوى "+$("level").value+"/10";
+    $(pos+"Turn").textContent=!game.game_over()&&!timedOut&&!analysisMode&&game.turn()===color?"● الدور الآن":"";
+  }
+}
+function renderEditor(){
+  const tools=$("editorTools");tools.replaceChildren();
+  $("editorTurnW").classList.toggle("active",editorTurn==="w");
+  $("editorTurnB").classList.toggle("active",editorTurn==="b");
+  const groups=[
+    {title:"القطع الحمراء",cls:"red-title",items:[["wq","♛"],["wr","♜"],["wb","♝"],["wn","♞"],["wp","♟"],["wk","♚"]],tool:"red-tool"},
+    {title:"القطع السوداء",cls:"black-title",items:[["bq","♛"],["br","♜"],["bb","♝"],["bn","♞"],["bp","♟"],["bk","♚"]],tool:"black-tool"}
+  ];
+  groups.forEach(group=>{
+    const wrap=document.createElement("div");wrap.className="editor-group";
+    const title=document.createElement("div");title.className="editor-group-title "+group.cls;title.textContent=group.title;wrap.append(title);
+    group.items.forEach(([id,glyph])=>{const b=document.createElement("button");b.type="button";b.className="piece-tool "+group.tool;b.textContent=glyph;b.title=PIECE_NAME[id[1]];b.setAttribute("aria-label",group.title+" — "+PIECE_NAME[id[1]]);b.classList.toggle("active",editorSelected===id);b.onclick=()=>{editorSelected=id;renderEditor();};wrap.append(b);});
+    tools.append(wrap);
+  });
+  const erase=document.createElement("div");erase.className="editor-group";
+  const et=document.createElement("div");et.className="editor-group-title";et.textContent="أداة المسح";erase.append(et);
+  const eb=document.createElement("button");eb.type="button";eb.className="piece-tool erase-tool";eb.textContent="⌫";eb.title="مسح قطعة";eb.classList.toggle("active",editorSelected==="erase");eb.onclick=()=>{editorSelected="erase";renderEditor();};erase.append(eb);tools.append(erase);
+  const board=$("editorBoard");board.replaceChildren();
+  for(let r=8;r>=1;r--)for(let c=0;c<8;c++){
+    const sq="abcdefgh"[c]+r,b=document.createElement("button");b.className="editor-sq "+(((c+r)%2)?"dark":"light");
+    b.onclick=()=>{if(editorSelected==="erase")delete editorPieces[sq];else editorPieces[sq]=editorSelected;renderEditor();};
+    const p=editorPieces[sq];if(p){const span=document.createElement("span");span.className="piece "+(p[0]==="w"?"red":"black");span.textContent=GLYPH[p[1]];b.append(span);}board.append(b);
+  }
+}
+function editorFen(){
+  const rows=[];
+  for(let r=8;r>=1;r--){let row="",empty=0;for(const f of "abcdefgh"){const p=editorPieces[f+r];if(!p){empty++;continue;}if(empty){row+=empty;empty=0;}row+=p[0]==="w"?p[1].toUpperCase():p[1];}if(empty)row+=empty;rows.push(row);}
+  return rows.join("/")+" "+editorTurn+" - - 0 1";
+}
+function validateEditor(){
+  const vals=Object.values(editorPieces);
+  if(vals.filter(p=>p==="wk").length!==1||vals.filter(p=>p==="bk").length!==1){$("notice").textContent="يجب وضع ملك واحد لكل طرف.";return null;}
+  try{const g=new Chess(editorFen());return g.fen();}catch(_){$("notice").textContent="الوضع غير صالح.";return null;}
+}
+function openEditor(){
+  editorPieces=standardEditorPieces();editorSelected="wq";editorTurn=human;renderEditor();$("customPosition").showModal();
+}
+
+function showPromotion(from,to) {
+  const dialog=$("promotion");
+  const options=$("promotionOptions");
+  options.replaceChildren();
+  for (const piece of ["q","r","b","n"]) {
+    const button=document.createElement("button");
+    button.textContent=GLYPH[piece];
+    button.setAttribute("aria-label","الترقية إلى "+PIECE_NAME[piece]);
+    button.onclick=()=>{
+      dialog.close();
+      takeHumanTurn({from,to,promotion:piece});
+    };
+    options.append(button);
+  }
+  dialog.showModal();
+}
+
+function onSquare(square) {
+  if (busy || game.game_over() || game.turn()!==human) return;
+  const piece=game.get(square);
+
+if (selected) {
+    const moves=game.moves({square:selected,verbose:true});
+    const options=moves.filter(m=>m.to===square);
+    if (options.length) {
+      const from=selected;
+      if (options.some(m=>m.promotion)) showPromotion(from,square);
+      else takeHumanTurn({from,to:square});
+      return;
+    }
+  }
+
+selected=piece?.color===human && selected!==square ? square : null;
+  hintSquares=[];
+  renderBoard();
+}
+
+function primeMateAudio(){
+  try{
+    const C=window.AudioContext||window.webkitAudioContext;
+    if(!C)return;
+    if(!mateAudioCtx)mateAudioCtx=new C();
+    if(mateAudioCtx.state==="suspended")mateAudioCtx.resume().catch(()=>{});
+  }catch(_){}
+}
+
+function playMateEffects(){
+  if(!game.in_checkmate() || lastMatePly===game.history().length)return;
+  lastMatePly=game.history().length;
+  const overlay=$("checkmateOverlay");
+  if(overlay){
+    $("checkmateSub").textContent="فاز "+colorName(game.turn()==="w"?"b":"w")+" بالكش مات";
+    overlay.classList.add("show"); overlay.setAttribute("aria-hidden","false");
+    clearTimeout(mateTimer); mateTimer=setTimeout(()=>{overlay.classList.remove("show");overlay.setAttribute("aria-hidden","true")},3000);
+  }
+  // Short synthesized fanfare: no external audio file/network dependency.
+  try{
+    primeMateAudio();
+    const ac=mateAudioCtx;if(!ac)return;
+    const now=ac.currentTime;
+    [[220,0,.16],[330,.12,.18],[440,.25,.32]].forEach(([f,t,d])=>{
+      const o=ac.createOscillator(),g=ac.createGain();o.type="sine";o.frequency.value=f;
+      g.gain.setValueAtTime(.0001,now+t);g.gain.exponentialRampToValueAtTime(.12,now+t+.025);g.gain.exponentialRampToValueAtTime(.0001,now+t+d);
+      o.connect(g).connect(ac.destination);o.start(now+t);o.stop(now+t+d+.02);
+    });
+  }catch(_){}
+}
+
+async function playMove(move,version){
+  const applied=game.move(move); if(!applied)throw new Error("illegal-move");
+  selected=null;hintSquares=[];save();render();
+  if(game.in_checkmate())playMateEffects();
+  return true;
+}
 async function aiTurn(version){
   if(version!==epoch||game.game_over()||timedOut||game.turn()===human)return;
   const config=LEVELS[Number($("level").value)-1];phase="المحرك يفكّر…";render();
@@ -1058,7 +3051,7 @@ async function analyseWholeGame(){
   stopClock();analysisRunning=true;analysisMode=true;analysisData=[];analysisIndex=-1;
   phase="بدء التحليل…";render();
   const moves=game.history({verbose:true}),total=moves.length;
-  const ANALYSIS_DEPTH=18,ANALYSIS_MS=22000;
+  const ANALYSIS_DEPTH=12,ANALYSIS_MS=2500;
 
   for(let i=0;i<total;i++){
     const before=positionAtPly(i),played=moves[i].from+moves[i].to+(moves[i].promotion||"");
