@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CRIMSON — شطرنج أحمر وأسود</title>
+<title>CRIMSON v12 — شطرنج أحمر وأسود</title>
 <style>
 :root {
   color-scheme: dark;
@@ -335,6 +335,39 @@ footer { text-align:center; color:#797681; font-size:11px; padding:0 20px 25px }
 .editor-turn button.active{outline:2px solid var(--red);background:#3b222b;color:#fff}
 #analysisProgress{font-size:11px;color:var(--muted)}
 
+[hidden]{display:none!important}
+.pc{width:90%;height:90%;position:relative;z-index:2;pointer-events:none;filter:drop-shadow(0 2px 2px #0008)}
+.pc.red *{fill:#e0203f;stroke:#ffd3d9;stroke-width:1.1;stroke-linejoin:round}
+.pc.black *{fill:#1b1d26;stroke:#e8ddd7;stroke-width:1.1;stroke-linejoin:round}
+.pc.red .d,.pc.black .d{fill:none;stroke-linecap:round}
+.pc.red .e,.pc.black .e{fill:#fff;stroke:none}
+.piece-tool .pc,.promotion-options .pc,.editor-sq .pc{width:100%;height:100%}
+.editor-tools .piece-tool{padding:3px}.editor-sq{padding:0}
+.mbadge{position:absolute;top:2%;right:2%;z-index:5;font:900 clamp(9px,2.4vw,15px)/1 Tahoma;padding:3px 5px;border-radius:99px;color:#fff;box-shadow:0 1px 4px #000a;pointer-events:none}
+.k-brilliant{background:#1aa7a1}.k-great{background:#4f86c6}.k-best{background:#7fae3b}.k-excellent{background:#5f9d45}.k-good{background:#8a9a5b}.k-inaccuracy{background:#d9a21b}.k-mistake{background:#e0702b}.k-blunder{background:#d02f45}
+.mk{display:inline-grid;place-items:center;min-width:19px;height:19px;border-radius:50%;font:900 10px Tahoma;color:#fff;margin-inline-start:4px;padding:0 3px}
+.mk.big{min-width:44px;height:44px;font-size:20px;margin:0}
+.ar{display:flex;gap:6px;margin-bottom:8px}.ar-open{flex:1;display:flex;gap:10px;align-items:center;text-align:right;font-size:12px;line-height:1.7;padding:9px 11px}
+.ar-open small{color:var(--muted)}.ar-del{padding:9px 11px}
+.res{padding:5px 8px;border-radius:8px;font-weight:900;font-size:11px;white-space:nowrap}.res-w{background:#27452b;color:#a7e49d}.res-l{background:#54232d;color:#ff9baa}.res-d{background:#3b3b44;color:#ddd}
+#review{position:fixed;inset:0;z-index:6000;background:#08080cf5;overflow:auto;padding:12px}
+.rv-in{max-width:1120px;margin:auto}.rv-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;font-weight:bold;font-size:14px}
+.rv-pop{display:flex;flex-wrap:wrap;align-items:center;gap:12px;border:1px solid var(--line);border-right:7px solid var(--c,#555);border-radius:14px;background:#17171d;padding:10px 14px;min-height:74px;margin-bottom:12px}
+.rv-pop .sub{font-size:12px;color:#cfc8cc;line-height:1.8;margin-top:3px}.rv-pop .kl{font-weight:bold;color:var(--text);font-size:14px}
+.rv-pop .pe{font:800 20px Georgia,serif;direction:ltr;text-align:center}.rv-pop .pe small{display:block;font:11px Tahoma;color:var(--muted)}
+.rv-main{display:grid;grid-template-columns:minmax(0,600px) 1fr;gap:16px;align-items:start}
+@media(max-width:860px){.rv-main{grid-template-columns:1fr}}
+.rv-ctl{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}.rv-ctl button{flex:1;min-width:46px;min-height:44px}
+.mvs{direction:ltr;display:flex;flex-wrap:wrap;gap:3px 2px;align-items:center;max-height:320px;overflow:auto;background:#121218;border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:12px}
+.mvs .mn{color:var(--muted);font:12px Georgia,serif;margin:0 2px 0 8px}
+.mvs button{padding:4px 7px;border-radius:7px;font:16px Georgia,serif;background:transparent;border:1px solid transparent;display:inline-flex;align-items:center}
+.mvs button:hover{background:#2a2a33}.mvs button.cur{background:#4a2330;border-color:var(--red)}
+.vline{width:100%;font:11px Tahoma;color:#f5b764;margin-top:8px;direction:rtl}
+.rvg{display:flex;height:76px;gap:1px;margin-bottom:12px;background:linear-gradient(to bottom,transparent 49%,#555 49%,#555 51%,transparent 51%);border:1px solid var(--line);border-radius:8px;padding:2px;direction:ltr}
+.gb{flex:1;position:relative;cursor:pointer;min-width:2px}.gb.cur{outline:2px solid #f5b764}
+.gf{position:absolute;left:0;right:0;bottom:50%;background:#eee;border-radius:2px 2px 0 0}.gf.neg{bottom:auto;top:50%;background:#e0203f;border-radius:0 0 2px 2px}
+.sum{width:100%;font-size:12px;margin-bottom:12px}.sum td,.sum th{padding:6px;text-align:center}.sum td:first-child{text-align:right}
+
 </style>
 </head>
 <body>
@@ -343,7 +376,7 @@ footer { text-align:center; color:#797681; font-size:11px; padding:0 20px 25px }
     <div class="brand">CRIM<span>SON</span> ♟</div>
     <div class="sub">شطرنج أحمر وأسود · مساحة للتحدّي والتعلّم</div>
   </div>
-  <div class="version">نسخة أولية · 01</div>
+  <div class="version">v12 · محرك جديد + مراجعة</div>
 </header>
 
 <main>
@@ -390,6 +423,8 @@ footer { text-align:center; color:#797681; font-size:11px; padding:0 20px 25px }
     <button id="undoBtn">↶ تراجع</button>
     <button id="flipBtn">⇅ قلب اللوحة</button>
     <button id="exportBtn">↓ PGN</button>
+    <button id="resignBtn">⚑ استسلام</button>
+    <button id="reviewBtn" class="primary">▶ مراجعة المباراة</button>
     <button id="add30Me">＋30ث لي</button>
     <button id="add30Engine">＋30ث للمحرك</button>
     <button id="add60Me">＋1د لي</button>
@@ -439,79 +474,48 @@ footer { text-align:center; color:#797681; font-size:11px; padding:0 20px 25px }
 
     <button class="primary start" id="newBtn">ابدأ مباراة جديدة</button>
     <p class="note">
-      المستويات تغيّر ميزانية اللعب. للتحليل الكامل تُستخدم ميزانية مستقلة أعمق.
-      اللعب والتحليل يعملان داخل Web Worker حتى تبقى الواجهة مستجيبة.
+      كل مباراة تنتهي تُحفظ تلقائيًا في «سجل المباريات» ويمكنك مراجعتها وتحليلها بالتفصيل.
     </p>
   </section>
 
 <section class="card">
-    <div class="small-title">FULL GAME ANALYSIS</div>
-    <div class="analysis-head">
-      <div>
-        <h2 style="margin-bottom:4px">تحليل المباراة</h2>
-        <div class="engine-status" id="engineStatus">المحرك المحلي جاهز · يعمل بدون إنترنت</div><div class="engine-note">المحرك يعمل ببحث متسلسل: لا يبدأ تحليلًا جديدًا قبل انتهاء السابق، ومعه مؤقّت أمان يمنع تجمّد اللعبة.</div>
-      </div>
-      <span class="badge" id="grade">بانتظار تحليل المباراة</span>
-    </div>
-
-    <div class="analysis-top">
-      <span id="moveLabel">—</span>
-      <span id="analysisProgress"></span>
-    </div>
-
-    <div class="analysis-score-row">
-      <div class="eval-big" id="evalBig">—</div>
-      <div class="accuracy-box">
-        <span>دقة النقلة</span>
-        <strong id="moveAccuracy">—</strong>
-      </div>
-      <div class="accuracy-box">
-        <span>دقة المباراة</span>
-        <strong id="gameAccuracy">—</strong>
-      </div>
-    </div>
-
-    <p id="analysisText">بعد انتهاء المباراة اضغط «تحليل المباراة» لبدء التحليل الكامل.</p>
-
-    <div class="pv-title">أفضل خط</div>
-    <div id="pvBox" class="pv-box">الخط الأفضل سيظهر هنا بعد التحليل.</div>
-
-    <div class="stats">
-      <div class="stat"><span>خسارة التقييم</span><strong id="loss">—</strong></div>
-      <div class="stat"><span>عمق البحث</span><strong id="depth">—</strong></div>
-      <div class="stat"><span>العقد</span><strong id="nodes">—</strong></div>
-    </div>
-
-    <div class="eval-graph-wrap">
-      <div class="graph-labels"><span>+5</span><span>0</span><span>−5</span></div>
-      <div id="evalGraph" class="eval-graph"></div>
-    </div>
-
-    <div class="classification-grid" id="classificationGrid"></div>
-
-    <div class="analysis-actions">
-      <button id="analysisBtn" class="primary">تحليل المباراة</button>
-      <button id="deepAnalysisBtn">إعادة التحليل بعمق أكبر</button>
-    </div>
-
-    <p class="note">
-      التحليل يستخدم محرك CRIMSON المحلي مع بحث مستقل للنقلة الأفضل والنقلة التي لُعبت، ثم يحسب خسارة التقييم والتصنيف.
-      التصنيفات والدقة مؤشرات تحليلية وليست أرقام Elo.
-    </p>
+    <div class="small-title">GAME LOG</div>
+    <h2>سجل المباريات</h2>
+    <div id="archive"></div>
+    <p class="note">اضغط على أي مباراة لفتح المراجعة: تنقّل بين النقلات، حلّلها، وجرّب اللعب بالطرفين.</p>
   </section>
 
 <section class="card">
-    <h2>سجل المباراة</h2>
-    <div class="history-scroll" id="historyBox">
-      <table>
-        <thead><tr><th>الدور</th><th>النقلة</th><th>التصنيف</th></tr></thead>
-        <tbody id="history"></tbody>
-      </table>
-    </div>
-    <p class="note" id="saveNote">الحفظ تلقائي داخل هذا المتصفح.</p>
+    <h2>نقلات المباراة الحالية</h2>
+    <div class="history-scroll" id="historyBox"><table><tbody id="history"></tbody></table></div>
   </section>
 </aside>
 </main>
+
+
+<div id="review" hidden>
+ <div class="rv-in">
+  <div class="rv-top"><span id="rvTitle"></span><button id="rvClose">✕ إغلاق</button></div>
+  <div id="rvPop" class="rv-pop"></div>
+  <div class="rv-main">
+   <div>
+    <div class="board-wrap"><div class="eval-track"><div class="eval-red" id="rvEval"></div></div><div class="board" id="rvBoard"></div></div>
+    <div class="rv-ctl">
+     <button id="rvFirst">⏮</button><button id="rvPrev">◀</button><button id="rvNext">▶</button><button id="rvLast">⏭</button>
+     <button id="rvFlip">⇅</button><button id="rvBestBtn">💡 أفضل نقلة</button><button id="rvBack" hidden>↺ الخط الأصلي</button>
+    </div>
+   </div>
+   <div>
+    <div class="small-title">MOVES</div>
+    <div id="rvMoves" class="mvs"></div>
+    <div id="rvGraph" class="rvg"></div>
+    <div id="rvSummary"></div>
+    <div class="analysis-actions"><button id="rvAnalyse" class="primary">تحليل المباراة</button><button id="rvDeep">تحليل أعمق</button><button id="rvPgn">↓ PGN</button></div>
+    <div id="rvProg" class="note"></div>
+   </div>
+  </div>
+ </div>
+</div>
 
 <div id="checkmateOverlay" class="checkmate-overlay" aria-hidden="true">
   <div class="checkmate-card">
@@ -545,1783 +549,89 @@ footer { text-align:center; color:#797681; font-size:11px; padding:0 20px 25px }
 </dialog>
 
 <footer>CRIMSON · محرك محلي داخل المتصفح · تحليل المباراة يبدأ يدويًا بعد النهاية · لا تُرسل المباراة إلى خادم</footer>
-
-<script id="chessLib">
-
-
-/* minified license below  */
-
-/* @license
- * Copyright (c) 2018, Jeff Hlywa (jhlywa@gmail.com)
- * Released under the BSD license
- * https://github.com/jhlywa/chess.js/blob/master/LICENSE
- */
-
-var Chess = function(fen) {
-  var BLACK = 'b'
-  var WHITE = 'w'
-
-  var EMPTY = -1
-
-  var PAWN = 'p'
-  var KNIGHT = 'n'
-  var BISHOP = 'b'
-  var ROOK = 'r'
-  var QUEEN = 'q'
-  var KING = 'k'
-
-  var SYMBOLS = 'pnbrqkPNBRQK'
-
-  var DEFAULT_POSITION =
-    'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
-
-  var POSSIBLE_RESULTS = ['1-0', '0-1', '1/2-1/2', '*']
-
-  var PAWN_OFFSETS = {
-    b: [16, 32, 17, 15],
-    w: [-16, -32, -17, -15]
-  }
-
-  var PIECE_OFFSETS = {
-    n: [-18, -33, -31, -14, 18, 33, 31, 14],
-    b: [-17, -15, 17, 15],
-    r: [-16, 1, 16, -1],
-    q: [-17, -16, -15, 1, 17, 16, 15, -1],
-    k: [-17, -16, -15, 1, 17, 16, 15, -1]
-  }
-
-  // prettier-ignore
-  var ATTACKS = [
-    20, 0, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0, 0,20, 0,
-     0,20, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0,20, 0, 0,
-     0, 0,20, 0, 0, 0, 0, 24,  0, 0, 0, 0,20, 0, 0, 0,
-     0, 0, 0,20, 0, 0, 0, 24,  0, 0, 0,20, 0, 0, 0, 0,
-     0, 0, 0, 0,20, 0, 0, 24,  0, 0,20, 0, 0, 0, 0, 0,
-     0, 0, 0, 0, 0,20, 2, 24,  2,20, 0, 0, 0, 0, 0, 0,
-     0, 0, 0, 0, 0, 2,53, 56, 53, 2, 0, 0, 0, 0, 0, 0,
-    24,24,24,24,24,24,56,  0, 56,24,24,24,24,24,24, 0,
-     0, 0, 0, 0, 0, 2,53, 56, 53, 2, 0, 0, 0, 0, 0, 0,
-     0, 0, 0, 0, 0,20, 2, 24,  2,20, 0, 0, 0, 0, 0, 0,
-     0, 0, 0, 0,20, 0, 0, 24,  0, 0,20, 0, 0, 0, 0, 0,
-     0, 0, 0,20, 0, 0, 0, 24,  0, 0, 0,20, 0, 0, 0, 0,
-     0, 0,20, 0, 0, 0, 0, 24,  0, 0, 0, 0,20, 0, 0, 0,
-     0,20, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0,20, 0, 0,
-    20, 0, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0, 0,20
-  ];
-
-  // prettier-ignore
-  var RAYS = [
-     17,  0,  0,  0,  0,  0,  0, 16,  0,  0,  0,  0,  0,  0, 15, 0,
-      0, 17,  0,  0,  0,  0,  0, 16,  0,  0,  0,  0,  0, 15,  0, 0,
-      0,  0, 17,  0,  0,  0,  0, 16,  0,  0,  0,  0, 15,  0,  0, 0,
-      0,  0,  0, 17,  0,  0,  0, 16,  0,  0,  0, 15,  0,  0,  0, 0,
-      0,  0,  0,  0, 17,  0,  0, 16,  0,  0, 15,  0,  0,  0,  0, 0,
-      0,  0,  0,  0,  0, 17,  0, 16,  0, 15,  0,  0,  0,  0,  0, 0,
-      0,  0,  0,  0,  0,  0, 17, 16, 15,  0,  0,  0,  0,  0,  0, 0,
-      1,  1,  1,  1,  1,  1,  1,  0, -1, -1,  -1,-1, -1, -1, -1, 0,
-      0,  0,  0,  0,  0,  0,-15,-16,-17,  0,  0,  0,  0,  0,  0, 0,
-      0,  0,  0,  0,  0,-15,  0,-16,  0,-17,  0,  0,  0,  0,  0, 0,
-      0,  0,  0,  0,-15,  0,  0,-16,  0,  0,-17,  0,  0,  0,  0, 0,
-      0,  0,  0,-15,  0,  0,  0,-16,  0,  0,  0,-17,  0,  0,  0, 0,
-      0,  0,-15,  0,  0,  0,  0,-16,  0,  0,  0,  0,-17,  0,  0, 0,
-      0,-15,  0,  0,  0,  0,  0,-16,  0,  0,  0,  0,  0,-17,  0, 0,
-    -15,  0,  0,  0,  0,  0,  0,-16,  0,  0,  0,  0,  0,  0,-17
-  ];
-
-  var SHIFTS = { p: 0, n: 1, b: 2, r: 3, q: 4, k: 5 }
-
-  var FLAGS = {
-    NORMAL: 'n',
-    CAPTURE: 'c',
-    BIG_PAWN: 'b',
-    EP_CAPTURE: 'e',
-    PROMOTION: 'p',
-    KSIDE_CASTLE: 'k',
-    QSIDE_CASTLE: 'q'
-  }
-
-  var BITS = {
-    NORMAL: 1,
-    CAPTURE: 2,
-    BIG_PAWN: 4,
-    EP_CAPTURE: 8,
-    PROMOTION: 16,
-    KSIDE_CASTLE: 32,
-    QSIDE_CASTLE: 64
-  }
-
-  var RANK_1 = 7
-  var RANK_2 = 6
-  var RANK_3 = 5
-  var RANK_4 = 4
-  var RANK_5 = 3
-  var RANK_6 = 2
-  var RANK_7 = 1
-  var RANK_8 = 0
-
-  // prettier-ignore
-  var SQUARES = {
-    a8:   0, b8:   1, c8:   2, d8:   3, e8:   4, f8:   5, g8:   6, h8:   7,
-    a7:  16, b7:  17, c7:  18, d7:  19, e7:  20, f7:  21, g7:  22, h7:  23,
-    a6:  32, b6:  33, c6:  34, d6:  35, e6:  36, f6:  37, g6:  38, h6:  39,
-    a5:  48, b5:  49, c5:  50, d5:  51, e5:  52, f5:  53, g5:  54, h5:  55,
-    a4:  64, b4:  65, c4:  66, d4:  67, e4:  68, f4:  69, g4:  70, h4:  71,
-    a3:  80, b3:  81, c3:  82, d3:  83, e3:  84, f3:  85, g3:  86, h3:  87,
-    a2:  96, b2:  97, c2:  98, d2:  99, e2: 100, f2: 101, g2: 102, h2: 103,
-    a1: 112, b1: 113, c1: 114, d1: 115, e1: 116, f1: 117, g1: 118, h1: 119
-  };
-
-  var ROOKS = {
-    w: [
-      { square: SQUARES.a1, flag: BITS.QSIDE_CASTLE },
-      { square: SQUARES.h1, flag: BITS.KSIDE_CASTLE }
-    ],
-    b: [
-      { square: SQUARES.a8, flag: BITS.QSIDE_CASTLE },
-      { square: SQUARES.h8, flag: BITS.KSIDE_CASTLE }
-    ]
-  }
-
-  var board = new Array(128)
-  var kings = { w: EMPTY, b: EMPTY }
-  var turn = WHITE
-  var castling = { w: 0, b: 0 }
-  var ep_square = EMPTY
-  var half_moves = 0
-  var move_number = 1
-  var history = []
-  var header = {}
-
-  /* if the user passes in a fen string, load it, else default to
-   * starting position
-   */
-  if (typeof fen === 'undefined') {
-    load(DEFAULT_POSITION)
-  } else {
-    load(fen)
-  }
-
-  function clear(keep_headers) {
-    if (typeof keep_headers === 'undefined') {
-      keep_headers = false
-    }
-
-    board = new Array(128)
-    kings = { w: EMPTY, b: EMPTY }
-    turn = WHITE
-    castling = { w: 0, b: 0 }
-    ep_square = EMPTY
-    half_moves = 0
-    move_number = 1
-    history = []
-    if (!keep_headers) header = {}
-    update_setup(generate_fen())
-  }
-
-  function reset() {
-    load(DEFAULT_POSITION)
-  }
-
-  function load(fen, keep_headers) {
-    if (typeof keep_headers === 'undefined') {
-      keep_headers = false
-    }
-
-    var tokens = fen.split(/\s+/)
-    var position = tokens[0]
-    var square = 0
-
-    if (!validate_fen(fen).valid) {
-      return false
-    }
-
-    clear(keep_headers)
-
-    for (var i = 0; i < position.length; i++) {
-      var piece = position.charAt(i)
-
-      if (piece === '/') {
-        square += 8
-      } else if (is_digit(piece)) {
-        square += parseInt(piece, 10)
-      } else {
-        var color = piece < 'a' ? WHITE : BLACK
-        put({ type: piece.toLowerCase(), color: color }, algebraic(square))
-        square++
-      }
-    }
-
-    turn = tokens[1]
-
-    if (tokens[2].indexOf('K') > -1) {
-      castling.w |= BITS.KSIDE_CASTLE
-    }
-    if (tokens[2].indexOf('Q') > -1) {
-      castling.w |= BITS.QSIDE_CASTLE
-    }
-    if (tokens[2].indexOf('k') > -1) {
-      castling.b |= BITS.KSIDE_CASTLE
-    }
-    if (tokens[2].indexOf('q') > -1) {
-      castling.b |= BITS.QSIDE_CASTLE
-    }
-
-    ep_square = tokens[3] === '-' ? EMPTY : SQUARES[tokens[3]]
-    half_moves = parseInt(tokens[4], 10)
-    move_number = parseInt(tokens[5], 10)
-
-    update_setup(generate_fen())
-
-    return true
-  }
-
-  /* TODO: this function is pretty much crap - it validates structure but
-   * completely ignores content (e.g. doesn't verify that each side has a king)
-   * ... we should rewrite this, and ditch the silly error_number field while
-   * we're at it
-   */
-  function validate_fen(fen) {
-    var errors = {
-      0: 'No errors.',
-      1: 'FEN string must contain six space-delimited fields.',
-      2: '6th field (move number) must be a positive integer.',
-      3: '5th field (half move counter) must be a non-negative integer.',
-      4: '4th field (en-passant square) is invalid.',
-      5: '3rd field (castling availability) is invalid.',
-      6: '2nd field (side to move) is invalid.',
-      7: "1st field (piece positions) does not contain 8 '/'-delimited rows.",
-      8: '1st field (piece positions) is invalid [consecutive numbers].',
-      9: '1st field (piece positions) is invalid [invalid piece].',
-      10: '1st field (piece positions) is invalid [row too large].',
-      11: 'Illegal en-passant square'
-    }
-
-    /* 1st criterion: 6 space-seperated fields? */
-    var tokens = fen.split(/\s+/)
-    if (tokens.length !== 6) {
-      return { valid: false, error_number: 1, error: errors[1] }
-    }
-
-    /* 2nd criterion: move number field is a integer value > 0? */
-    if (isNaN(tokens[5]) || parseInt(tokens[5], 10) <= 0) {
-      return { valid: false, error_number: 2, error: errors[2] }
-    }
-
-    /* 3rd criterion: half move counter is an integer >= 0? */
-    if (isNaN(tokens[4]) || parseInt(tokens[4], 10) < 0) {
-      return { valid: false, error_number: 3, error: errors[3] }
-    }
-
-    /* 4th criterion: 4th field is a valid e.p.-string? */
-    if (!/^(-|[abcdefgh][36])$/.test(tokens[3])) {
-      return { valid: false, error_number: 4, error: errors[4] }
-    }
-
-    /* 5th criterion: 3th field is a valid castle-string? */
-    if (!/^(KQ?k?q?|Qk?q?|kq?|q|-)$/.test(tokens[2])) {
-      return { valid: false, error_number: 5, error: errors[5] }
-    }
-
-    /* 6th criterion: 2nd field is "w" (white) or "b" (black)? */
-    if (!/^(w|b)$/.test(tokens[1])) {
-      return { valid: false, error_number: 6, error: errors[6] }
-    }
-
-    /* 7th criterion: 1st field contains 8 rows? */
-    var rows = tokens[0].split('/')
-    if (rows.length !== 8) {
-      return { valid: false, error_number: 7, error: errors[7] }
-    }
-
-    /* 8th criterion: every row is valid? */
-    for (var i = 0; i < rows.length; i++) {
-      /* check for right sum of fields AND not two numbers in succession */
-      var sum_fields = 0
-      var previous_was_number = false
-
-      for (var k = 0; k < rows[i].length; k++) {
-        if (!isNaN(rows[i][k])) {
-          if (previous_was_number) {
-            return { valid: false, error_number: 8, error: errors[8] }
-          }
-          sum_fields += parseInt(rows[i][k], 10)
-          previous_was_number = true
-        } else {
-          if (!/^[prnbqkPRNBQK]$/.test(rows[i][k])) {
-            return { valid: false, error_number: 9, error: errors[9] }
-          }
-          sum_fields += 1
-          previous_was_number = false
-        }
-      }
-      if (sum_fields !== 8) {
-        return { valid: false, error_number: 10, error: errors[10] }
-      }
-    }
-
-    if (
-      (tokens[3][1] == '3' && tokens[1] == 'w') ||
-      (tokens[3][1] == '6' && tokens[1] == 'b')
-    ) {
-      return { valid: false, error_number: 11, error: errors[11] }
-    }
-
-    /* everything's okay! */
-    return { valid: true, error_number: 0, error: errors[0] }
-  }
-
-  function generate_fen() {
-    var empty = 0
-    var fen = ''
-
-    for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
-      if (board[i] == null) {
-        empty++
-      } else {
-        if (empty > 0) {
-          fen += empty
-          empty = 0
-        }
-        var color = board[i].color
-        var piece = board[i].type
-
-        fen += color === WHITE ? piece.toUpperCase() : piece.toLowerCase()
-      }
-
-      if ((i + 1) & 0x88) {
-        if (empty > 0) {
-          fen += empty
-        }
-
-        if (i !== SQUARES.h1) {
-          fen += '/'
-        }
-
-        empty = 0
-        i += 8
-      }
-    }
-
-    var cflags = ''
-    if (castling[WHITE] & BITS.KSIDE_CASTLE) {
-      cflags += 'K'
-    }
-    if (castling[WHITE] & BITS.QSIDE_CASTLE) {
-      cflags += 'Q'
-    }
-    if (castling[BLACK] & BITS.KSIDE_CASTLE) {
-      cflags += 'k'
-    }
-    if (castling[BLACK] & BITS.QSIDE_CASTLE) {
-      cflags += 'q'
-    }
-
-    /* do we have an empty castling flag? */
-    cflags = cflags || '-'
-    var epflags = ep_square === EMPTY ? '-' : algebraic(ep_square)
-
-    return [fen, turn, cflags, epflags, half_moves, move_number].join(' ')
-  }
-
-  function set_header(args) {
-    for (var i = 0; i < args.length; i += 2) {
-      if (typeof args[i] === 'string' && typeof args[i + 1] === 'string') {
-        header[args[i]] = args[i + 1]
-      }
-    }
-    return header
-  }
-
-  /* called when the initial board setup is changed with put() or remove().
-   * modifies the SetUp and FEN properties of the header object.  if the FEN is
-   * equal to the default position, the SetUp and FEN are deleted
-   * the setup is only updated if history.length is zero, ie moves haven't been
-   * made.
-   */
-  function update_setup(fen) {
-    if (history.length > 0) return
-
-    if (fen !== DEFAULT_POSITION) {
-      header['SetUp'] = '1'
-      header['FEN'] = fen
-    } else {
-      delete header['SetUp']
-      delete header['FEN']
-    }
-  }
-
-  function get(square) {
-    var piece = board[SQUARES[square]]
-    return piece ? { type: piece.type, color: piece.color } : null
-  }
-
-  function put(piece, square) {
-    /* check for valid piece object */
-    if (!('type' in piece && 'color' in piece)) {
-      return false
-    }
-
-    /* check for piece */
-    if (SYMBOLS.indexOf(piece.type.toLowerCase()) === -1) {
-      return false
-    }
-
-    /* check for valid square */
-    if (!(square in SQUARES)) {
-      return false
-    }
-
-    var sq = SQUARES[square]
-
-    /* don't let the user place more than one king */
-    if (
-      piece.type == KING &&
-      !(kings[piece.color] == EMPTY || kings[piece.color] == sq)
-    ) {
-      return false
-    }
-
-    board[sq] = { type: piece.type, color: piece.color }
-    if (piece.type === KING) {
-      kings[piece.color] = sq
-    }
-
-    update_setup(generate_fen())
-
-    return true
-  }
-
-  function remove(square) {
-    var piece = get(square)
-    board[SQUARES[square]] = null
-    if (piece && piece.type === KING) {
-      kings[piece.color] = EMPTY
-    }
-
-    update_setup(generate_fen())
-
-    return piece
-  }
-
-  function build_move(board, from, to, flags, promotion) {
-    var move = {
-      color: turn,
-      from: from,
-      to: to,
-      flags: flags,
-      piece: board[from].type
-    }
-
-    if (promotion) {
-      move.flags |= BITS.PROMOTION
-      move.promotion = promotion
-    }
-
-    if (board[to]) {
-      move.captured = board[to].type
-    } else if (flags & BITS.EP_CAPTURE) {
-      move.captured = PAWN
-    }
-    return move
-  }
-
-  function generate_moves(options) {
-    function add_move(board, moves, from, to, flags) {
-      /* if pawn promotion */
-      if (
-        board[from].type === PAWN &&
-        (rank(to) === RANK_8 || rank(to) === RANK_1)
-      ) {
-        var pieces = [QUEEN, ROOK, BISHOP, KNIGHT]
-        for (var i = 0, len = pieces.length; i < len; i++) {
-          moves.push(build_move(board, from, to, flags, pieces[i]))
-        }
-      } else {
-        moves.push(build_move(board, from, to, flags))
-      }
-    }
-
-    var moves = []
-    var us = turn
-    var them = swap_color(us)
-    var second_rank = { b: RANK_7, w: RANK_2 }
-
-    var first_sq = SQUARES.a8
-    var last_sq = SQUARES.h1
-    var single_square = false
-
-    /* do we want legal moves? */
-    var legal =
-      typeof options !== 'undefined' && 'legal' in options
-        ? options.legal
-        : true
-
-    /* are we generating moves for a single square? */
-    if (typeof options !== 'undefined' && 'square' in options) {
-      if (options.square in SQUARES) {
-        first_sq = last_sq = SQUARES[options.square]
-        single_square = true
-      } else {
-        /* invalid square */
-        return []
-      }
-    }
-
-    for (var i = first_sq; i <= last_sq; i++) {
-      /* did we run off the end of the board */
-      if (i & 0x88) {
-        i += 7
-        continue
-      }
-
-      var piece = board[i]
-      if (piece == null || piece.color !== us) {
-        continue
-      }
-
-      if (piece.type === PAWN) {
-        /* single square, non-capturing */
-        var square = i + PAWN_OFFSETS[us][0]
-        if (board[square] == null) {
-          add_move(board, moves, i, square, BITS.NORMAL)
-
-          /* double square */
-          var square = i + PAWN_OFFSETS[us][1]
-          if (second_rank[us] === rank(i) && board[square] == null) {
-            add_move(board, moves, i, square, BITS.BIG_PAWN)
-          }
-        }
-
-        /* pawn captures */
-        for (j = 2; j < 4; j++) {
-          var square = i + PAWN_OFFSETS[us][j]
-          if (square & 0x88) continue
-
-          if (board[square] != null && board[square].color === them) {
-            add_move(board, moves, i, square, BITS.CAPTURE)
-          } else if (square === ep_square) {
-            add_move(board, moves, i, ep_square, BITS.EP_CAPTURE)
-          }
-        }
-      } else {
-        for (var j = 0, len = PIECE_OFFSETS[piece.type].length; j < len; j++) {
-          var offset = PIECE_OFFSETS[piece.type][j]
-          var square = i
-
-          while (true) {
-            square += offset
-            if (square & 0x88) break
-
-            if (board[square] == null) {
-              add_move(board, moves, i, square, BITS.NORMAL)
-            } else {
-              if (board[square].color === us) break
-              add_move(board, moves, i, square, BITS.CAPTURE)
-              break
-            }
-
-            /* break, if knight or king */
-            if (piece.type === 'n' || piece.type === 'k') break
-          }
-        }
-      }
-    }
-
-    /* check for castling if: a) we're generating all moves, or b) we're doing
-     * single square move generation on the king's square
-     */
-    if (!single_square || last_sq === kings[us]) {
-      /* king-side castling */
-      if (castling[us] & BITS.KSIDE_CASTLE) {
-        var castling_from = kings[us]
-        var castling_to = castling_from + 2
-
-        if (
-          board[castling_from + 1] == null &&
-          board[castling_to] == null &&
-          !attacked(them, kings[us]) &&
-          !attacked(them, castling_from + 1) &&
-          !attacked(them, castling_to)
-        ) {
-          add_move(board, moves, kings[us], castling_to, BITS.KSIDE_CASTLE)
-        }
-      }
-
-      /* queen-side castling */
-      if (castling[us] & BITS.QSIDE_CASTLE) {
-        var castling_from = kings[us]
-        var castling_to = castling_from - 2
-
-        if (
-          board[castling_from - 1] == null &&
-          board[castling_from - 2] == null &&
-          board[castling_from - 3] == null &&
-          !attacked(them, kings[us]) &&
-          !attacked(them, castling_from - 1) &&
-          !attacked(them, castling_to)
-        ) {
-          add_move(board, moves, kings[us], castling_to, BITS.QSIDE_CASTLE)
-        }
-      }
-    }
-
-    /* return all pseudo-legal moves (this includes moves that allow the king
-     * to be captured)
-     */
-    if (!legal) {
-      return moves
-    }
-
-    /* filter out illegal moves */
-    var legal_moves = []
-    for (var i = 0, len = moves.length; i < len; i++) {
-      make_move(moves[i])
-      if (!king_attacked(us)) {
-        legal_moves.push(moves[i])
-      }
-      undo_move()
-    }
-
-    return legal_moves
-  }
-
-  /* convert a move from 0x88 coordinates to Standard Algebraic Notation
-   * (SAN)
-   *
-   * @param {boolean} sloppy Use the sloppy SAN generator to work around over
-   * disambiguation bugs in Fritz and Chessbase.  See below:
-   *
-   * r1bqkbnr/ppp2ppp/2n5/1B1pP3/4P3/8/PPPP2PP/RNBQK1NR b KQkq - 2 4
-   * 4. ... Nge7 is overly disambiguated because the knight on c6 is pinned
-   * 4. ... Ne7 is technically the valid SAN
-   */
-  function move_to_san(move, sloppy) {
-    var output = ''
-
-    if (move.flags & BITS.KSIDE_CASTLE) {
-      output = 'O-O'
-    } else if (move.flags & BITS.QSIDE_CASTLE) {
-      output = 'O-O-O'
-    } else {
-      var disambiguator = get_disambiguator(move, sloppy)
-
-      if (move.piece !== PAWN) {
-        output += move.piece.toUpperCase() + disambiguator
-      }
-
-      if (move.flags & (BITS.CAPTURE | BITS.EP_CAPTURE)) {
-        if (move.piece === PAWN) {
-          output += algebraic(move.from)[0]
-        }
-        output += 'x'
-      }
-
-      output += algebraic(move.to)
-
-      if (move.flags & BITS.PROMOTION) {
-        output += '=' + move.promotion.toUpperCase()
-      }
-    }
-
-    make_move(move)
-    if (in_check()) {
-      if (in_checkmate()) {
-        output += '#'
-      } else {
-        output += '+'
-      }
-    }
-    undo_move()
-
-    return output
-  }
-
-  // parses all of the decorators out of a SAN string
-  function stripped_san(move) {
-    return move.replace(/=/, '').replace(/[+#]?[?!]*$/, '')
-  }
-
-  function attacked(color, square) {
-    for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
-      /* did we run off the end of the board */
-      if (i & 0x88) {
-        i += 7
-        continue
-      }
-
-      /* if empty square or wrong color */
-      if (board[i] == null || board[i].color !== color) continue
-
-      var piece = board[i]
-      var difference = i - square
-      var index = difference + 119
-
-      if (ATTACKS[index] & (1 << SHIFTS[piece.type])) {
-        if (piece.type === PAWN) {
-          if (difference > 0) {
-            if (piece.color === WHITE) return true
-          } else {
-            if (piece.color === BLACK) return true
-          }
-          continue
-        }
-
-        /* if the piece is a knight or a king */
-        if (piece.type === 'n' || piece.type === 'k') return true
-
-        var offset = RAYS[index]
-        var j = i + offset
-
-        var blocked = false
-        while (j !== square) {
-          if (board[j] != null) {
-            blocked = true
-            break
-          }
-          j += offset
-        }
-
-        if (!blocked) return true
-      }
-    }
-
-    return false
-  }
-
-  function king_attacked(color) {
-    return attacked(swap_color(color), kings[color])
-  }
-
-  function in_check() {
-    return king_attacked(turn)
-  }
-
-  function in_checkmate() {
-    return in_check() && generate_moves().length === 0
-  }
-
-  function in_stalemate() {
-    return !in_check() && generate_moves().length === 0
-  }
-
-  function insufficient_material() {
-    var pieces = {}
-    var bishops = []
-    var num_pieces = 0
-    var sq_color = 0
-
-    for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
-      sq_color = (sq_color + 1) % 2
-      if (i & 0x88) {
-        i += 7
-        continue
-      }
-
-      var piece = board[i]
-      if (piece) {
-        pieces[piece.type] = piece.type in pieces ? pieces[piece.type] + 1 : 1
-        if (piece.type === BISHOP) {
-          bishops.push(sq_color)
-        }
-        num_pieces++
-      }
-    }
-
-    /* k vs. k */
-    if (num_pieces === 2) {
-      return true
-    } else if (
-      /* k vs. kn .... or .... k vs. kb */
-      num_pieces === 3 &&
-      (pieces[BISHOP] === 1 || pieces[KNIGHT] === 1)
-    ) {
-      return true
-    } else if (num_pieces === pieces[BISHOP] + 2) {
-      /* kb vs. kb where any number of bishops are all on the same color */
-      var sum = 0
-      var len = bishops.length
-      for (var i = 0; i < len; i++) {
-        sum += bishops[i]
-      }
-      if (sum === 0 || sum === len) {
-        return true
-      }
-    }
-
-    return false
-  }
-
-  function in_threefold_repetition() {
-    /* TODO: while this function is fine for casual use, a better
-     * implementation would use a Zobrist key (instead of FEN). the
-     * Zobrist key would be maintained in the make_move/undo_move functions,
-     * avoiding the costly that we do below.
-     */
-    var moves = []
-    var positions = {}
-    var repetition = false
-
-    while (true) {
-      var move = undo_move()
-      if (!move) break
-      moves.push(move)
-    }
-
-    while (true) {
-      /* remove the last two fields in the FEN string, they're not needed
-       * when checking for draw by rep */
-      var fen = generate_fen()
-        .split(' ')
-        .slice(0, 4)
-        .join(' ')
-
-      /* has the position occurred three or move times */
-      positions[fen] = fen in positions ? positions[fen] + 1 : 1
-      if (positions[fen] >= 3) {
-        repetition = true
-      }
-
-      if (!moves.length) {
-        break
-      }
-      make_move(moves.pop())
-    }
-
-    return repetition
-  }
-
-  function push(move) {
-    history.push({
-      move: move,
-      kings: { b: kings.b, w: kings.w },
-      turn: turn,
-      castling: { b: castling.b, w: castling.w },
-      ep_square: ep_square,
-      half_moves: half_moves,
-      move_number: move_number
-    })
-  }
-
-  function make_move(move) {
-    var us = turn
-    var them = swap_color(us)
-    push(move)
-
-    board[move.to] = board[move.from]
-    board[move.from] = null
-
-    /* if ep capture, remove the captured pawn */
-    if (move.flags & BITS.EP_CAPTURE) {
-      if (turn === BLACK) {
-        board[move.to - 16] = null
-      } else {
-        board[move.to + 16] = null
-      }
-    }
-
-    /* if pawn promotion, replace with new piece */
-    if (move.flags & BITS.PROMOTION) {
-      board[move.to] = { type: move.promotion, color: us }
-    }
-
-    /* if we moved the king */
-    if (board[move.to].type === KING) {
-      kings[board[move.to].color] = move.to
-
-      /* if we castled, move the rook next to the king */
-      if (move.flags & BITS.KSIDE_CASTLE) {
-        var castling_to = move.to - 1
-        var castling_from = move.to + 1
-        board[castling_to] = board[castling_from]
-        board[castling_from] = null
-      } else if (move.flags & BITS.QSIDE_CASTLE) {
-        var castling_to = move.to + 1
-        var castling_from = move.to - 2
-        board[castling_to] = board[castling_from]
-        board[castling_from] = null
-      }
-
-      /* turn off castling */
-      castling[us] = ''
-    }
-
-    /* turn off castling if we move a rook */
-    if (castling[us]) {
-      for (var i = 0, len = ROOKS[us].length; i < len; i++) {
-        if (
-          move.from === ROOKS[us][i].square &&
-          castling[us] & ROOKS[us][i].flag
-        ) {
-          castling[us] ^= ROOKS[us][i].flag
-          break
-        }
-      }
-    }
-
-    /* turn off castling if we capture a rook */
-    if (castling[them]) {
-      for (var i = 0, len = ROOKS[them].length; i < len; i++) {
-        if (
-          move.to === ROOKS[them][i].square &&
-          castling[them] & ROOKS[them][i].flag
-        ) {
-          castling[them] ^= ROOKS[them][i].flag
-          break
-        }
-      }
-    }
-
-    /* if big pawn move, update the en passant square */
-    if (move.flags & BITS.BIG_PAWN) {
-      if (turn === 'b') {
-        ep_square = move.to - 16
-      } else {
-        ep_square = move.to + 16
-      }
-    } else {
-      ep_square = EMPTY
-    }
-
-    /* reset the 50 move counter if a pawn is moved or a piece is captured */
-    if (move.piece === PAWN) {
-      half_moves = 0
-    } else if (move.flags & (BITS.CAPTURE | BITS.EP_CAPTURE)) {
-      half_moves = 0
-    } else {
-      half_moves++
-    }
-
-    if (turn === BLACK) {
-      move_number++
-    }
-    turn = swap_color(turn)
-  }
-
-  function undo_move() {
-    var old = history.pop()
-    if (old == null) {
-      return null
-    }
-
-    var move = old.move
-    kings = old.kings
-    turn = old.turn
-    castling = old.castling
-    ep_square = old.ep_square
-    half_moves = old.half_moves
-    move_number = old.move_number
-
-    var us = turn
-    var them = swap_color(turn)
-
-    board[move.from] = board[move.to]
-    board[move.from].type = move.piece // to undo any promotions
-    board[move.to] = null
-
-    if (move.flags & BITS.CAPTURE) {
-      board[move.to] = { type: move.captured, color: them }
-    } else if (move.flags & BITS.EP_CAPTURE) {
-      var index
-      if (us === BLACK) {
-        index = move.to - 16
-      } else {
-        index = move.to + 16
-      }
-      board[index] = { type: PAWN, color: them }
-    }
-
-    if (move.flags & (BITS.KSIDE_CASTLE | BITS.QSIDE_CASTLE)) {
-      var castling_to, castling_from
-      if (move.flags & BITS.KSIDE_CASTLE) {
-        castling_to = move.to + 1
-        castling_from = move.to - 1
-      } else if (move.flags & BITS.QSIDE_CASTLE) {
-        castling_to = move.to - 2
-        castling_from = move.to + 1
-      }
-
-      board[castling_to] = board[castling_from]
-      board[castling_from] = null
-    }
-
-    return move
-  }
-
-  /* this function is used to uniquely identify ambiguous moves */
-  function get_disambiguator(move, sloppy) {
-    var moves = generate_moves({ legal: !sloppy })
-
-    var from = move.from
-    var to = move.to
-    var piece = move.piece
-
-    var ambiguities = 0
-    var same_rank = 0
-    var same_file = 0
-
-    for (var i = 0, len = moves.length; i < len; i++) {
-      var ambig_from = moves[i].from
-      var ambig_to = moves[i].to
-      var ambig_piece = moves[i].piece
-
-      /* if a move of the same piece type ends on the same to square, we'll
-       * need to add a disambiguator to the algebraic notation
-       */
-      if (piece === ambig_piece && from !== ambig_from && to === ambig_to) {
-        ambiguities++
-
-        if (rank(from) === rank(ambig_from)) {
-          same_rank++
-        }
-
-        if (file(from) === file(ambig_from)) {
-          same_file++
-        }
-      }
-    }
-
-    if (ambiguities > 0) {
-      /* if there exists a similar moving piece on the same rank and file as
-       * the move in question, use the square as the disambiguator
-       */
-      if (same_rank > 0 && same_file > 0) {
-        return algebraic(from)
-      } else if (same_file > 0) {
-        /* if the moving piece rests on the same file, use the rank symbol as the
-         * disambiguator
-         */
-        return algebraic(from).charAt(1)
-      } else {
-        /* else use the file symbol */
-        return algebraic(from).charAt(0)
-      }
-    }
-
-    return ''
-  }
-
-  function ascii() {
-    var s = '   +------------------------+\n'
-    for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
-      /* display the rank */
-      if (file(i) === 0) {
-        s += ' ' + '87654321'[rank(i)] + ' |'
-      }
-
-      /* empty piece */
-      if (board[i] == null) {
-        s += ' . '
-      } else {
-        var piece = board[i].type
-        var color = board[i].color
-        var symbol = color === WHITE ? piece.toUpperCase() : piece.toLowerCase()
-        s += ' ' + symbol + ' '
-      }
-
-      if ((i + 1) & 0x88) {
-        s += '|\n'
-        i += 8
-      }
-    }
-    s += '   +------------------------+\n'
-    s += '     a  b  c  d  e  f  g  h\n'
-
-    return s
-  }
-
-  // convert a move from Standard Algebraic Notation (SAN) to 0x88 coordinates
-  function move_from_san(move, sloppy) {
-    // strip off any move decorations: e.g Nf3+?!
-    var clean_move = stripped_san(move)
-
-    // if we're using the sloppy parser run a regex to grab piece, to, and from
-    // this should parse invalid SAN like: Pe2-e4, Rc1c4, Qf3xf7
-    if (sloppy) {
-      var matches = clean_move.match(
-        /([pnbrqkPNBRQK])?([a-h][1-8])x?-?([a-h][1-8])([qrbnQRBN])?/
-      )
-      if (matches) {
-        var piece = matches[1]
-        var from = matches[2]
-        var to = matches[3]
-        var promotion = matches[4]
-      }
-    }
-
-    var moves = generate_moves()
-    for (var i = 0, len = moves.length; i < len; i++) {
-      // try the strict parser first, then the sloppy parser if requested
-      // by the user
-      if (
-        clean_move === stripped_san(move_to_san(moves[i])) ||
-        (sloppy && clean_move === stripped_san(move_to_san(moves[i], true)))
-      ) {
-        return moves[i]
-      } else {
-        if (
-          matches &&
-          (!piece || piece.toLowerCase() == moves[i].piece) &&
-          SQUARES[from] == moves[i].from &&
-          SQUARES[to] == moves[i].to &&
-          (!promotion || promotion.toLowerCase() == moves[i].promotion)
-        ) {
-          return moves[i]
-        }
-      }
-    }
-
-    return null
-  }
-
-  /*****************************************************************************
-   * UTILITY FUNCTIONS
-   ****************************************************************************/
-  function rank(i) {
-    return i >> 4
-  }
-
-  function file(i) {
-    return i & 15
-  }
-
-  function algebraic(i) {
-    var f = file(i),
-      r = rank(i)
-    return 'abcdefgh'.substring(f, f + 1) + '87654321'.substring(r, r + 1)
-  }
-
-  function swap_color(c) {
-    return c === WHITE ? BLACK : WHITE
-  }
-
-  function is_digit(c) {
-    return '0123456789'.indexOf(c) !== -1
-  }
-
-  /* pretty = external move object */
-  function make_pretty(ugly_move) {
-    var move = clone(ugly_move)
-    move.san = move_to_san(move, false)
-    move.to = algebraic(move.to)
-    move.from = algebraic(move.from)
-
-    var flags = ''
-
-    for (var flag in BITS) {
-      if (BITS[flag] & move.flags) {
-        flags += FLAGS[flag]
-      }
-    }
-    move.flags = flags
-
-    return move
-  }
-
-  function clone(obj) {
-    var dupe = obj instanceof Array ? [] : {}
-
-    for (var property in obj) {
-      if (typeof property === 'object') {
-        dupe[property] = clone(obj[property])
-      } else {
-        dupe[property] = obj[property]
-      }
-    }
-
-    return dupe
-  }
-
-  function trim(str) {
-    return str.replace(/^\s+|\s+$/g, '')
-  }
-
-  /*****************************************************************************
-   * DEBUGGING UTILITIES
-   ****************************************************************************/
-  function perft(depth) {
-    var moves = generate_moves({ legal: false })
-    var nodes = 0
-    var color = turn
-
-    for (var i = 0, len = moves.length; i < len; i++) {
-      make_move(moves[i])
-      if (!king_attacked(color)) {
-        if (depth - 1 > 0) {
-          var child_nodes = perft(depth - 1)
-          nodes += child_nodes
-        } else {
-          nodes++
-        }
-      }
-      undo_move()
-    }
-
-    return nodes
-  }
-
-  return {
-    /***************************************************************************
-     * PUBLIC CONSTANTS (is there a better way to do this?)
-     **************************************************************************/
-    WHITE: WHITE,
-    BLACK: BLACK,
-    PAWN: PAWN,
-    KNIGHT: KNIGHT,
-    BISHOP: BISHOP,
-    ROOK: ROOK,
-    QUEEN: QUEEN,
-    KING: KING,
-    SQUARES: (function() {
-      /* from the ECMA-262 spec (section 12.6.4):
-       * "The mechanics of enumerating the properties ... is
-       * implementation dependent"
-       * so: for (var sq in SQUARES) { keys.push(sq); } might not be
-       * ordered correctly
-       */
-      var keys = []
-      for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
-        if (i & 0x88) {
-          i += 7
-          continue
-        }
-        keys.push(algebraic(i))
-      }
-      return keys
-    })(),
-    FLAGS: FLAGS,
-
-    /***************************************************************************
-     * PUBLIC API
-     **************************************************************************/
-    load: function(fen) {
-      return load(fen)
-    },
-
-    reset: function() {
-      return reset()
-    },
-
-    moves: function(options) {
-      /* The internal representation of a chess move is in 0x88 format, and
-       * not meant to be human-readable.  The code below converts the 0x88
-       * square coordinates to algebraic coordinates.  It also prunes an
-       * unnecessary move keys resulting from a verbose call.
-       */
-
-      var ugly_moves = generate_moves(options)
-      var moves = []
-
-      for (var i = 0, len = ugly_moves.length; i < len; i++) {
-        /* does the user want a full move object (most likely not), or just
-         * SAN
-         */
-        if (
-          typeof options !== 'undefined' &&
-          'verbose' in options &&
-          options.verbose
-        ) {
-          moves.push(make_pretty(ugly_moves[i]))
-        } else {
-          moves.push(move_to_san(ugly_moves[i], false))
-        }
-      }
-
-      return moves
-    },
-
-    in_check: function() {
-      return in_check()
-    },
-
-    in_checkmate: function() {
-      return in_checkmate()
-    },
-
-    in_stalemate: function() {
-      return in_stalemate()
-    },
-
-    in_draw: function() {
-      return (
-        half_moves >= 100 ||
-        in_stalemate() ||
-        insufficient_material() ||
-        in_threefold_repetition()
-      )
-    },
-
-    insufficient_material: function() {
-      return insufficient_material()
-    },
-
-    in_threefold_repetition: function() {
-      return in_threefold_repetition()
-    },
-
-    game_over: function() {
-      return (
-        half_moves >= 100 ||
-        in_checkmate() ||
-        in_stalemate() ||
-        insufficient_material() ||
-        in_threefold_repetition()
-      )
-    },
-
-    validate_fen: function(fen) {
-      return validate_fen(fen)
-    },
-
-    fen: function() {
-      return generate_fen()
-    },
-
-    board: function() {
-      var output = [],
-        row = []
-
-      for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
-        if (board[i] == null) {
-          row.push(null)
-        } else {
-          row.push({ type: board[i].type, color: board[i].color })
-        }
-        if ((i + 1) & 0x88) {
-          output.push(row)
-          row = []
-          i += 8
-        }
-      }
-
-      return output
-    },
-
-    pgn: function(options) {
-      /* using the specification from http://www.chessclub.com/help/PGN-spec
-       * example for html usage: .pgn({ max_width: 72, newline_char: "<br />" })
-       */
-      var newline =
-        typeof options === 'object' && typeof options.newline_char === 'string'
-          ? options.newline_char
-          : '\n'
-      var max_width =
-        typeof options === 'object' && typeof options.max_width === 'number'
-          ? options.max_width
-          : 0
-      var result = []
-      var header_exists = false
-
-      /* add the PGN header headerrmation */
-      for (var i in header) {
-        /* TODO: order of enumerated properties in header object is not
-         * guaranteed, see ECMA-262 spec (section 12.6.4)
-         */
-        result.push('[' + i + ' "' + header[i] + '"]' + newline)
-        header_exists = true
-      }
-
-      if (header_exists && history.length) {
-        result.push(newline)
-      }
-
-      /* pop all of history onto reversed_history */
-      var reversed_history = []
-      while (history.length > 0) {
-        reversed_history.push(undo_move())
-      }
-
-      var moves = []
-      var move_string = ''
-
-      /* build the list of moves.  a move_string looks like: "3. e3 e6" */
-      while (reversed_history.length > 0) {
-        var move = reversed_history.pop()
-
-        /* if the position started with black to move, start PGN with 1. ... */
-        if (!history.length && move.color === 'b') {
-          move_string = move_number + '. ...'
-        } else if (move.color === 'w') {
-          /* store the previous generated move_string if we have one */
-          if (move_string.length) {
-            moves.push(move_string)
-          }
-          move_string = move_number + '.'
-        }
-
-        move_string = move_string + ' ' + move_to_san(move, false)
-        make_move(move)
-      }
-
-      /* are there any other leftover moves? */
-      if (move_string.length) {
-        moves.push(move_string)
-      }
-
-      /* is there a result? */
-      if (typeof header.Result !== 'undefined') {
-        moves.push(header.Result)
-      }
-
-      /* history should be back to what is was before we started generating PGN,
-       * so join together moves
-       */
-      if (max_width === 0) {
-        return result.join('') + moves.join(' ')
-      }
-
-      /* wrap the PGN output at max_width */
-      var current_width = 0
-      for (var i = 0; i < moves.length; i++) {
-        /* if the current move will push past max_width */
-        if (current_width + moves[i].length > max_width && i !== 0) {
-          /* don't end the line with whitespace */
-          if (result[result.length - 1] === ' ') {
-            result.pop()
-          }
-
-          result.push(newline)
-          current_width = 0
-        } else if (i !== 0) {
-          result.push(' ')
-          current_width++
-        }
-        result.push(moves[i])
-        current_width += moves[i].length
-      }
-
-      return result.join('')
-    },
-
-    load_pgn: function(pgn, options) {
-      // allow the user to specify the sloppy move parser to work around over
-      // disambiguation bugs in Fritz and Chessbase
-      var sloppy =
-        typeof options !== 'undefined' && 'sloppy' in options
-          ? options.sloppy
-          : false
-
-      function mask(str) {
-        return str.replace(/\\/g, '\\')
-      }
-
-      function has_keys(object) {
-        for (var key in object) {
-          return true
-        }
-        return false
-      }
-
-      function parse_pgn_header(header, options) {
-        var newline_char =
-          typeof options === 'object' &&
-          typeof options.newline_char === 'string'
-            ? options.newline_char
-            : '\r?\n'
-        var header_obj = {}
-        var headers = header.split(new RegExp(mask(newline_char)))
-        var key = ''
-        var value = ''
-
-        for (var i = 0; i < headers.length; i++) {
-          key = headers[i].replace(/^\[([A-Z][A-Za-z]*)\s.*\]$/, '$1')
-          value = headers[i].replace(/^\[[A-Za-z]+\s"(.*)"\]$/, '$1')
-          if (trim(key).length > 0) {
-            header_obj[key] = value
-          }
-        }
-
-        return header_obj
-      }
-
-      var newline_char =
-        typeof options === 'object' && typeof options.newline_char === 'string'
-          ? options.newline_char
-          : '\r?\n'
-
-      // RegExp to split header. Takes advantage of the fact that header and movetext
-      // will always have a blank line between them (ie, two newline_char's).
-      // With default newline_char, will equal: /^(\[((?:\r?\n)|.)*\])(?:\r?\n){2}/
-      var header_regex = new RegExp(
-        '^(\\[((?:' +
-          mask(newline_char) +
-          ')|.)*\\])' +
-          '(?:' +
-          mask(newline_char) +
-          '){2}'
-      )
-
-      // If no header given, begin with moves.
-      var header_string = header_regex.test(pgn)
-        ? header_regex.exec(pgn)[1]
-        : ''
-
-      // Put the board in the starting position
-      reset()
-
-      /* parse PGN header */
-      var headers = parse_pgn_header(header_string, options)
-      for (var key in headers) {
-        set_header([key, headers[key]])
-      }
-
-      /* load the starting position indicated by [Setup '1'] and
-       * [FEN position] */
-      if (headers['SetUp'] === '1') {
-        if (!('FEN' in headers && load(headers['FEN'], true))) {
-          // second argument to load: don't clear the headers
-          return false
-        }
-      }
-
-      /* delete header to get the moves */
-      var ms = pgn
-        .replace(header_string, '')
-        .replace(new RegExp(mask(newline_char), 'g'), ' ')
-
-      /* delete comments */
-      ms = ms.replace(/(\{[^}]+\})+?/g, '')
-
-      /* delete recursive annotation variations */
-      var rav_regex = /(\([^\(\)]+\))+?/g
-      while (rav_regex.test(ms)) {
-        ms = ms.replace(rav_regex, '')
-      }
-
-      /* delete move numbers */
-      ms = ms.replace(/\d+\.(\.\.)?/g, '')
-
-      /* delete ... indicating black to move */
-      ms = ms.replace(/\.\.\./g, '')
-
-      /* delete numeric annotation glyphs */
-      ms = ms.replace(/\$\d+/g, '')
-
-      /* trim and get array of moves */
-      var moves = trim(ms).split(new RegExp(/\s+/))
-
-      /* delete empty entries */
-      moves = moves
-        .join(',')
-        .replace(/,,+/g, ',')
-        .split(',')
-      var move = ''
-
-      for (var half_move = 0; half_move < moves.length - 1; half_move++) {
-        move = move_from_san(moves[half_move], sloppy)
-
-        /* move not possible! (don't clear the board to examine to show the
-         * latest valid position)
-         */
-        if (move == null) {
-          return false
-        } else {
-          make_move(move)
-        }
-      }
-
-      /* examine last move */
-      move = moves[moves.length - 1]
-      if (POSSIBLE_RESULTS.indexOf(move) > -1) {
-        if (has_keys(header) && typeof header.Result === 'undefined') {
-          set_header(['Result', move])
-        }
-      } else {
-        move = move_from_san(move, sloppy)
-        if (move == null) {
-          return false
-        } else {
-          make_move(move)
-        }
-      }
-      return true
-    },
-
-    header: function() {
-      return set_header(arguments)
-    },
-
-    ascii: function() {
-      return ascii()
-    },
-
-    turn: function() {
-      return turn
-    },
-
-    move: function(move, options) {
-      /* The move function can be called with in the following parameters:
-       *
-       * .move('Nxb7')      <- where 'move' is a case-sensitive SAN string
-       *
-       * .move({ from: 'h7', <- where the 'move' is a move object (additional
-       *         to :'h8',      fields are ignored)
-       *         promotion: 'q',
-       *      })
-       */
-
-      // allow the user to specify the sloppy move parser to work around over
-      // disambiguation bugs in Fritz and Chessbase
-      var sloppy =
-        typeof options !== 'undefined' && 'sloppy' in options
-          ? options.sloppy
-          : false
-
-      var move_obj = null
-
-      if (typeof move === 'string') {
-        move_obj = move_from_san(move, sloppy)
-      } else if (typeof move === 'object') {
-        var moves = generate_moves()
-
-        /* convert the pretty move object to an ugly move object */
-        for (var i = 0, len = moves.length; i < len; i++) {
-          if (
-            move.from === algebraic(moves[i].from) &&
-            move.to === algebraic(moves[i].to) &&
-            (!('promotion' in moves[i]) ||
-              move.promotion === moves[i].promotion)
-          ) {
-            move_obj = moves[i]
-            break
-          }
-        }
-      }
-
-      /* failed to find move */
-      if (!move_obj) {
-        return null
-      }
-
-      /* need to make a copy of move because we can't generate SAN after the
-       * move is made
-       */
-      var pretty_move = make_pretty(move_obj)
-
-      make_move(move_obj)
-
-      return pretty_move
-    },
-
-    undo: function() {
-      var move = undo_move()
-      return move ? make_pretty(move) : null
-    },
-
-    clear: function() {
-      return clear()
-    },
-
-    put: function(piece, square) {
-      return put(piece, square)
-    },
-
-    get: function(square) {
-      return get(square)
-    },
-
-    remove: function(square) {
-      return remove(square)
-    },
-
-    perft: function(depth) {
-      return perft(depth)
-    },
-
-    square_color: function(square) {
-      if (square in SQUARES) {
-        var sq_0x88 = SQUARES[square]
-        return (rank(sq_0x88) + file(sq_0x88)) % 2 === 0 ? 'light' : 'dark'
-      }
-
-      return null
-    },
-
-    history: function(options) {
-      var reversed_history = []
-      var move_history = []
-      var verbose =
-        typeof options !== 'undefined' &&
-        'verbose' in options &&
-        options.verbose
-
-      while (history.length > 0) {
-        reversed_history.push(undo_move())
-      }
-
-      while (reversed_history.length > 0) {
-        var move = reversed_history.pop()
-        if (verbose) {
-          move_history.push(make_pretty(move))
-        } else {
-          move_history.push(move_to_san(move))
-        }
-        make_move(move)
-      }
-
-      return move_history
-    }
-  }
-}
-
-/* export Chess object if using node or any other CommonJS compatible
- * environment */
-if (typeof exports !== 'undefined') exports.Chess = Chess
-/* export Chess object for any RequireJS compatible environment */
-if (typeof define !== 'undefined')
-  define(function() {
-    return Chess
-  })
-
-</script>
 <script>
+const ENGINE_SRC="\"use strict\";\nconst V=[0,100,320,330,500,900,0],VV=[0,100,320,330,500,900,2000],PH=[0,0,1,1,2,4,0];\nconst MATE=100000,INF=1000000,TIMEOUT={};\nconst CAP=1<<15,EP=1<<16,DBL=1<<17,CK=1<<18,CQ=1<<19;\n  const PST={\n    p:[0,0,0,0,0,0,0,0, 5,10,10,-20,-20,10,10,5, 5,-5,-10,0,0,-10,-5,5, 0,0,0,20,20,0,0,0, 5,5,10,25,25,10,5,5, 10,10,20,30,30,20,10,10, 50,50,50,50,50,50,50,50, 0,0,0,0,0,0,0,0],\n    n:[-50,-40,-30,-30,-30,-30,-40,-50,-40,-20,0,5,5,0,-20,-40,-30,5,10,15,15,10,5,-30,-30,0,15,20,20,15,0,-30,-30,5,15,20,20,15,5,-30,-30,0,10,15,15,10,0,-30,-40,-20,0,0,0,0,-20,-40,-50,-40,-30,-30,-30,-30,-40,-50],\n    b:[-20,-10,-10,-10,-10,-10,-10,-20,-10,5,0,0,0,0,5,-10,-10,10,10,10,10,10,10,-10,-10,0,10,10,10,10,0,-10,-10,5,5,10,10,5,5,-10,-10,0,5,10,10,5,0,-10,-10,0,0,0,0,0,0,-10,-20,-10,-10,-10,-10,-10,-10,-20],\n    r:[0,0,0,5,5,0,0,0,-5,0,0,0,0,0,0,-5,-5,0,0,0,0,0,0,-5,-5,0,0,0,0,0,0,-5,-5,0,0,0,0,0,0,-5,5,10,10,10,10,10,10,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\n    q:[-20,-10,-10,-5,-5,-10,-10,-20,-10,0,0,0,0,0,0,-10,-10,0,5,5,5,5,0,-10,-5,0,5,5,5,5,0,-5,0,0,5,5,5,5,0,0,-10,5,5,5,5,5,0,-10,-10,0,5,0,0,0,0,-10,-20,-10,-10,-5,-5,-10,-10,-20],\n    k:[20,30,10,0,0,10,30,20,20,20,0,0,0,0,20,20,-10,-20,-20,-20,-20,-20,-20,-10,-20,-30,-30,-40,-40,-30,-30,-20,-30,-40,-40,-50,-50,-40,-40,-30,-30,-40,-40,-50,-50,-40,-40,-30,-30,-40,-40,-50,-50,-40,-40,-30,-30,-40,-40,-50,-50,-40,-40,-30]\n  };\nconst PS=[null,PST.p,PST.n,PST.b,PST.r,PST.q,PST.k];\nconst KN=[],KG=[],RAY=[];\n(()=>{const D=[[0,1],[0,-1],[1,0],[-1,0],[1,1],[-1,1],[1,-1],[-1,-1]];\nfor(let s=0;s<64;s++){const f=s&7,r=s>>3;KN[s]=[];KG[s]=[];RAY[s]=[];\n for(const [a,c] of [[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]]){const x=f+a,y=r+c;if(x>=0&&x<8&&y>=0&&y<8)KN[s].push(y*8+x);}\n D.forEach(([a,c],d)=>{const ray=[];let x=f+a,y=r+c;while(x>=0&&x<8&&y>=0&&y<8){ray.push(y*8+x);x+=a;y+=c;}RAY[s].push(ray);if(ray.length)KG[s].push(ray[0]);});}})();\nlet seed=2463534242;const rnd=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return seed>>>0;};\nconst ZA=new Uint32Array(832),ZB=new Uint32Array(832),ZCA=new Uint32Array(16),ZCB=new Uint32Array(16),ZEA=new Uint32Array(8),ZEB=new Uint32Array(8);\nfor(let i=0;i<832;i++){ZA[i]=rnd();ZB[i]=rnd();}for(let i=0;i<16;i++){ZCA[i]=rnd();ZCB[i]=rnd();}for(let i=0;i<8;i++){ZEA[i]=rnd();ZEB[i]=rnd();}\nconst ZS=rnd(),ZS2=rnd();\nconst b=new Int8Array(64),ksq=[-1,-1];\nlet side=1,castle=0,ep=-1,half=0,sp=0,nodes=0,deadline=0,limited=false,hc=0,tt=new Map();\nconst sC=new Int32Array(600),sE=new Int32Array(600),sH=new Int32Array(600),sK=new Int8Array(600),pathH=new Uint32Array(200);\nlet killers=[],hist=[new Int32Array(4096),new Int32Array(4096)];\nconst sqn=i=>String.fromCharCode(97+(i&7))+String.fromCharCode(49+(i>>3));\nconst uci=m=>sqn(m&63)+sqn((m>>6)&63)+(((m>>12)&7)?\"nbrq\"[((m>>12)&7)-2]:\"\");\nfunction setup(fen){const a=fen.split(\" \");b.fill(0);ksq[0]=ksq[1]=-1;let s=56;\n for(const ch of a[0]){if(ch===\"/\"){s-=16;continue;}if(ch>=\"1\"&&ch<=\"8\"){s+=+ch;continue;}const t=\"pnbrqk\".indexOf(ch.toLowerCase())+1,w=ch===ch.toUpperCase();b[s]=w?t:-t;if(t===6)ksq[w?0:1]=s;s++;}\n side=a[1]===\"w\"?1:-1;castle=(a[2].includes(\"K\")?1:0)|(a[2].includes(\"Q\")?2:0)|(a[2].includes(\"k\")?4:0)|(a[2].includes(\"q\")?8:0);\n ep=a[3]===\"-\"||!a[3]?-1:(a[3].charCodeAt(0)-97)+(a[3].charCodeAt(1)-49)*8;half=+a[4]||0;sp=0;}\nfunction hash(){let a=side>0?0:ZS,c=side>0?0:ZS2;for(let i=0;i<64;i++){const p=b[i];if(p){const z=(p+6)*64+i;a^=ZA[z];c^=ZB[z];}}a^=ZCA[castle];c^=ZCB[castle];if(ep>=0){a^=ZEA[ep&7];c^=ZEB[ep&7];}hc=c;return a>>>0;}\nfunction attacked(s,by){\n const f=s&7,r=s>>3;\n if(by>0){if(r>0){if(f<7&&b[s-7]===1)return true;if(f>0&&b[s-9]===1)return true;}}\n else if(r<7){if(f>0&&b[s+7]===-1)return true;if(f<7&&b[s+9]===-1)return true;}\n const kn=2*by,kg=6*by;\n for(const t of KN[s])if(b[t]===kn)return true;\n for(const t of KG[s])if(b[t]===kg)return true;\n const R=4*by,B=3*by,Q=5*by,rays=RAY[s];\n for(let d=0;d<8;d++){for(const t of rays[d]){const p=b[t];if(p){if(p===Q||p===(d<4?R:B))return true;break;}}}\n return false;}\nfunction inCheck(){const k=ksq[side>0?0:1];return k>=0&&attacked(k,-side);}\nfunction gen(caps){\n const out=[],w=side>0;\n for(let s=0;s<64;s++){\n  const p=b[s];if(!p||(p>0)!==w)continue;const t=p>0?p:-p,f=s&7,r=s>>3;\n  if(t===1){\n   const dir=w?8:-8,last=w?6:1,start=w?1:6,one=s+dir;\n   if(one>=0&&one<64&&!b[one]){\n    if(r===last){for(let q=5;q>=2;q--)out.push(s|one<<6|q<<12);}\n    else if(!caps){out.push(s|one<<6);if(r===start&&!b[one+dir])out.push(s|(one+dir)<<6|DBL);}\n   }\n   for(let df=-1;df<=1;df+=2){const x=f+df;if(x<0||x>7)continue;const to=one+df;if(to<0||to>63)continue;const q=b[to];\n    if(q&&(q>0)!==w){if(r===last){for(let k=5;k>=2;k--)out.push(s|to<<6|k<<12|CAP);}else out.push(s|to<<6|CAP);}\n    else if(!q&&to===ep)out.push(s|to<<6|EP|CAP);}\n  }else if(t===2||t===6){\n   for(const to of (t===2?KN[s]:KG[s])){const q=b[to];if(!q){if(!caps)out.push(s|to<<6);}else if((q>0)!==w)out.push(s|to<<6|CAP);}\n   if(t===6&&!caps){\n    if(w&&s===4){\n     if((castle&1)&&b[7]===4&&!b[5]&&!b[6]&&!attacked(4,-1)&&!attacked(5,-1)&&!attacked(6,-1))out.push(4|6<<6|CK);\n     if((castle&2)&&b[0]===4&&!b[1]&&!b[2]&&!b[3]&&!attacked(4,-1)&&!attacked(3,-1)&&!attacked(2,-1))out.push(4|2<<6|CQ);\n    }else if(!w&&s===60){\n     if((castle&4)&&b[63]===-4&&!b[61]&&!b[62]&&!attacked(60,1)&&!attacked(61,1)&&!attacked(62,1))out.push(60|62<<6|CK);\n     if((castle&8)&&b[56]===-4&&!b[57]&&!b[58]&&!b[59]&&!attacked(60,1)&&!attacked(59,1)&&!attacked(58,1))out.push(60|58<<6|CQ);\n    }\n   }\n  }else{\n   const d0=t===3?4:0,d1=t===4?4:8;\n   for(let d=d0;d<d1;d++)for(const to of RAY[s][d]){const q=b[to];if(!q){if(!caps)out.push(s|to<<6);}else{if((q>0)!==w)out.push(s|to<<6|CAP);break;}}\n  }\n }\n return out;}\nfunction make(m){\n const from=m&63,to=(m>>6)&63,pr=(m>>12)&7,p=b[from];\n sC[sp]=castle;sE[sp]=ep;sH[sp]=half;sK[sp]=b[to];sp++;\n b[to]=pr?side*pr:p;b[from]=0;\n if(m&EP)b[to-side*8]=0;\n if(m&CK){b[to-1]=b[to+1];b[to+1]=0;}\n if(m&CQ){b[to+1]=b[to-2];b[to-2]=0;}\n if(p===6){castle&=~3;ksq[0]=to;}else if(p===-6){castle&=~12;ksq[1]=to;}\n if(from===0||to===0)castle&=~2;if(from===7||to===7)castle&=~1;if(from===56||to===56)castle&=~8;if(from===63||to===63)castle&=~4;\n ep=(m&DBL)?(from+to)>>1:-1;\n half=(p===1||p===-1||(m&CAP))?0:half+1;\n side=-side;}\nfunction unmake(m){\n side=-side;sp--;castle=sC[sp];ep=sE[sp];half=sH[sp];\n const from=m&63,to=(m>>6)&63,pr=(m>>12)&7,p=pr?side:b[to];\n b[from]=p;b[to]=sK[sp];\n if(m&EP)b[to-side*8]=-side;\n if(m&CK){b[to+1]=b[to-1];b[to-1]=0;}\n if(m&CQ){b[to-2]=b[to+1];b[to+1]=0;}\n if(p===6)ksq[0]=from;else if(p===-6)ksq[1]=from;}\nfunction illegal(){const k=ksq[side>0?1:0];return k>=0&&attacked(k,side);}\nfunction evaluate(){\n let mg=0,eg=0,ph=0,wb=0,bb=0,wq=0,bq=0;\n const wf=new Int8Array(10),bf=new Int8Array(10),wps=[],bps=[],rooks=[];\n for(let s=0;s<64;s++){const p=b[s];if(!p)continue;const w=p>0,t=w?p:-p,i=w?s:s^56,sg=w?1:-1;\n  let m=V[t],e=V[t];\n  if(t===1){m+=PS[1][i];e+=PS[1][i]*0.5+(i>>3)*6;(w?wf:bf)[(s&7)+1]++;(w?wps:bps).push(s);}\n  else if(t===6){m+=PS[6][i];const d=Math.max(Math.abs((s&7)-3.5),Math.abs((s>>3)-3.5));e+=(3.5-d)*14-20;}\n  else{\n   m+=PS[t][i];e+=PS[t][i]*0.6;ph+=PH[t];\n   if(t===3){w?wb++:bb++;}else if(t===5){w?wq++:bq++;}else if(t===4)rooks.push(s);\n   if(t>=3){let mob=0;const d0=t===3?4:0,d1=t===4?4:8;\n    for(let d=d0;d<d1;d++)for(const to of RAY[s][d]){const q=b[to];if(!q)mob++;else{if((q>0)!==w)mob++;break;}}\n    const mw=t===3?4:t===4?3:1.5,base=t===3?6:t===4?5:9;m+=(mob-base)*mw;e+=(mob-base)*mw*1.4;}\n  }\n  mg+=sg*m;eg+=sg*e;}\n if(wb>=2){mg+=32;eg+=48;}if(bb>=2){mg-=32;eg-=48;}\n for(const [list,own,opp,oList,sg,w] of [[wps,wf,bf,bps,1,true],[bps,bf,wf,wps,-1,false]]){\n  for(const s of list){const f=s&7,r=s>>3,adv=w?r:7-r;\n   if(own[f+1]>1){mg-=sg*8;eg-=sg*14;}\n   if(!own[f]&&!own[f+2]){mg-=sg*11;eg-=sg*14;}\n   let passed=true;for(const o of oList){const of=o&7,or=o>>3;if(Math.abs(of-f)<=1&&(w?or>r:or<r)){passed=false;break;}}\n   if(passed){const bn=[0,5,10,20,38,65,105,0][adv];mg+=sg*bn*0.6;eg+=sg*bn*1.5;}\n  }}\n for(const s of rooks){const w=b[s]>0,f=s&7,own=w?wf:bf,opp=w?bf:wf,sg=w?1:-1;\n  if(!own[f+1]){const bn=!opp[f+1]?24:12;mg+=sg*bn;eg+=sg*bn*0.5;}}\n for(let c=0;c<2;c++){const k=ksq[c];if(k<0)continue;const w=c===0,f=k&7,r=k>>3,own=w?wf:bf;let pen=0;\n  for(let ff=Math.max(0,f-1);ff<=Math.min(7,f+1);ff++){let found=false;\n   for(let q=1;q<=2;q++){const rr=w?r+q:r-q;if(rr>=0&&rr<8&&b[rr*8+ff]===(w?1:-1)){found=true;break;}}\n   if(!found)pen+=11;if(!own[ff+1])pen+=7;}\n  pen*=(w?bq:wq)?1:0.4;mg-=(w?1:-1)*pen;}\n ph=Math.min(24,ph);const sc=(mg*ph+eg*(24-ph))/24;\n return ((side>0?sc:-sc)|0)+10;}\nfunction nonPawn(sd){for(let s=0;s<64;s++){const p=b[s]*sd;if(p>=2&&p<=5)return true;}return false;}\nfunction orderScores(ms,ttm,ply){\n const sc=new Int32Array(ms.length),k=killers[ply]||[0,0],h=hist[side>0?0:1];\n for(let i=0;i<ms.length;i++){const m=ms[i];let s=0;\n  if(m===ttm)s=10000000;\n  else if(m&CAP){const v=(m&EP)?1:Math.abs(b[(m>>6)&63]),a=Math.abs(b[m&63]);s=1000000+VV[v]*10-a;}\n  else if((m>>12)&7)s=900000+((m>>12)&7);\n  else if(m===k[0])s=800000;else if(m===k[1])s=700000;\n  else s=h[(m&63)*64+((m>>6)&63)];\n  sc[i]=s;}\n return sc;}\nfunction pick(ms,sc,i){let bi=i;for(let j=i+1;j<ms.length;j++)if(sc[j]>sc[bi])bi=j;\n if(bi!==i){let t=ms[i];ms[i]=ms[bi];ms[bi]=t;t=sc[i];sc[i]=sc[bi];sc[bi]=t;}return ms[i];}\nfunction tick(){nodes++;if(limited&&(nodes&1023)===0&&Date.now()>deadline)throw TIMEOUT;}\nfunction qsearch(alpha,beta,ply){\n tick();if(ply>=95)return evaluate();\n const chk=inCheck();let best=-INF,st=0;\n if(!chk){st=evaluate();if(st>=beta)return st;if(st>alpha)alpha=st;best=st;}\n const ms=gen(!chk),sc=orderScores(ms,0,ply);let legal=0;\n for(let i=0;i<ms.length;i++){const m=pick(ms,sc,i);\n  if(!chk&&!((m>>12)&7)&&st+VV[(m&EP)?1:Math.abs(b[(m>>6)&63])]+180<alpha)continue;\n  make(m);if(illegal()){unmake(m);continue;}legal++;\n  const v=-qsearch(-beta,-alpha,ply+1);unmake(m);\n  if(v>best){best=v;if(v>alpha){alpha=v;if(v>=beta)break;}}}\n if(chk&&!legal)return -MATE+ply;\n return best;}\nfunction search(depth,alpha,beta,ply,nullOk){\n tick();\n if(ply>=90)return evaluate();\n const h=hash(),c=hc;pathH[ply]=h;\n if(ply>0){if(half>=100)return 0;for(let i=ply-2;i>=0&&i>=ply-half;i-=2)if(pathH[i]===h)return 0;}\n const chk=inCheck();if(chk&&ply<60)depth++;\n if(depth<=0)return qsearch(alpha,beta,ply);\n const a0=alpha;let ttm=0;const e=tt.get(h);\n if(e&&e.c===c){ttm=e.m;if(e.d>=depth&&ply>0){let s=e.s;if(s>MATE-1000)s-=ply;else if(s<-MATE+1000)s+=ply;\n  if(e.f===0)return s;if(e.f===1&&s>=beta)return s;if(e.f===2&&s<=alpha)return s;}}\n let ev=0;\n if(!chk){ev=evaluate();\n  if(ply>0&&depth<=3&&beta<MATE-1000&&ev-110*depth>=beta)return ev;\n  if(nullOk&&depth>=3&&ev>=beta&&nonPawn(side)){\n   const se=ep;ep=-1;side=-side;const R=depth>6?3:2;\n   const v=-search(depth-1-R,-beta,-beta+1,ply+1,false);side=-side;ep=se;\n   if(v>=beta)return v>MATE-1000?beta:v;}}\n const ms=gen(false),sc=orderScores(ms,ttm,ply);let best=-INF,bm=0,legal=0;\n for(let i=0;i<ms.length;i++){const m=pick(ms,sc,i);\n  make(m);if(illegal()){unmake(m);continue;}legal++;\n  const quiet=!(m&CAP)&&!((m>>12)&7),gives=inCheck();let v;\n  if(legal===1)v=-search(depth-1,-beta,-alpha,ply+1,true);\n  else{let r=0;if(depth>=3&&quiet&&legal>3&&!chk&&!gives)r=1+(legal>9?1:0);\n   v=-search(depth-1-r,-alpha-1,-alpha,ply+1,true);\n   if(v>alpha&&r)v=-search(depth-1,-alpha-1,-alpha,ply+1,true);\n   if(v>alpha&&v<beta)v=-search(depth-1,-beta,-alpha,ply+1,true);}\n  unmake(m);\n  if(v>best){best=v;bm=m;if(v>alpha){alpha=v;if(alpha>=beta){\n   if(quiet){const k=killers[ply]||(killers[ply]=[0,0]);if(k[0]!==m){k[1]=k[0];k[0]=m;}const hh=hist[side>0?0:1],ix=(m&63)*64+((m>>6)&63);hh[ix]=Math.min(30000,hh[ix]+depth*depth);}\n   break;}}}}\n if(!legal)return chk?-MATE+ply:0;\n let s=best;if(s>MATE-1000)s+=ply;else if(s<-MATE+1000)s-=ply;\n if(tt.size>700000)tt.clear();\n tt.set(h,{c,d:depth,s,f:best<=a0?2:best>=beta?1:0,m:bm});\n return best;}\nfunction legalIn(m){if(gen(false).indexOf(m)<0)return false;make(m);const ok=!illegal();unmake(m);return ok;}\nfunction pvOf(m,len){const out=[uci(m)],made=[m];make(m);\n for(let i=0;i<len;i++){const h=hash(),e=tt.get(h);if(!e||e.c!==hc||!e.m||!legalIn(e.m))break;made.push(e.m);out.push(uci(e.m));make(e.m);}\n for(let i=made.length-1;i>=0;i--)unmake(made[i]);return out;}\nfunction rootSearch(prev,d,full){\n let alpha=-INF;const res=[];\n for(let i=0;i<prev.length;i++){const m=prev[i].m;make(m);let v;\n  if(full||i===0)v=-search(d-1,-INF,INF,1,true);\n  else{v=-search(d-1,-alpha-1,-alpha,1,true);if(v>alpha)v=-search(d-1,-INF,-alpha,1,true);}\n  unmake(m);res.push({m,score:v});if(v>alpha)alpha=v;}\n res.sort((x,y)=>y.score-x.score);return res;}\nfunction analyse(fen,o){\n setup(fen);tt=new Map();killers=[];hist=[new Int32Array(4096),new Int32Array(4096)];nodes=0;\n const legal=[];for(const m of gen(false)){make(m);if(!illegal())legal.push(m);unmake(m);}\n if(!legal.length)return{lines:[],depth:0,nodes:0};\n const t0=Date.now(),ms=o.ms||1000,maxD=o.depth||8,hasP=!!o.played;\n let lines=legal.map(m=>({m,score:0})),done=0;\n pathH[0]=hash();deadline=t0+ms*(hasP?0.55:0.95);\n try{for(let d=1;d<=maxD;d++){limited=d>1;lines=rootSearch(lines,d,o.full);done=d;\n  if(Math.abs(lines[0].score)>MATE-300&&d>=3)break;if(Date.now()>deadline)break;}}\n catch(x){if(x!==TIMEOUT)throw x;setup(fen);}\n limited=false;\n const pvBest=pvOf(lines[0].m,14);let playedScore=null,playedPv=null,second=null;\n if(hasP){const pm=legal.find(m=>uci(m)===o.played);\n  if(pm){if(pm===lines[0].m)playedScore=lines[0].score;\n   else{let dd=done;while(dd>=1&&playedScore===null){deadline=Date.now()+Math.max(200,ms*0.3);limited=true;\n    try{make(pm);playedScore=-search(dd-1,-INF,INF,1,true);unmake(pm);}catch(x){if(x!==TIMEOUT)throw x;setup(fen);dd-=2;}}\n    limited=false;if(playedScore===null)playedScore=lines.find(x=>x.m===pm).score;}\n   playedPv=pvOf(pm,10);}}\n if(o.multi&&lines.length>1){\n  if(o.full)second=lines[1].score;\n  else{deadline=Date.now()+ms*0.25;limited=true;\n   try{second=rootSearch(lines.slice(1),Math.max(1,done-1),false)[0].score;}catch(x){if(x!==TIMEOUT)throw x;setup(fen);second=lines[1].score;}\n   limited=false;}}\n return{lines:lines.slice(0,6).map((l,i)=>({move:uci(l.m),score:l.score,pv:i?[uci(l.m)]:pvBest})),depth:done,nodes,playedScore,playedPv,second};}\nself.onmessage=e=>{const d=e.data;try{self.postMessage({id:d.id,result:analyse(d.fen,d)});}catch(err){self.postMessage({id:d.id,error:String(err&&err.message||err)});}};\n";
 "use strict";
-
-if (typeof Chess === "undefined") {
-  document.getElementById("status").textContent =
-    "تعذّر تحميل مكتبة القواعد. أعد تحميل الصفحة.";
-  throw new Error("Chess rules library unavailable");
+class Chess {
+  constructor(fen){ this.reset(fen); }
+  reset(fen){
+    this.board=Array(64).fill(null); this.turnColor='w'; this.castle={K:true,Q:true,k:true,q:true};
+    this.ep='-'; this.half=0; this.full=1; this.hist=[]; this.headers={}; this.startFEN=fen||null;
+    this.load(fen||'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'); return this;
+  }
+  clone(){ return new Chess(this.fen()); }
+  load(f){
+    const a=f.trim().split(/\s+/); if(a.length<4) throw Error('Invalid FEN');
+    this.board.fill(null); let r=7;
+    for(const ch of a[0]){ if(ch==='/'){r--;continue;} if(/[1-8]/.test(ch)){ for(let n=+ch;n--;){/*skip*/} } }
+    let sq=56; for(const ch of a[0]){ if(ch==='/'){sq-=16;continue;} if(/[1-8]/.test(ch)){sq+=+ch;continue;} if(!/[prnbqkPRNBQK]/.test(ch)) throw Error('Invalid FEN'); this.board[sq++]=ch; }
+    this.turnColor=a[1]; this.castle={K:a[2].includes('K'),Q:a[2].includes('Q'),k:a[2].includes('k'),q:a[2].includes('q')};
+    this.ep=a[3]||'-'; this.half=+(a[4]||0); this.full=+(a[5]||1); this.hist=[]; return true;
+  }
+  fen(){ let out=''; for(let r=7;r>=0;r--){let e=0;for(let f=0;f<8;f++){let p=this.board[r*8+f];if(!p)e++;else{if(e){out+=e;e=0}out+=p}}if(e)out+=e;if(r)out+='/';} let c='';for(const x of ['K','Q','k','q'])if(this.castle[x])c+=x;return out+' '+this.turnColor+' '+(c||'-')+' '+this.ep+' '+this.half+' '+this.full; }
+  turn(){return this.turnColor;}
+  get(s){const i=this.si(s);const p=this.board[i];return p?{type:p.toLowerCase(),color:p===p.toUpperCase()?'w':'b'}:null;}
+  si(s){return (s.charCodeAt(0)-97)+(s.charCodeAt(1)-49)*8;}
+  sn(i){return String.fromCharCode(97+i%8)+String.fromCharCode(49+Math.floor(i/8));}
+  attacked(i,by){
+    const f=i%8,r=Math.floor(i/8), opp=by==='w'?'W':'B';
+    for(const df of [-1,1]) for(const dr of [1,2]){const rr=r+(by==='w'?dr:-dr),ff=f+df;if(rr>=0&&rr<8&&ff>=0&&ff<8&&this.board[rr*8+ff]===(by==='w'?'P':'p')) return true;}
+    const ns=[[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]]; for(const [df,dr] of ns){let ff=f+df,rr=r+dr;if(ff>=0&&ff<8&&rr>=0&&rr<8){let p=this.board[rr*8+ff];if(p===(by==='w'?'N':'n'))return true;}}
+    const dirs=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]];
+    for(let d=0;d<8;d++){let [df,dr]=dirs[d],ff=f+df,rr=r+dr;while(ff>=0&&ff<8&&rr>=0&&rr<8){let p=this.board[rr*8+ff];if(p){if(p===(by==='w'?(d<4?'R':'B'):(d<4?'r':'b'))||p===(by==='w'?'Q':'q'))return true;break;}ff+=df;rr+=dr;}}
+    for(let df=-1;df<=1;df++)for(let dr=-1;dr<=1;dr++){if(!df&&!dr)continue;let ff=f+df,rr=r+dr;if(ff>=0&&ff<8&&rr>=0&&rr<8&&this.board[rr*8+ff]===(by==='w'?'K':'k'))return true;}
+    return false;
+  }
+  in_check(color=this.turnColor){const k=color==='w'?'K':'k',i=this.board.indexOf(k);return i>=0&&this.attacked(i,color==='w'?'b':'w');}
+  _pseudo(verbose=false){
+    const res=[], us=this.turnColor, enemy=us==='w'?'b':'w';
+    const add=(from,to,promo,captured,flags='')=>{const piece=this.board[from].toLowerCase();res.push({color:us,from:this.sn(from),to:this.sn(to),piece,captured:captured?captured.toLowerCase():undefined,promotion:promo,flags});};
+    for(let i=0;i<64;i++){const p=this.board[i];if(!p||(p===p.toUpperCase()?'w':'b')!==us)continue;const type=p.toLowerCase(),f=i%8,r=Math.floor(i/8);
+      if(type==='p'){const dir=us==='w'?1:-1, start=us==='w'?1:6, prom=us==='w'?7:0, one=r+dir;if(one>=0&&one<8&&!this.board[one*8+f]){if(one===prom)for(const q of ['q','r','b','n'])add(i,one*8+f,q);else add(i,one*8+f);if(r===start&&!this.board[(r+2*dir)*8+f])add(i,(r+2*dir)*8+f,undefined,undefined,'b');}for(const df of [-1,1]){const ff=f+df;if(ff<0||ff>7)continue;const to=one*8+ff,p2=this.board[to];if(one>=0&&one<8&&p2&& (p2===p2.toUpperCase()?'w':'b')===enemy){if(one===prom)for(const q of ['q','r','b','n'])add(i,to,q,p2,'c');else add(i,to,undefined,p2,'c');}if(this.ep===this.sn(to))add(i,to,undefined,us==='w'?'p':'P','e');}}
+      else if(type==='n'){for(const [df,dr] of [[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]]){const ff=f+df,rr=r+dr;if(ff<0||ff>7||rr<0||rr>7)continue;const to=rr*8+ff,p2=this.board[to];if(!p2||(p2===p2.toUpperCase()?'w':'b')===enemy)add(i,to,undefined,p2,p2?'c':'');}}
+      else {const dirs=type==='b'?[[1,1],[-1,1],[1,-1],[-1,-1]]:type==='r'?[[1,0],[-1,0],[0,1],[0,-1]]:[[1,1],[-1,1],[1,-1],[-1,-1],[1,0],[-1,0],[0,1],[0,-1]];for(const [df,dr] of dirs){let ff=f+df,rr=r+dr;while(ff>=0&&ff<8&&rr>=0&&rr<8){const to=rr*8+ff,p2=this.board[to];if(!p2)add(i,to);else{if((p2===p2.toUpperCase()?'w':'b')===enemy)add(i,to,undefined,p2,'c');break;}if(type==='k')break;ff+=df;rr+=dr;}}if(type==='k'&&r===(us==='w'?0:7)&&f===4&&!this.in_check(us)){const rank=r; if(this.castle[us==='w'?'K':'k']&&!this.board[rank*8+5]&&!this.board[rank*8+6]&&!this.attacked(rank*8+5,enemy)&&!this.attacked(rank*8+6,enemy))add(i,rank*8+6,undefined,undefined,'k');if(this.castle[us==='w'?'Q':'q']&&!this.board[rank*8+1]&&!this.board[rank*8+2]&&!this.board[rank*8+3]&&!this.attacked(rank*8+3,enemy)&&!this.attacked(rank*8+2,enemy))add(i,rank*8+2,undefined,undefined,'q');}}
+    } return res;
+  }
+  _apply(m,record=true){
+    const from=this.si(m.from),to=this.si(m.to),p=this.board[from],cap=m.flags==='e'?(this.turnColor==='w'?'p':'P'):this.board[to];
+    const snap={fen:this.fen(),headers:{...this.headers}};
+    if(record)this.hist.push(snap);
+    this.board[from]=null; this.board[to]=m.promotion?(this.turnColor==='w'?m.promotion.toUpperCase():m.promotion):p;
+    if(m.flags==='e')this.board[to+(this.turnColor==='w'?-8:8)]=null;
+    if(m.flags==='k'){this.board[to-1]=this.board[to+1];this.board[to+1]=null;} if(m.flags==='q'){this.board[to+1]=this.board[to-2];this.board[to-2]=null;}
+    if(p==='K'){this.castle.K=this.castle.Q=false;} if(p==='k'){this.castle.k=this.castle.q=false;}
+    if(from===0||to===0)this.castle.Q=false;if(from===7||to===7)this.castle.K=false;if(from===56||to===56)this.castle.q=false;if(from===63||to===63)this.castle.k=false;
+    this.ep='-';if(p.toLowerCase()==='p'&&Math.abs(to-from)===16)this.ep=this.sn((from+to)/2);
+    if(p.toLowerCase()==='p'||cap)this.half=0;else this.half++; if(this.turnColor==='b')this.full++;this.turnColor=this.turnColor==='w'?'b':'w'; return true;
+  }
+  _snapshot(){return {board:this.board.slice(),turn:this.turnColor,castle:{...this.castle},ep:this.ep,half:this.half,full:this.full};}
+  _restore(x){this.board=x.board.slice();this.turnColor=x.turn;this.castle={...x.castle};this.ep=x.ep;this.half=x.half;this.full=x.full;}
+  _legalMoves(){const out=[];for(const m of this._pseudo()){const snap=this._snapshot();this._apply(m,false);const ok=!this.in_check(snap.turn);this._restore(snap);if(ok)out.push(m);}return out;}
+  moves(opts={}){let ms=this._legalMoves();if(opts.square){ms=ms.filter(m=>m.from===opts.square);}if(opts.verbose)return ms.map(m=>({...m,san:this._san(m,ms)}));return ms.map(m=>this._san(m,ms));}
+  _san(m,all){const p=this.board[this.si(m.from)].toUpperCase(),capture=!!m.captured||m.flags==='e';let s=p==='P'?'':p;if(p==='P'&&capture)s+=m.from[0];if(capture)s+='x';s+=m.to;if(m.promotion)s+='='+m.promotion.toUpperCase();if(m.flags==='k')s='O-O';if(m.flags==='q')s='O-O-O';const snap=this._snapshot();this._apply(m,false);const chk=this.in_check(this.turnColor),mate=chk&&this._legalMoves().length===0;this._restore(snap);if(mate)s+='#';else if(chk)s+='+';return s;}
+  move(m){let ms=this._legalMoves(), chosen=null;if(typeof m==='string'){chosen=ms.find(x=>this._san(x,ms)===m||x.from+x.to+(x.promotion||'')===m);}else chosen=ms.find(x=>x.from===m.from&&x.to===m.to&&(!m.promotion||x.promotion===m.promotion));if(!chosen)return null;const san=this._san(chosen,ms);this._apply(chosen,true);chosen.san=san;return chosen;}
+  undo(record=true){if(!this.hist.length)return null;const snap=this.hist.pop();this.load(snap.fen);this.headers=snap.headers;return true;}
+  history(opts={}){const arr=this.hist.map((h,i)=>h);if(!opts.verbose){return this.hist.map((h)=>{const temp=new Chess(h.fen);return '';}).filter(Boolean);} // rebuilt below
+    // verbose history is stored as FEN transitions in _moveLog when available
+    return this.moveLog||[];
+  }
+  _ensureLog(){if(!this.moveLog)this.moveLog=[];}
+  game_over(){return this.in_checkmate()||this.in_draw();}
+  in_checkmate(){return this.in_check()&&this._legalMoves().length===0;}
+  in_stalemate(){return !this.in_check()&&this._legalMoves().length===0;}
+  insufficient_material(){const pcs=this.board.filter(Boolean).map(x=>x.toLowerCase());if(pcs.some(x=>x==='p'||x==='r'||x==='q'))return false;const minors=pcs.filter(x=>x==='b'||x==='n');return minors.length<=1;}
+  in_threefold_repetition(){const cur=this.fen().split(' ').slice(0,4).join(' ');let n=1;for(const h of this.hist)if(h.fen.split(' ').slice(0,4).join(' ')===cur)n++;return n>=3;}
+  in_draw(){return this.half>=100||this.in_threefold_repetition()||this.insufficient_material()||this.in_stalemate();}
+  header(...a){for(let i=0;i<a.length;i+=2)this.headers[a[i]]=a[i+1];}
+  pgn(){return (this.headers.Event?'[Event "'+this.headers.Event+'"]\n':'')+(this.headers.Result?'[Result "'+this.headers.Result+'"]\n\n':'')+(this.moveLog||[]).map((m,i)=>(i%2===0?(Math.floor(i/2)+1)+'. ':'')+m.san).join(' ');}
 }
+// patch move/undo history logging
+const _cmove=Chess.prototype.move,_cundo=Chess.prototype.undo;
+Chess.prototype.move=function(m){this._ensureLog();const before=this.hist.length,res=_cmove.call(this,m);if(res){this.moveLog.push({...res});}return res;};
+Chess.prototype.undo=function(record=true){const r=_cundo.call(this,record);if(r&&this.moveLog&&this.moveLog.length)this.moveLog.pop();return r;};
 
-const $ = id => document.getElementById(id);
-const GLYPH = { k:"♚", q:"♛", r:"♜", b:"♝", n:"♞", p:"♟" };
-const PIECE_NAME = {
-  k:"ملك", q:"وزير", r:"رخ", b:"فيل", n:"حصان", p:"بيدق"
-};
-const STORE = "crimson-chess-v3";
-let game = new Chess();
-let human = "w";
-let flipped = false;
-let selected = null;
-let hintSquares = [];
-let reports = [];
-let busy = false;
-let phase = "";
-let worker = null;
-let workerFailed = false;
-let epoch = 0;
-let requestId = 0;
-const pending = new Map();
 
-let timeMinutes = 10;
-let clock = {w:600,b:600};
-let clockTimer = null;
-let clockLast = 0;
-let timedOut = false;
-let startFen = null;
-let customPosition = false;
-
-let analysisData = [];
-let analysisIndex = -1;
-let analysisRunning = false;
-let analysisMode = false;
-
-let editorPieces = {};
-let editorSelected = "wq";
-let editorTurn = "w";
-let lastMatePly = -1;
-let mateTimer = null;
-let mateAudioCtx = null;
-
+Chess.prototype.history=function(opts={}){this._ensureLog();return opts.verbose?this.moveLog.map(x=>({...x})):this.moveLog.map(x=>x.san);};
 function standardEditorPieces() {
   const pieces={};
   const back=["r","n","b","q","k","b","n","r"];
@@ -2343,804 +653,335 @@ function resetClock(minutes=timeMinutes){
 }
 function stopClock(){ if(clockTimer){clearInterval(clockTimer);clockTimer=null;} }
 function clockTick(){
-  if(!game||game.game_over()||analysisMode||timedOut)return;
+  if(isOver()||analysisMode)return;
   const now=performance.now(), delta=(now-clockLast)/1000; clockLast=now;
   const side=game.turn(); if(side!=="w"&&side!=="b")return;
   clock[side]-=delta;
   if(clock[side]<=0){clock[side]=0;timedOut=true;stopClock();phase="انتهى الوقت";}
-  renderClocks(); if(timedOut)render();
+  renderClocks(); if(timedOut){phase="";finishGame();save();render();}
 }
 function startClock(){
   stopClock();
-  if(!game.game_over()&&!analysisMode&&!timedOut){clockLast=performance.now();clockTimer=setInterval(clockTick,100);}
+  if(!isOver()&&!analysisMode){clockLast=performance.now();clockTimer=setInterval(clockTick,100);}
 }
 function renderClocks(){
   for(const color of ["w","b"]){
     const el=$(color==="w"?"bottomClock":"topClock"); if(!el)continue;
     el.textContent=formatClock(clock[color]);
-    el.classList.toggle("active",!game.game_over()&&!timedOut&&!analysisMode&&game.turn()===color);
+    el.classList.toggle("active",!isOver()&&!analysisMode&&game.turn()===color);
     el.classList.toggle("low",clock[color]<30);
   }
 }
-function positionAtPly(ply){
-  const g=new Chess(startFen||undefined), moves=game.history({verbose:true});
-  for(let i=0;i<ply&&i<moves.length;i++){const m=moves[i];g.move({from:m.from,to:m.to,promotion:m.promotion});}
-  return g;
-}
-function displayGame(){
-  if(!analysisMode||analysisIndex<0)return game;
-  return positionAtPly(analysisIndex+1);
-}
-/* محرك CRIMSON المحلي: مستقل تمامًا وبدون إنترنت. */
-function engineWorker() {
-  /* CRIMSON Engine 3 — محرك مستقل: لوحة 0x88 + PVS + جدول تحويل + Null move + LMR + بحث هدوء.
-     لا يعتمد على أي مكتبة خارجية ولا على الإنترنت. */
-  const VAL=[0,100,320,335,500,900,0], MATE=100000, INF=1000000, TIMEOUT={};
-  const PST = {
-    p:[0,0,0,0,0,0,0,0, 5,10,10,-20,-20,10,10,5, 5,-5,-10,0,0,-10,-5,5, 0,0,0,20,20,0,0,0, 5,5,10,25,25,10,5,5, 10,10,20,30,30,20,10,10, 50,50,50,50,50,50,50,50, 0,0,0,0,0,0,0,0],
-    n:[-50,-40,-30,-30,-30,-30,-40,-50, -40,-20,0,5,5,0,-20,-40, -30,5,10,15,15,10,5,-30, -30,0,15,20,20,15,0,-30, -30,5,15,20,20,15,5,-30, -30,0,10,15,15,10,0,-30, -40,-20,0,0,0,0,-20,-40, -50,-40,-30,-30,-30,-30,-40,-50],
-    b:[-20,-10,-10,-10,-10,-10,-10,-20, -10,5,0,0,0,0,5,-10, -10,10,10,10,10,10,10,-10, -10,0,10,10,10,10,0,-10, -10,5,5,10,10,5,5,-10, -10,0,5,10,10,5,0,-10, -10,0,0,0,0,0,0,-10, -20,-10,-10,-10,-10,-10,-10,-20],
-    r:[0,0,0,5,5,0,0,0, -5,0,0,0,0,0,0,-5, -5,0,0,0,0,0,0,-5, -5,0,0,0,0,0,0,-5, -5,0,0,0,0,0,0,-5, 5,10,10,10,10,10,10,5, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0],
-    q:[-20,-10,-10,-5,-5,-10,-10,-20, -10,0,0,0,0,0,0,-10, -10,0,5,5,5,5,0,-10, -5,0,5,5,5,5,0,-5, 0,0,5,5,5,5,0,0, -10,5,5,5,5,5,0,-10, -10,0,5,0,0,0,0,-10, -20,-10,-10,-5,-5,-10,-10,-20],
-    k:[20,30,10,0,0,10,30,20, 20,20,0,0,0,0,20,20, -10,-20,-20,-20,-20,-20,-20,-10, -20,-30,-30,-40,-40,-30,-30,-20, -30,-40,-40,-50,-50,-40,-40,-30, -30,-40,-40,-50,-50,-40,-40,-30, -30,-40,-40,-50,-50,-40,-40,-30]
-  };
-  const PSTA=[null,PST.p,PST.n,PST.b,PST.r,PST.q,PST.k];
-  const ND=[33,31,18,14,-33,-31,-18,-14], KD=[1,-1,16,-16,17,15,-17,-15], BD=[17,15,-17,-15], RD=[16,-16,1,-1];
-  const bd=new Int8Array(128), ksq=[0,0];
-  let side=0,castle=0,ep=-1,hm=0,hlo=0,hhi=0,deadline=0,nodes=0,sp=0;
-  let seed=88172645;const rnd=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return seed|0;};
-  const ZL=[],ZH=[];
-  for(let p=0;p<16;p++){const a=new Int32Array(128),b=new Int32Array(128);for(let s=0;s<128;s++){a[s]=rnd();b[s]=rnd();}ZL.push(a);ZH.push(b);}
-  const CM=new Uint8Array(128).fill(15);CM[0]=13;CM[4]=12;CM[7]=14;CM[0x70]=7;CM[0x74]=3;CM[0x77]=11;
-  const TS=1<<19,TM=TS-1,ttK=new Int32Array(TS),ttS=new Int32Array(TS),ttM=new Int32Array(TS),ttD=new Int8Array(TS),ttF=new Int8Array(TS),ttU=new Uint8Array(TS);
-  const uM=[],uC=[],uCs=[],uE=[],uH=[],uL=[],uHi=[];
-  let killers=[],hist=new Int32Array(1<<14);
-  const off=s=>s&0x88;
-  function hashAll(){
-    hlo=0;hhi=0;
-    for(let s=0;s<128;s++){if(s&0x88)continue;const p=bd[s];if(p){hlo^=ZL[p][s];hhi^=ZH[p][s];}}
-    hlo^=ZL[7][castle];hhi^=ZH[7][castle];
-    if(ep>=0){hlo^=ZL[0][ep];hhi^=ZH[0][ep];}
-    if(side){hlo^=ZL[15][0];hhi^=ZH[15][0];}
-  }
-  function setFen(fen){
-    const [pp,s,c,e,h]=fen.split(" ");bd.fill(0);let r=7,f=0;
-    for(const ch of pp){
-      if(ch==="/"){r--;f=0;}
-      else if(ch>="1"&&ch<="8")f+=+ch;
-      else{const t="pnbrqk".indexOf(ch.toLowerCase())+1,p=t|(ch===ch.toLowerCase()?8:0),sq=r*16+f;bd[sq]=p;if(t===6)ksq[p>>3]=sq;f++;}
-    }
-    side=s==="b"?1:0;castle=0;
-    if(c)for(const ch of c)castle|=({K:1,Q:2,k:4,q:8})[ch]||0;
-    ep=(e&&e!=="-")?(e.charCodeAt(0)-97)+(+e[1]-1)*16:-1;hm=+h||0;sp=0;hashAll();
-  }
-  function attacked(sq,by){
-    const pc=by<<3,a1=by?sq+15:sq-15,a2=by?sq+17:sq-17;
-    if(!off(a1)&&bd[a1]===(pc|1))return true;
-    if(!off(a2)&&bd[a2]===(pc|1))return true;
-    for(let i=0;i<8;i++){const s=sq+ND[i];if(!off(s)&&bd[s]===(pc|2))return true;}
-    for(let i=0;i<8;i++){const s=sq+KD[i];if(!off(s)&&bd[s]===(pc|6))return true;}
-    for(let i=0;i<4;i++){const d=BD[i];let s=sq+d;while(!off(s)){const p=bd[s];if(p){if(p===(pc|3)||p===(pc|5))return true;break;}s+=d;}}
-    for(let i=0;i<4;i++){const d=RD[i];let s=sq+d;while(!off(s)){const p=bd[s];if(p){if(p===(pc|4)||p===(pc|5))return true;break;}s+=d;}}
-    return false;
-  }
-  function gen(qs){
-    const mv=[],us=side,fw=us?-16:16,start=us?6:1,pr=us?1:6;
-    for(let sq=0;sq<128;sq++){
-      if(sq&0x88){sq+=7;continue;}
-      const p=bd[sq];if(!p||(p>>3)!==us)continue;const t=p&7;
-      if(t===1){
-        const r=sq>>4;let to=sq+fw;
-        if(!bd[to]){
-          if(r===pr){for(let q=5;q>=2;q--)mv.push(sq|to<<7|q<<14);}
-          else if(!qs){mv.push(sq|to<<7);if(r===start&&!bd[to+fw])mv.push(sq|(to+fw)<<7|4<<17);}
-        }
-        for(let k=-1;k<=1;k+=2){
-          to=sq+fw+k;if(off(to))continue;const c=bd[to];
-          if(c&&(c>>3)!==us){if(r===pr){for(let q=5;q>=2;q--)mv.push(sq|to<<7|q<<14);}else mv.push(sq|to<<7);}
-          else if(to===ep)mv.push(sq|to<<7|1<<17);
-        }
-      }else if(t===2||t===6){
-        const D=t===2?ND:KD;
-        for(let i=0;i<8;i++){const to=sq+D[i];if(off(to))continue;const c=bd[to];if(!c){if(!qs)mv.push(sq|to<<7);}else if((c>>3)!==us)mv.push(sq|to<<7);}
-      }else{
-        const D=t===3?BD:t===4?RD:KD,n=t===5?8:4,o=t===5?0:0;
-        for(let i=0;i<n;i++){
-          const d=t===5?KD[i]:D[i];let to=sq+d;
-          while(!off(to)){const c=bd[to];if(!c){if(!qs)mv.push(sq|to<<7);}else{if((c>>3)!==us)mv.push(sq|to<<7);break;}to+=d;}
-        }
-      }
-    }
-    if(!qs){
-      const b=us?0x70:0,e=b+4,rt=1+us*3;
-      if(bd[e]===(6|us<<3)&&!attacked(e,us^1)){
-        if((castle&(1<<(us*2)))&&!bd[b+5]&&!bd[b+6]&&!attacked(b+5,us^1)&&!attacked(b+6,us^1))mv.push(e|(b+6)<<7|2<<17);
-        if((castle&(2<<(us*2)))&&!bd[b+3]&&!bd[b+2]&&!bd[b+1]&&!attacked(b+3,us^1)&&!attacked(b+2,us^1))mv.push(e|(b+2)<<7|2<<17);
-      }
-    }
-    return mv;
-  }
-  function make(m){
-    const from=m&127,to=(m>>7)&127,pr=(m>>14)&7,fl=m>>17,us=side,p=bd[from];let cap=bd[to];
-    uM[sp]=m;uCs[sp]=castle;uE[sp]=ep;uH[sp]=hm;uL[sp]=hlo;uHi[sp]=hhi;
-    if(ep>=0){hlo^=ZL[0][ep];hhi^=ZH[0][ep];}
-    hlo^=ZL[7][castle];hhi^=ZH[7][castle];
-    if(cap){hlo^=ZL[cap][to];hhi^=ZH[cap][to];}
-    if(fl&1){const cs=to+(us?16:-16);cap=bd[cs];bd[cs]=0;hlo^=ZL[cap][cs];hhi^=ZH[cap][cs];}
-    uC[sp]=cap;sp++;
-    const np=pr?(pr|us<<3):p;
-    bd[from]=0;bd[to]=np;
-    hlo^=ZL[p][from]^ZL[np][to];hhi^=ZH[p][from]^ZH[np][to];
-    if(fl&2){
-      let rf,rt;if(to>from){rf=from+3;rt=from+1;}else{rf=from-4;rt=from-1;}
-      const rk=bd[rf];bd[rf]=0;bd[rt]=rk;hlo^=ZL[rk][rf]^ZL[rk][rt];hhi^=ZH[rk][rf]^ZH[rk][rt];
-    }
-    if((p&7)===6)ksq[us]=to;
-    castle&=CM[from]&CM[to];
-    ep=(fl&4)?(from+to)>>1:-1;
-    hm=((p&7)===1||cap)?0:hm+1;
-    hlo^=ZL[7][castle];hhi^=ZH[7][castle];
-    if(ep>=0){hlo^=ZL[0][ep];hhi^=ZH[0][ep];}
-    side^=1;hlo^=ZL[15][0];hhi^=ZH[15][0];
-  }
-  function unmake(){
-    sp--;const m=uM[sp],from=m&127,to=(m>>7)&127,fl=m>>17;
-    side^=1;const us=side;let p=bd[to];
-    if((m>>14)&7)p=1|us<<3;
-    bd[from]=p;
-    if(fl&1){bd[to]=0;bd[to+(us?16:-16)]=uC[sp];}else bd[to]=uC[sp];
-    if(fl&2){if(to>from){bd[from+3]=bd[from+1];bd[from+1]=0;}else{bd[from-4]=bd[from-1];bd[from-1]=0;}}
-    if((p&7)===6)ksq[us]=from;
-    castle=uCs[sp];ep=uE[sp];hm=uH[sp];hlo=uL[sp];hhi=uHi[sp];
-  }
-  function evaluate(){
-    let t=0,mat=0,wb=0,bb=0,kw=0,kb=0;
-    for(let sq=0;sq<128;sq++){
-      if(sq&0x88){sq+=7;continue;}
-      const p=bd[sq];if(!p)continue;
-      const ty=p&7,w=!(p&8),rk=sq>>4,i=(w?rk:7-rk)*8+(sq&7);
-      if(ty===6){if(w)kw=sq;else kb=sq;continue;}
-      let v=VAL[ty]+PSTA[ty][i];
-      if(ty===1)v+=(w?rk-1:6-rk)*7;else{mat+=VAL[ty];if(ty===3){if(w)wb++;else bb++;}}
-      t+=w?v:-v;
-    }
-    const eg=mat<2400;
-    for(let c=0;c<2;c++){
-      const sq=c?kb:kw,rk=sq>>4,f=sq&7;
-      const v=eg?40-(Math.abs(rk-3.5)+Math.abs(f-3.5))*12:PST.k[(c?7-rk:rk)*8+f];
-      t+=c?-v:v;
-    }
-    if(wb>1)t+=25;if(bb>1)t-=25;
-    return (side?-t:t)+8;
-  }
-  function pick(mv,sc,j){let b=j;for(let k=j+1;k<mv.length;k++)if(sc[k]>sc[b])b=k;
-    if(b!==j){let x=mv[j];mv[j]=mv[b];mv[b]=x;x=sc[j];sc[j]=sc[b];sc[b]=x;}}
-  function score(mv,ttm,ply){
-    const sc=new Array(mv.length),kl=killers[ply]||[];
-    for(let i=0;i<mv.length;i++){
-      const m=mv[i],to=(m>>7)&127,cap=bd[to],pr=(m>>14)&7;let s=0;
-      if(m===ttm)s=1e7;
-      else{
-        if(cap)s=10000+10*VAL[cap&7]-VAL[bd[m&127]&7];else if((m>>17)&1)s=10100;
-        if(pr)s+=9000+VAL[pr];
-        if(!cap&&!pr){if(m===kl[0])s=5000;else if(m===kl[1])s=4900;else s=hist[(bd[m&127]&15)<<7|to]|0;}
-      }
-      sc[i]=s;
-    }
-    return sc;
-  }
-  function qs(alpha,beta,ply){
-    if((++nodes&2047)===0&&performance.now()>deadline)throw TIMEOUT;
-    const st=evaluate();
-    if(st>=beta||ply>64)return st;
-    if(st>alpha)alpha=st;
-    const mv=gen(true),sc=score(mv,0,0);
-    for(let j=0;j<mv.length;j++){
-      pick(mv,sc,j);make(mv[j]);
-      if(attacked(ksq[side^1],side)){unmake();continue;}
-      let s;try{s=-qs(-beta,-alpha,ply+1);}finally{unmake();}
-      if(s>=beta)return s;if(s>alpha)alpha=s;
-    }
-    return alpha;
-  }
-  function hasPieces(c){for(let s=0;s<128;s++){if(s&0x88){s+=7;continue;}const p=bd[s];if(p&&(p>>3)===c&&(p&7)>1&&(p&7)<6)return true;}return false;}
-  function search(depth,alpha,beta,ply,nullOk){
-    if((++nodes&2047)===0&&performance.now()>deadline)throw TIMEOUT;
-    const inChk=attacked(ksq[side],side^1);
-    if(inChk&&ply<40)depth++;
-    if(depth<=0)return qs(alpha,beta,ply);
-    if(ply>0){
-      if(hm>=100)return 0;
-      for(let i=sp-2;i>=0&&i>=sp-hm;i-=2)if(uL[i]===hlo&&uHi[i]===hhi)return 0;
-    }
-    const ti=hlo&TM;let ttm=0;
-    if(ttU[ti]&&ttK[ti]===hhi){
-      ttm=ttM[ti];
-      if(ply>0&&ttD[ti]>=depth){const s=ttS[ti],f=ttF[ti];if(f===0||(f===1&&s>=beta)||(f===2&&s<=alpha))return s;}
-    }
-    if(nullOk&&!inChk&&depth>=3&&beta<MATE-1000&&hasPieces(side)){
-      const sEp=ep,sl=hlo,sh=hhi;
-      if(ep>=0){hlo^=ZL[0][ep];hhi^=ZH[0][ep];ep=-1;}
-      side^=1;hlo^=ZL[15][0];hhi^=ZH[15][0];uM[sp]=0;uL[sp]=sl;uHi[sp]=sh;sp++;
-      let s;try{s=-search(depth-3,-beta,-beta+1,ply+1,false);}finally{sp--;side^=1;ep=sEp;hlo=sl;hhi=sh;}
-      if(s>=beta)return beta;
-    }
-    const mv=gen(false),sc=score(mv,ttm,ply);
-    let best=-INF,bm=0,legal=0;const a0=alpha;
-    for(let j=0;j<mv.length;j++){
-      pick(mv,sc,j);const m=mv[j];make(m);
-      if(attacked(ksq[side^1],side)){unmake();continue;}
-      const quiet=!uC[sp-1]&&!((m>>14)&7);
-      let s;
-      try{
-        if(legal===0)s=-search(depth-1,-beta,-alpha,ply+1,true);
-        else{
-          const r=(legal>3&&depth>2&&quiet&&!inChk)?1+(legal>8?1:0):0;
-          s=-search(depth-1-r,-alpha-1,-alpha,ply+1,true);
-          if(s>alpha&&r)s=-search(depth-1,-alpha-1,-alpha,ply+1,true);
-          if(s>alpha&&s<beta)s=-search(depth-1,-beta,-alpha,ply+1,true);
-        }
-      }finally{unmake();}
-      legal++;
-      if(s>best){best=s;bm=m;}
-      if(s>alpha)alpha=s;
-      if(alpha>=beta){
-        if(quiet){
-          const kl=killers[ply]||(killers[ply]=[]);
-          if(kl[0]!==m){kl[1]=kl[0];kl[0]=m;}
-          hist[(bd[m&127]&15)<<7|((m>>7)&127)]+=depth*depth;
-        }
-        break;
-      }
-    }
-    if(!legal)return inChk?-MATE+ply:0;
-    ttK[ti]=hhi;ttS[ti]=best;ttM[ti]=bm;ttD[ti]=depth;ttF[ti]=best<=a0?2:best>=beta?1:0;ttU[ti]=1;
-    return best;
-  }
-  const NAMES="abcdefgh";
-  const uci=m=>{const f=m&127,t=(m>>7)&127,p=(m>>14)&7;return NAMES[f&7]+((f>>4)+1)+NAMES[t&7]+((t>>4)+1)+(p?"nbrq"[p-2]:"");};
-  function perft(d){if(!d)return 1;let n=0;for(const m of gen(false)){make(m);if(!attacked(ksq[side^1],side))n+=perft(d-1);unmake();}return n;}
-  self.perft=(fen,d)=>{setFen(fen);return perft(d);};
-
-  function analyse(fen,maxDepth,ms,played){
-    setFen(fen);nodes=0;killers=[];hist.fill(0);
-    deadline=performance.now()+ms;
-    const all=gen(false),roots=[];
-    for(const m of all){make(m);if(!attacked(ksq[side^1],side))roots.push(m);unmake();}
-    if(!roots.length)return {lines:[],depth:0,nodes:0,sacrifice:false,forcedCapture:false};
-    const isc=score(roots,0,0);
-    let lines=roots.map((m,i)=>({m,move:uci(m),score:isc[i],depth:0,pv:[uci(m)]})).sort((a,b)=>b.score-a.score);
-    let completed=0;const cap=roots.length===1?1:Math.min(maxDepth,60);
-    for(let depth=1;depth<=cap;depth++){
-      const it=[];let timedOut=false;
-      try{
-        for(const prev of lines){
-          if(it.length&&performance.now()>deadline)throw TIMEOUT;
-          make(prev.m);let s;
-          try{
-            if(!it.length)s=-search(depth-1,-INF,INF,1,true);
-            else{const lo=it.reduce((a,x)=>Math.max(a,x.score),-INF)-150;s=-search(depth-1,-INF,-lo,1,true);}
-          }finally{unmake();}
-          it.push({m:prev.m,move:prev.move,score:s,depth,pv:[prev.move]});
-        }
-      }catch(e){if(e!==TIMEOUT)throw e;timedOut=true;}
-      if(it.length){
-        it.sort((a,b)=>b.score-a.score);
-        if(timedOut){const d=new Set(it.map(x=>x.move));lines=it.concat(lines.filter(x=>!d.has(x.move)));completed=Math.max(completed,depth-1);}
-        else{lines=it;completed=depth;}
-      }
-      if(timedOut||Math.abs(lines[0].score)>MATE-200||performance.now()>deadline)break;
-    }
-    let sacrifice=false,forcedCapture=false;
-    const ch=roots.find(m=>uci(m)===played);
-    if(ch&&!((ch>>14)&7)&&VAL[bd[ch&127]&7]>=500){
-      const to=(ch>>7)&127;make(ch);
-      try{for(const r of gen(true)){if(((r>>7)&127)===to&&bd[to]){make(r);const ok=!attacked(ksq[side^1],side);unmake();if(ok){forcedCapture=true;break;}}}}finally{unmake();}
-      sacrifice=forcedCapture;
-    }
-    return {lines:lines.map(({m,...x})=>x),depth:completed,nodes,sacrifice,forcedCapture,engine:"CRIMSON"};
-  }
-  self.onmessage=event=>{
-    const {id,fen,depth,ms,played}=event.data;
-    try{self.postMessage({id,result:analyse(fen,depth,ms,played)});}
-    catch(_){self.postMessage({id,error:"engine-search-failed"});}
-  };
-}
-
-
-function setEngineStatus(text){const el=$("engineStatus");if(el)el.textContent=text;}
-function uciToSanLine(fen,pv){
-  const g=new Chess(fen),out=[];
-  for(const u of (pv||[])){
-    if(!u||u.length<4)break;
-    const m=g.move({from:u.slice(0,2),to:u.slice(2,4),promotion:u[4]});
-    if(!m)break;out.push(m.san);
-  }
-  return out;
-}
-let workerSeq=0;
-function restartWorker(){
-  if(worker){try{worker.terminate();}catch(_){}}
-  for(const [id,p] of pending){clearTimeout(p.timer);p.reject(new Error("worker-restarted"));}
-  pending.clear();workerFailed=false;
-  try{
-    const blob=new Blob(["("+engineWorker.toString()+")()"],{type:"application/javascript"});
-    const url=URL.createObjectURL(blob);
-    worker=new Worker(url);
-    setTimeout(()=>URL.revokeObjectURL(url),5000);
-    worker.onmessage=e=>{
-      const d=e.data||{},p=pending.get(d.id);if(!p)return;
-      pending.delete(d.id);clearTimeout(p.timer);
-      if(d.error)p.reject(new Error(d.error));else p.resolve(d.result);
-    };
-    worker.onerror=ev=>{
-      if(ev&&ev.preventDefault)ev.preventDefault();
-      for(const [id,p] of pending){clearTimeout(p.timer);p.reject(new Error("worker-error"));}
-      pending.clear();worker=null;
-    };
-    setEngineStatus("المحرك المحلي جاهز · يعمل بدون إنترنت");
-  }catch(_){worker=null;}
-}
-function askWorker(fen,depth,ms,played){
-  return new Promise((resolve,reject)=>{
-    if(!worker)restartWorker();
-    if(!worker){reject(new Error("no-worker"));return;}
-    const id=++requestId;
-    const timer=setTimeout(()=>{
-      pending.delete(id);
-      try{worker.terminate();}catch(_){}
-      worker=null;reject(new Error("engine-timeout"));
-    },ms+5000);
-    pending.set(id,{resolve,reject,timer});
-    worker.postMessage({id,fen,depth,ms,played});
-  }).then(r=>{
-    const g=new Chess(fen);
-    for(const l of r.lines){const m=g.move({from:l.move.slice(0,2),to:l.move.slice(2,4),promotion:l.move[4]});if(m){l.san=m.san;g.undo();}}
-    return r;
-  });
-}
-/* آخر ملاذ: نقلة سريعة على الخيط الرئيسي (التقاط أو عشوائية) حتى لا تتوقف اللعبة أبدًا */
-function emergencyResult(fen){
-  const g=new Chess(fen),ms=g.moves({verbose:true});
-  if(!ms.length)return {lines:[],depth:0,nodes:0,sacrifice:false,forcedCapture:false};
-  const val={p:1,n:3,b:3,r:5,q:9};
-  const sc=m=>(m.captured?val[m.captured]*10-val[m.piece]:0)+(m.san.includes("#")?1000:m.san.includes("+")?3:0)+Math.random();
-  const lines=ms.map(m=>({move:m.from+m.to+(m.promotion||""),san:m.san,score:sc(m)*10,depth:0,nodes:0,pv:[]})).sort((a,b)=>b.score-a.score);
-  return {lines,depth:0,nodes:0,sacrifice:false,forcedCapture:false};
-}
-async function askEngine(fen,depth,ms,played=""){
-  try{return await askWorker(fen,depth,ms,played);}
-  catch(_){
-    try{return await askWorker(fen,Math.min(depth,4),Math.min(ms,1200),played);}
-    catch(__){setEngineStatus("تعذّر المحرك — نقلة طوارئ");return emergencyResult(fen);}
-  }
-}
-
-function engineMove(fen,depth,ms){
-  return askEngine(fen,depth,ms).then(result=>{
-    const best=result.lines?.[0];
-    if(!best || !best.move)throw new Error("no-engine-move");
-    return {uci:best.move,result};
-  });
-}
-
-const LEVELS = [
-  {depth:1,ms:180,noise:700},
-  {depth:2,ms:350,noise:430},
-  {depth:3,ms:550,noise:260},
-  {depth:4,ms:900,noise:150},
-  {depth:4,ms:1400,noise:80},
-  {depth:5,ms:2200,noise:35},
-  {depth:6,ms:3500,noise:15},
-  {depth:9,ms:5500,noise:5},
-  {depth:12,ms:9000,noise:0},
-  {depth:15,ms:18000,noise:0}
-];
-
-function chooseAI(lines, noise) {
-  if (!lines.length) return null;
-  return lines.map(line=>({
-    ...line,
-    adjusted:line.score+Math.random()*noise
-  })).sort((a,b)=>b.adjusted-a.adjusted)[0].move;
-}
-
-function moveObject(uci) {
-  const move = {from:uci.slice(0,2),to:uci.slice(2,4)};
-  if (uci[4]) move.promotion=uci[4];
-  return move;
-}
-
-function classify(result,played,playedAfterScore=null,context=null){
-  const best=result.lines?.[0];if(!best)return null;
-  const line=result.lines?.find(x=>x.move===played);
-  let loss=playedAfterScore!=null?Math.max(0,best.score-(-playedAfterScore)):
-    line?Math.max(0,best.score-line.score):0;
-  const gap=result.lines?.length>1?Math.max(0,best.score-result.lines[1].score):0;
-  const acc=accuracyFromLoss(loss);
-  const sacrifice=!!context?.sacrifice,forcing=!!context?.forcing;
-  let title,kind,description;
-  if(sacrifice&&forcing&&loss<=35){title="Brilliant!";kind="brilliant";description="بريلينت: تضحية/فكرة تكتيكية مع الحفاظ على تقييم الموقف ضمن هامش صغير.";}
-  else if(loss<=8&&gap>=70){title="Great!";kind="great";description="نقلة قوية جدًا؛ البدائل الرئيسية أضعف بوضوح.";}
-  else if(loss<=12){title="Best";kind="best";description="النقلة قريبة جدًا من أفضل اختيار للمحرك.";}
-  else if(loss<=25){title="Excellent";kind="excellent";description="نقلة ممتازة مع خسارة تقييم صغيرة.";}
-  else if(loss<=55){title="Good";kind="good";description="نقلة جيدة مع تنازل محدود.";}
-  else if(loss<=110){title="Inaccuracy";kind="inaccuracy";description="عدم دقة: كان هناك خيار أقوى بوضوح.";}
-  else if(loss<=240){title="Mistake";kind="mistake";description="خطأ: خسارة ملحوظة في التقييم.";}
-  else{title="Blunder";kind="blunder";description="خطأ فادح: خسارة كبيرة في التقييم أو تغيير حاسم في نتيجة الموقف.";}
-  return {title,kind,description,loss,accuracy:acc,score:playedAfterScore!=null?-playedAfterScore:(line?.score??best.score),
-    best:best.san,depth:result.depth,nodes:result.nodes,candidates:(result.lines||[]).slice(0,5).map(x=>x.san),pv:best.pv||[],
-    sacrifice,forcing,materialDelta:context?.materialDelta||0};
-}
-
-function accuracyFromLoss(loss){
-  return Math.max(0,Math.min(100,100*Math.exp(-Math.max(0,loss)/95)));
-}
-
-function colorName(c) { return c==="w" ? "الأحمر" : "الأسود" }
-
-function save(){
-  try{localStorage.setItem(STORE,JSON.stringify({
-    moves:game.history(),human,flipped,level:$("level").value,timeMinutes,startFen,customPosition
-  }));}catch(_){}
-}
-function restore(){
-  try{
-    const saved=JSON.parse(localStorage.getItem(STORE)||"null");
-    if(!saved||!Array.isArray(saved.moves))return;
-    const candidate=new Chess(saved.startFen||undefined);
-    for(const san of saved.moves){if(typeof san!=="string"||!candidate.move(san))return;}
-    game=candidate; startFen=saved.startFen||null; customPosition=!!saved.customPosition;
-    human=saved.human==="b"?"b":"w"; flipped=!!saved.flipped;
-    $("side").value=human;
-    const level=Number(saved.level); if(Number.isInteger(level)&&level>=1&&level<=10)$("level").value=String(level);
-    timeMinutes=Number(saved.timeMinutes)||10;
-    $("timeControl").value=String(Math.min(60,Math.max(1,timeMinutes)));
-    $("timeValue").textContent=formatClock(timeMinutes*60);
-    resetClock(timeMinutes);
-  }catch(_){}
-}
-function statusText(){
-  if(timedOut)return "انتهى الوقت — فاز "+colorName(game.turn()==="w"?"b":"w")+"!";
-  if(game.in_checkmate())return "كش مات — فاز "+colorName(game.turn()==="w"?"b":"w")+"!";
-  if(game.in_stalemate())return "تعادل — الملك غير مهدد ولا توجد نقلة قانونية.";
-  if(game.insufficient_material())return "تعادل — قطع غير كافية للمات.";
-  if(game.in_threefold_repetition())return "تعادل — تكرر الموقف ثلاث مرات.";
-  if(game.in_draw())return "تعادل وفق قواعد المكتبة المستخدمة.";
-  if(analysisRunning)return phase;
-  if(busy)return phase;
-  return game.turn()===human?"دورك، اختر قطعة.":"دور المحرك.";
-}
-function renderAnalysis(){
-  const r=analysisData[analysisIndex>=0?analysisIndex:analysisData.length-1];
-  $("grade").textContent=r?.title||"بانتظار تحليل المباراة";
-  $("grade").className="badge "+(r?.kind||"");
-  $("moveLabel").textContent=r?.san||"—";
-  $("analysisText").textContent=r
-    ? (r.description||"")+(r.best?" أفضل نقلة: "+r.best+".":"")
-    : (analysisRunning?"جارٍ تحليل المباراة بعمق…":"بعد انتهاء المباراة اضغط «تحليل المباراة» لبدء التحليل.");
-
-  $("loss").textContent=r?.loss!=null?(r.loss>10000?"حاسمة":(r.loss/100).toFixed(2)+" بيدق"):"—";
-  $("depth").textContent=r?.depth??"—";
-  $("nodes").textContent=r?.nodes?Number(r.nodes).toLocaleString():"—";
-  $("moveAccuracy").textContent=r?.accuracy!=null?r.accuracy.toFixed(1)+"%":"—";
-
-  const mine=human;
-  const relevant=analysisData.filter(x=>x && x.color===mine && typeof x.accuracy==="number");
-  const avg=relevant.length?relevant.reduce((a,x)=>a+x.accuracy,0)/relevant.length:null;
-  $("gameAccuracy").textContent=avg==null?"—":avg.toFixed(1)+"%";
-
-  let ev=r?.whiteScore;
-  $("evalBig").textContent=ev==null?"—":(Math.abs(ev)>=9000?(ev>0?"M":"−M"):(ev>0?"+":"")+((ev||0)/100).toFixed(2));
-  $("pvBox").textContent=r?.pvSan?.length?r.pvSan.join("  "):(r?.candidates?.length?"أفضل الخيارات: "+r.candidates.join("  ·  "):"الخط الأفضل سيظهر هنا بعد التحليل.");
-
-  const graph=$("evalGraph"); graph.replaceChildren();
-  analysisData.forEach((x,i)=>{
-    const bar=document.createElement("div");
-    bar.className="eval-bar"+(x.whiteScore<0?" neg ":" ")+(i===analysisIndex?"current":"");
-    const magnitude=Math.min(5,Math.abs(x.whiteScore||0)/100);
-    const fill=document.createElement("div");
-    fill.className="eval-fill";
-    fill.style.height=Math.max(3,magnitude/5*50)+"%";
-    bar.append(fill);
-    bar.onclick=()=>{analysisIndex=i;analysisMode=true;render();};
-    graph.append(bar);
-  });
-
-  const counts={brilliant:0,great:0,best:0,excellent:0,good:0,inaccuracy:0,mistake:0,blunder:0};
-  for(const x of analysisData)if(x?.kind)counts[x.kind]=(counts[x.kind]||0)+1;
-  const labels=[
-    ["brilliant","Brilliant"],["great","Great"],["best","Best"],["excellent","Excellent"],
-    ["good","Good"],["inaccuracy","Inaccuracy"],["mistake","Mistake"],["blunder","Blunder"]
-  ];
-  $("classificationGrid").replaceChildren(...labels.map(([k,l])=>{
-    const d=document.createElement("div");d.className="class-stat";
-    const b=document.createElement("b");b.textContent=counts[k]||0;
-    const sp=document.createElement("span");sp.textContent=l;
-    d.append(b,sp);return d;
-  }));
-}
-
-function renderHistory(){
-  const target=$("history");target.replaceChildren();
-  const moves=game.history({verbose:true});
-  moves.forEach((m,i)=>{
-    const row=document.createElement("tr");row.className="clickable"+(i===analysisIndex?" current-move":"");
-    row.onclick=()=>{if(analysisData.length){analysisIndex=i;analysisMode=true;render();}};
-    const n=document.createElement("td");n.textContent=(Math.floor(i/2)+1)+" · "+colorName(m.color);
-    const san=document.createElement("td");san.className="san";san.textContent=m.san;
-    const g=document.createElement("td");g.textContent=analysisData[i]?.title||"—";row.append(n,san,g);target.append(row);
-  });
-  if(!moves.length){const row=document.createElement("tr"),cell=document.createElement("td");cell.colSpan=3;cell.textContent="لا توجد نقلات بعد.";row.append(cell);target.append(row);}
-}
-function renderBoard(){
-  const board=$("board");board.replaceChildren();
-  const g=displayGame();
-  const files=flipped?"hgfedcba":"abcdefgh",ranks=flipped?[1,2,3,4,5,6,7,8]:[8,7,6,5,4,3,2,1];
-  const last=g.history({verbose:true}).slice(-1)[0];
-  const legal=!analysisMode&&selected?g.moves({square:selected,verbose:true}):[];
-  for(let row=0;row<8;row++)for(let col=0;col<8;col++){
-    const square=files[col]+ranks[row],piece=g.get(square),button=document.createElement("button");
-    button.className="sq"+(((square.charCodeAt(0)-97+Number(square[1]))%2===1)?" dark":"");
-    if(last&&(square===last.from||square===last.to))button.classList.add("last");
-    if(!analysisMode&&selected===square)button.classList.add("selected");
-    if(!analysisMode&&hintSquares.includes(square))button.classList.add("hint");
-    if(piece?.type==="k"&&piece.color===g.turn()&&g.in_check())button.classList.add("check");
-    button.onclick=()=>{if(!analysisMode)onSquare(square);};
-    if(piece){const glyph=document.createElement("span");glyph.className="piece "+(piece.color==="w"?"red":"black");glyph.textContent=GLYPH[piece.type];button.append(glyph);}
-    if(legal.some(m=>m.to===square)){const dot=document.createElement("span");dot.className=piece?"capture-ring":"dot";button.append(dot);}
-    if(row===7){const label=document.createElement("span");label.className="coord file";label.textContent=files[col];button.append(label);}
-    if(col===0){const label=document.createElement("span");label.className="coord rank";label.textContent=ranks[row];button.append(label);}
-    board.append(button);
-  }
-}
+/* ===== CRIMSON v12 : UI / game / review ===== */
+const KIND={brilliant:["‼","نقلة عبقرية"],great:["!","نقلة عظيمة"],best:["★","أفضل نقلة"],excellent:["✓","ممتازة"],good:["+","جيدة"],inaccuracy:["?!","عدم دقة"],mistake:["?","خطأ"],blunder:["??","خطأ فادح"]};
+const KORDER=["brilliant","great","best","excellent","good","inaccuracy","mistake","blunder"];
+const KCOL={brilliant:"#1aa7a1",great:"#4f86c6",best:"#7fae3b",excellent:"#5f9d45",good:"#8a9a5b",inaccuracy:"#d9a21b",mistake:"#e0702b",blunder:"#d02f45"};
+const MV={p:100,n:320,b:330,r:500,q:900,k:0},MATE=100000;
+const STORE="crimson-chess-v4",ARCH="crimson-games-v1";
+const LEVELS=[
+ {depth:1,ms:60,noise:420,full:1},{depth:1,ms:80,noise:260,full:1},{depth:2,ms:150,noise:170,full:1},
+ {depth:2,ms:250,noise:100,full:1},{depth:3,ms:400,noise:55,full:1},{depth:4,ms:600,noise:28,full:1},
+ {depth:5,ms:800,noise:10,full:0},{depth:6,ms:1000,noise:0,full:0},{depth:8,ms:1400,noise:0,full:0},{depth:9,ms:2000,noise:0,full:0}];
+const PS={
+ p:'<circle cx="22.5" cy="12" r="5.200"/><path d="M17 20.500h11c-1.500 2.500-2 5-1.500 8 2.500 1 4 2.500 5 5H13.500c1-2.500 2.500-4 5-5 .5-3 0-5.500-1.500-8z"/>',
+ r:'<path d="M12 10.500h4.500v3.500h3v-3.500h6v3.500h3v-3.500H33v8.500H12z"/><path d="M14.500 19h16v11h-16z"/><path d="M12 30h21v4H12z"/>',
+ n:'<path d="M13 34c0-9 3-15.500 10-19-1.500-1-3-3-3-5 2 .5 3.500 0 5-2 1.500 2 2 3.500 4.500 5.500 3 2.500 4.500 7 4.500 20.500z"/><path class="d" d="M17.500 22c2-1.500 3-3 3.500-5"/><circle class="e" cx="25" cy="14.500" r="1.300"/>',
+ b:'<path d="M22.500 6a3 3 0 1 0 .01 0zM22.500 11c6 3.500 9 8.500 7 14-.7 2-1.500 4-1.500 7h-11c0-3-.8-5-1.500-7-2-5.500 1-10.500 7-14z"/><path class="d" d="M19.500 19h6M22.500 16v6"/>',
+ q:'<path d="M9 16l6 9 1-14 4.500 12 2-14 2 14 4.500-12 1 14 6-9-2.500 16H11.500z"/><circle cx="9" cy="15" r="2"/><circle cx="16" cy="10" r="2"/><circle cx="22.500" cy="8" r="2.200"/><circle cx="29" cy="10" r="2"/><circle cx="36" cy="15" r="2"/>',
+ k:'<path d="M20.500 4h4v3h3v4h-3v3h-4v-3h-3V7h3z"/><path d="M13 34c-1.500-8 1.500-13.500 9.500-17 8 3.500 11 9 9.500 17z"/><path class="d" d="M16 26h13"/>'};
+const BASE='<path d="M9.500 39.500c0-3.500 2.500-5.500 5-6h16c2.500.5 5 2.500 5 6z"/>';
+function pieceSvg(ch){const w=ch===ch.toUpperCase();return '<svg viewBox="0 0 45 45" class="pc '+(w?"red":"black")+'">'+PS[ch.toLowerCase()]+BASE+'</svg>';}
+const $=id=>document.getElementById(id);
+const colorName=c=>c==="w"?"الأحمر":"الأسود";
+let game=new Chess(),human="w",flipped=false,selected=null,hintSquares=[],lastMove=null,busy=false,phase="",epoch=0;
+let timeMinutes=10,clock={w:600,b:600},clockTimer=null,clockLast=0,timedOut=false,startFen=null,customPosition=false;
+let analysisMode=false,archivedId=null,resigned=null,editorPieces={},editorSelected="wq",editorTurn="w",RV=null;
+const moveObject=u=>({from:u.slice(0,2),to:u.slice(2,4),promotion:u[4]||undefined});
+const uciOf=m=>m.from+m.to+(m.promotion||"");
+const isOver=()=>game.game_over()||timedOut||!!resigned;
+/* ---------- engine bridge ---------- */
+let worker=null,localEng=null,reqId=0,pend=new Map(),chain=Promise.resolve();
+function onEng(d){const p=pend.get(d.id);if(!p)return;pend.delete(d.id);clearTimeout(p.t);d.error?p.rej(new Error(d.error)):p.res(d.result);}
+function resetEngine(){if(worker){try{worker.terminate()}catch(_){}worker=null;}localEng=null;for(const [,p] of pend){clearTimeout(p.t);p.rej(new Error("reset"));}pend.clear();chain=Promise.resolve();}
+function send(msg){
+ if(!worker&&!localEng){try{worker=new Worker(URL.createObjectURL(new Blob([ENGINE_SRC],{type:"text/javascript"})));worker.onmessage=e=>onEng(e.data);worker.onerror=ev=>{ev.preventDefault&&ev.preventDefault();worker=null;};}
+  catch(_){worker=null;const fs={postMessage:d=>onEng(d)};new Function("self",ENGINE_SRC)(fs);localEng=fs;}}
+ if(worker)worker.postMessage(msg);else setTimeout(()=>localEng.onmessage({data:msg}),0);}
+function askEngine(fen,o){
+ const run=()=>new Promise((res,rej)=>{const id=++reqId;
+  const t=setTimeout(()=>{pend.delete(id);if(worker){try{worker.terminate()}catch(_){}worker=null;}rej(new Error("timeout"));},(o.ms||1000)*3+6000);
+  pend.set(id,{res,rej,t});send({...o,id,fen});});
+ const p=chain.then(run);chain=p.catch(()=>{});return p;}
+function uciToSan(fen,pv){const g=new Chess(fen),out=[];for(const u of pv||[]){const m=g.move(moveObject(u));if(!m)break;out.push(m.san);}return out;}
+function chooseAI(lines,noise){
+ if(!lines||!lines.length)return null;if(!noise)return lines[0].move;
+ let best=null,bs=-1e9;const top=lines[0].score;
+ for(const l of lines){if(l.score<top-noise*4)continue;const s=Math.max(-3000,Math.min(3000,l.score))+(Math.random()+Math.random()-1)*noise*1.6;if(s>bs){bs=s;best=l.move;}}
+ return best||lines[0].move;}
+/* ---------- board drawing (shared) ---------- */
+function drawBoard(el,g,o){
+ el.innerHTML="";const ks=g.in_check()?g.board.indexOf(g.turn()==="w"?"K":"k"):-1;
+ for(let vr=0;vr<8;vr++)for(let vf=0;vf<8;vf++){
+  const r=o.flipped?vr:7-vr,f=o.flipped?7-vf:vf,i=r*8+f,name=String.fromCharCode(97+f)+(r+1),p=g.board[i];
+  const b=document.createElement("button");b.className="sq"+((r+f)%2===0?" dark":"");b.setAttribute("aria-label",name);
+  if(o.last&&o.last.includes(name))b.classList.add("last");
+  if(o.selected===name)b.classList.add("selected");
+  if(o.hint&&o.hint.includes(name))b.classList.add("hint");
+  if(i===ks)b.classList.add("check");
+  let h="";if(p)h+=pieceSvg(p);
+  if(o.targets&&o.targets.includes(name))h+=p?'<span class="capture-ring"></span>':'<span class="dot"></span>';
+  if(vr===7)h+='<span class="coord file">'+String.fromCharCode(97+f)+'</span>';
+  if(vf===0)h+='<span class="coord rank">'+(r+1)+'</span>';
+  if(o.badge&&o.badge.sq===name)h+='<span class="mbadge k-'+o.badge.kind+'">'+KIND[o.badge.kind][0]+'</span>';
+  b.innerHTML=h;b.onclick=()=>o.onClick&&o.onClick(name);el.append(b);}}
+function targetsOf(g,sq){return g.moves({square:sq,verbose:true}).map(m=>m.to);}
+function askPromotion(color,cb){
+ const box=$("promotionOptions");box.innerHTML="";
+ for(const t of ["q","r","b","n"]){const b=document.createElement("button");b.innerHTML=pieceSvg(color==="w"?t.toUpperCase():t);b.style.width=b.style.height="64px";b.onclick=()=>{$("promotion").close();cb(t);};box.append(b);}
+ $("promotion").showModal();}
+/* ---------- helpers ---------- */
+const wp=cp=>{cp=Math.max(-1500,Math.min(1500,cp));return 50+50*(2/(1+Math.exp(-0.00368208*cp))-1);};
+function fmtEval(ws){if(Math.abs(ws)>=MATE-300){const n=Math.ceil((MATE-Math.abs(ws))/2);return (ws>0?"+":"-")+"M"+n;}return (ws>=0?"+":"")+(ws/100).toFixed(1);}
+function matOf(g,side){let s=0;for(const p of g.board)if(p)s+=(p===p.toUpperCase()?1:-1)*MV[p.toLowerCase()];return side==="w"?s:-s;}
+function sacrifice(fen,pv,side){
+ if(!pv||pv.length<2)return false;const g=new Chess(fen),m0=matOf(g,side);let n=0;
+ for(const u of pv.slice(0,4)){if(!g.move(moveObject(u)))break;n++;}
+ return n>=2&&matOf(g,side)-m0<=-200;}
+function buildReport(fen,uci,r){
+ const best=r.lines[0];if(!best)return null;const side=new Chess(fen).turn(),sg=side==="w"?1:-1;
+ const isBest=uci===best.move,ps=isBest?best.score:(r.playedScore??best.score);
+ const wb=wp(best.score),wpl=wp(ps);let loss=isBest?0:Math.max(0,wb-wpl);
+ if(wb>=94&&wpl>=82)loss=Math.min(loss,1.5);
+ const sac=loss<=1&&sacrifice(fen,r.playedPv||[uci],side);
+ const only=isBest&&r.second!=null&&wb-wp(r.second)>=13&&wb<96;
+ let kind;
+ if(isBest&&sac&&wpl>=42&&wb<=93)kind="brilliant";
+ else if(only)kind="great";
+ else if(isBest)kind="best";
+ else if(loss<=2.2)kind="excellent";else if(loss<=5)kind="good";else if(loss<=10)kind="inaccuracy";else if(loss<=20)kind="mistake";else kind="blunder";
+ const pvSan=uciToSan(fen,best.pv.slice(0,8));
+ return {kind,loss:+loss.toFixed(1),acc:Math.max(0,Math.min(100,103.1668*Math.exp(-0.04354*loss)-3.1669)),best:best.move,bestSan:pvSan[0]||"",pvSan,
+  ws:ps*sg,bestWs:best.score*sg,depth:r.depth,mateMiss:Math.abs(best.score)>MATE-300&&Math.abs(ps)<MATE-300};}
+async function evalPly(fen,uci,ms){return buildReport(fen,uci,await askEngine(fen,{depth:40,ms,played:uci,multi:true}));}
+function describe(rep,san){
+ const b=rep.bestSan,l=Math.round(rep.loss);
+ switch(rep.kind){
+  case"brilliant":return "تضحية مدروسة ومفاجئة، والمحرك يؤكد أنها تُبقي موقفك سليمًا.";
+  case"great":return "نقلة حاسمة — كانت تقريبًا الوحيدة التي تحافظ على الموقف.";
+  case"best":return "هذه هي أفضل نقلة في الموقف حسب المحرك.";
+  case"excellent":return "نقلة ممتازة وقريبة جدًا من الأفضل ("+b+").";
+  case"good":return "نقلة جيدة، لكن "+b+" كانت أدق.";
+  default:return (rep.mateMiss?"فاتتك فرصة كش مات! ":"")+"الأفضل كان "+b+". خسرت نحو "+l+"% من فرص الفوز.";}}
+/* ---------- archive ---------- */
+const loadArch=()=>{try{return JSON.parse(localStorage.getItem(ARCH)||"[]")}catch(_){return[]}};
+const saveArch=a=>{try{localStorage.setItem(ARCH,JSON.stringify(a.slice(0,60)))}catch(_){}};
+function resultOf(){if(resigned)return resigned==="w"?"0-1":"1-0";if(timedOut)return clock.w<=0?"0-1":"1-0";if(game.in_checkmate())return game.turn()==="w"?"0-1":"1-0";return"1/2-1/2";}
+function reasonOf(){if(resigned)return"استسلام";if(timedOut)return"انتهاء الوقت";if(game.in_checkmate())return"كش مات";if(game.in_stalemate())return"جمود";if(game.in_threefold_repetition())return"تكرار";if(game.insufficient_material())return"مادة غير كافية";return"قاعدة الخمسين";}
+function makeRecord(){return{id:"g"+Date.now(),ts:Date.now(),result:isOver()?resultOf():"*",reason:isOver()?reasonOf():"—",human,level:+$("level").value,startFen,
+ moves:game.history({verbose:true}).map(m=>({uci:uciOf(m),san:m.san,color:m.color})),analysis:null};}
+function finishGame(){if(archivedId||!game.history().length)return;const rec=makeRecord();archivedId=rec.id;const a=loadArch();a.unshift(rec);saveArch(a);
+ if(game.in_checkmate()||resigned||timedOut)showMate();save();}
+function showMate(){const o=$("checkmateOverlay");const r=resultOf();
+ $("checkmateSub").textContent=reasonOf()+" · "+(r==="1/2-1/2"?"تعادل":((r==="1-0")===(human==="w")?"فزتَ!":"فاز المحرك"));
+ $("checkmateOverlay").querySelector(".checkmate-title").textContent=game.in_checkmate()?"كش مات!":"انتهت المباراة";
+ o.classList.add("show");setTimeout(()=>o.classList.remove("show"),2300);}
+function renderArchive(){
+ const a=loadArch(),box=$("archive");
+ if(!a.length){box.innerHTML='<div class="empty">لا توجد مباريات بعد. كل مباراة تنتهي تُحفظ هنا تلقائيًا.</div>';return;}
+ box.innerHTML="";
+ for(const g of a){
+  const mine=g.result==="1/2-1/2"?"d":((g.result==="1-0")===(g.human==="w")?"w":"l"),lab={w:"فوز",l:"خسارة",d:"تعادل"}[mine];
+  let acc="";if(g.analysis){const xs=g.analysis.filter((r,i)=>r&&g.moves[i].color===g.human);if(xs.length)acc=" · دقة "+(xs.reduce((s,r)=>s+r.acc,0)/xs.length).toFixed(0)+"%";}
+  const row=document.createElement("div");row.className="ar";
+  const d=new Date(g.ts);
+  row.innerHTML='<button class="ar-open"><span class="res res-'+mine+'">'+lab+'</span><span>'+g.reason+' · '+Math.ceil(g.moves.length/2)+' نقلة · مستوى '+g.level+acc+'<br><small>'+d.toLocaleDateString("ar")+" "+d.toLocaleTimeString("ar",{hour:"2-digit",minute:"2-digit"})+'</small></span></button><button class="ar-del" title="حذف">🗑</button>';
+  row.firstChild.onclick=()=>openReview(g);
+  row.lastChild.onclick=()=>{if(confirm("حذف هذه المباراة من السجل؟")){saveArch(loadArch().filter(x=>x.id!==g.id));renderArchive();}};
+  box.append(row);}}
+/* ---------- live game ---------- */
+function numbered(moves,fen,startI){
+ const p=(fen||"").split(" "),blackFirst=p[1]==="b",n0=+(p[5]||1);
+ return moves.map((m,i)=>{const k=i+(blackFirst?1:0);return{num:n0+Math.floor(k/2),white:m.color==="w",first:i===startI};});}
 function render(){
-  renderBoard();renderAnalysis();renderHistory();renderClocks();
-  $("status").textContent=statusText();
-  $("hintBtn").disabled=busy||game.game_over()||timedOut||game.turn()!==human||analysisMode;
-  $("undoBtn").disabled=busy||analysisMode||game.history().length<=(human==="b"?1:0);
-  $("exportBtn").disabled=!game.history().length;
-  $("analysisBtn").style.display=(game.game_over()||timedOut)?"inline-flex":"none";
-  $("deepAnalysisBtn").disabled=analysisRunning||!(game.game_over()||timedOut)||!game.history().length;
-  const bottom=flipped?"b":"w",top=bottom==="w"?"b":"w";
-  for(const [pos,color] of [["top",top],["bottom",bottom]]){
-    const mine=color===human;
-    $(pos+"Name").textContent=mine?"أنت · "+colorName(color):"المحرك · "+colorName(color);
-    $(pos+"Info").textContent=mine?"لاعب":"المستوى "+$("level").value+"/10";
-    $(pos+"Turn").textContent=!game.game_over()&&!timedOut&&!analysisMode&&game.turn()===color?"● الدور الآن":"";
-  }
-}
-function renderEditor(){
-  const tools=$("editorTools");tools.replaceChildren();
-  $("editorTurnW").classList.toggle("active",editorTurn==="w");
-  $("editorTurnB").classList.toggle("active",editorTurn==="b");
-  const groups=[
-    {title:"القطع الحمراء",cls:"red-title",items:[["wq","♛"],["wr","♜"],["wb","♝"],["wn","♞"],["wp","♟"],["wk","♚"]],tool:"red-tool"},
-    {title:"القطع السوداء",cls:"black-title",items:[["bq","♛"],["br","♜"],["bb","♝"],["bn","♞"],["bp","♟"],["bk","♚"]],tool:"black-tool"}
-  ];
-  groups.forEach(group=>{
-    const wrap=document.createElement("div");wrap.className="editor-group";
-    const title=document.createElement("div");title.className="editor-group-title "+group.cls;title.textContent=group.title;wrap.append(title);
-    group.items.forEach(([id,glyph])=>{const b=document.createElement("button");b.type="button";b.className="piece-tool "+group.tool;b.textContent=glyph;b.title=PIECE_NAME[id[1]];b.setAttribute("aria-label",group.title+" — "+PIECE_NAME[id[1]]);b.classList.toggle("active",editorSelected===id);b.onclick=()=>{editorSelected=id;renderEditor();};wrap.append(b);});
-    tools.append(wrap);
-  });
-  const erase=document.createElement("div");erase.className="editor-group";
-  const et=document.createElement("div");et.className="editor-group-title";et.textContent="أداة المسح";erase.append(et);
-  const eb=document.createElement("button");eb.type="button";eb.className="piece-tool erase-tool";eb.textContent="⌫";eb.title="مسح قطعة";eb.classList.toggle("active",editorSelected==="erase");eb.onclick=()=>{editorSelected="erase";renderEditor();};erase.append(eb);tools.append(erase);
-  const board=$("editorBoard");board.replaceChildren();
-  for(let r=8;r>=1;r--)for(let c=0;c<8;c++){
-    const sq="abcdefgh"[c]+r,b=document.createElement("button");b.className="editor-sq "+(((c+r)%2)?"dark":"light");
-    b.onclick=()=>{if(editorSelected==="erase")delete editorPieces[sq];else editorPieces[sq]=editorSelected;renderEditor();};
-    const p=editorPieces[sq];if(p){const span=document.createElement("span");span.className="piece "+(p[0]==="w"?"red":"black");span.textContent=GLYPH[p[1]];b.append(span);}board.append(b);
-  }
-}
-function editorFen(){
-  const rows=[];
-  for(let r=8;r>=1;r--){let row="",empty=0;for(const f of "abcdefgh"){const p=editorPieces[f+r];if(!p){empty++;continue;}if(empty){row+=empty;empty=0;}row+=p[0]==="w"?p[1].toUpperCase():p[1];}if(empty)row+=empty;rows.push(row);}
-  return rows.join("/")+" "+editorTurn+" - - 0 1";
-}
-function validateEditor(){
-  const vals=Object.values(editorPieces);
-  if(vals.filter(p=>p==="wk").length!==1||vals.filter(p=>p==="bk").length!==1){$("notice").textContent="يجب وضع ملك واحد لكل طرف.";return null;}
-  try{const g=new Chess(editorFen());return g.fen();}catch(_){$("notice").textContent="الوضع غير صالح.";return null;}
-}
-function openEditor(){
-  editorPieces=standardEditorPieces();editorSelected="wq";editorTurn=human;renderEditor();$("customPosition").showModal();
-}
-
-function showPromotion(from,to) {
-  const dialog=$("promotion");
-  const options=$("promotionOptions");
-  options.replaceChildren();
-  for (const piece of ["q","r","b","n"]) {
-    const button=document.createElement("button");
-    button.textContent=GLYPH[piece];
-    button.setAttribute("aria-label","الترقية إلى "+PIECE_NAME[piece]);
-    button.onclick=()=>{
-      dialog.close();
-      takeHumanTurn({from,to,promotion:piece});
-    };
-    options.append(button);
-  }
-  dialog.showModal();
-}
-
-function onSquare(square) {
-  if (busy || game.game_over() || game.turn()!==human) return;
-  const piece=game.get(square);
-
-if (selected) {
-    const moves=game.moves({square:selected,verbose:true});
-    const options=moves.filter(m=>m.to===square);
-    if (options.length) {
-      const from=selected;
-      if (options.some(m=>m.promotion)) showPromotion(from,square);
-      else takeHumanTurn({from,to:square});
-      return;
-    }
-  }
-
-selected=piece?.color===human && selected!==square ? square : null;
-  hintSquares=[];
-  renderBoard();
-}
-
-function primeMateAudio(){
-  try{
-    const C=window.AudioContext||window.webkitAudioContext;
-    if(!C)return;
-    if(!mateAudioCtx)mateAudioCtx=new C();
-    if(mateAudioCtx.state==="suspended")mateAudioCtx.resume().catch(()=>{});
-  }catch(_){}
-}
-
-function playMateEffects(){
-  if(!game.in_checkmate() || lastMatePly===game.history().length)return;
-  lastMatePly=game.history().length;
-  const overlay=$("checkmateOverlay");
-  if(overlay){
-    $("checkmateSub").textContent="فاز "+colorName(game.turn()==="w"?"b":"w")+" بالكش مات";
-    overlay.classList.add("show"); overlay.setAttribute("aria-hidden","false");
-    clearTimeout(mateTimer); mateTimer=setTimeout(()=>{overlay.classList.remove("show");overlay.setAttribute("aria-hidden","true")},3000);
-  }
-  // Short synthesized fanfare: no external audio file/network dependency.
-  try{
-    primeMateAudio();
-    const ac=mateAudioCtx;if(!ac)return;
-    const now=ac.currentTime;
-    [[220,0,.16],[330,.12,.18],[440,.25,.32]].forEach(([f,t,d])=>{
-      const o=ac.createOscillator(),g=ac.createGain();o.type="sine";o.frequency.value=f;
-      g.gain.setValueAtTime(.0001,now+t);g.gain.exponentialRampToValueAtTime(.12,now+t+.025);g.gain.exponentialRampToValueAtTime(.0001,now+t+d);
-      o.connect(g).connect(ac.destination);o.start(now+t);o.stop(now+t+d+.02);
-    });
-  }catch(_){}
-}
-
-async function playMove(move,version){
-  const applied=game.move(move); if(!applied)throw new Error("illegal-move");
-  selected=null;hintSquares=[];save();render();
-  if(game.in_checkmate())playMateEffects();
-  return true;
-}
+ drawBoard($("board"),game,{flipped,selected,targets:selected?targetsOf(game,selected):[],last:lastMove,hint:hintSquares,onClick:clickSq});
+ renderClocks();
+ const over=isOver();
+ const turnMine=!over&&game.turn()===human;
+ $("bottomTurn").textContent=turnMine?"● دورك":"";$("topTurn").textContent=(!over&&!turnMine)?"● يفكّر":"";
+ $("bottomInfo").textContent=colorName(human);$("topInfo").textContent="محرك محلي · مستوى "+$("level").value;
+ let st=phase;
+ if(over)st="انتهت المباراة — "+reasonOf()+" ("+resultOf()+")";
+ else if(!st)st=game.in_check()?"كش! ":"";
+ if(!over&&!phase)st+=turnMine?"دورك الآن.":"دور المحرك.";
+ $("status").textContent=st;
+ const bal=matOf(game,"w");$("evalRed").style.height=(50+Math.max(-45,Math.min(45,bal/12)))+"%";$("evalText").textContent="مادة: "+(bal>=0?"+":"")+(bal/100).toFixed(1);
+ const mv=game.history({verbose:true}),nm=numbered(mv,startFen||"");
+ $("history").innerHTML=mv.length?'<tr><td colspan="3" class="san" style="text-align:left;line-height:2.2">'+mv.map((m,i)=>(m.color==="w"||i===0?'<b style="color:var(--muted)">'+nm[i].num+(m.color==="w"?".":"…")+'</b> ':"")+m.san).join(" ")+'</td></tr>':'<tr><td class="empty" colspan="3">لا نقلات بعد</td></tr>';
+ $("undoBtn").disabled=busy||over||!mv.length;$("hintBtn").disabled=busy||over||!turnMine;
+ $("resignBtn").disabled=over||!mv.length;$("reviewBtn").disabled=!over||!mv.length;
+ renderArchive();}
+function clickSq(sq){
+ if(busy||isOver()||game.turn()!==human)return;
+ const p=game.get(sq);
+ if(selected){const mv=game.moves({square:selected,verbose:true}).filter(m=>m.to===sq);
+  if(mv.length){const from=selected;if(mv.some(m=>m.promotion))return askPromotion(human,t=>takeHumanTurn({from,to:sq,promotion:t}));return takeHumanTurn({from,to:sq});}}
+ selected=p&&p.color===human?sq:null;hintSquares=[];render();}
+async function playMove(m){const r=game.move(m);if(!r)return false;selected=null;hintSquares=[];lastMove=[r.from,r.to];
+ if(game.game_over()){stopClock();}render();return true;}
 async function aiTurn(version){
-  if(version!==epoch||game.game_over()||timedOut||game.turn()===human)return;
-  const config=LEVELS[Number($("level").value)-1];phase="المحرك يفكّر…";render();
-  const result=await askEngine(game.fen(),config.depth,config.ms);
-  if(version!==epoch)return;
-  const uci=chooseAI(result.lines,config.noise);
-  if(uci)await playMove(moveObject(uci),version);
-  if(game.game_over()||timedOut){stopClock();render();}
-}
+ if(version!==epoch||isOver()||game.turn()===human)return;
+ const cfg=LEVELS[+$("level").value-1];phase="المحرك يفكّر…";render();
+ const res=await askEngine(game.fen(),{depth:cfg.depth,ms:cfg.ms,full:cfg.full});
+ if(version!==epoch)return;phase="";if(isOver())return;
+ const u=chooseAI(res.lines,cfg.noise);if(u)await playMove(moveObject(u));}
 async function runTask(task){
-  const version=epoch;busy=true;$("notice").textContent="";render();
-  try{await task(version);}catch(_){if(version===epoch)$("notice").textContent="لم تكتمل العملية.";}
-  finally{if(version===epoch){busy=false;phase="";save();render();}}
-}
-function takeHumanTurn(move){
-  if(timedOut||analysisMode)return;
-  primeMateAudio();
-  runTask(async version=>{
-    clockTick();if(timedOut)return;await playMove(move,version);
-    if(game.game_over()||timedOut){stopClock();render();return;}
-    await aiTurn(version);
-    if(game.game_over()||timedOut){stopClock();render();}
-  });
-}
-async function analyseWholeGame(){
-  if(analysisRunning||(!game.game_over()&&!timedOut)||!game.history().length)return;
-  stopClock();analysisRunning=true;analysisMode=true;analysisData=[];analysisIndex=-1;
-  phase="بدء التحليل…";render();
-  const moves=game.history({verbose:true}),total=moves.length;
-  const ANALYSIS_DEPTH=12,ANALYSIS_MS=2500;
-
-  for(let i=0;i<total;i++){
-    const before=positionAtPly(i),played=moves[i].from+moves[i].to+(moves[i].promotion||"");
-    phase="تحليل النقلة "+(i+1)+" / "+total+"…";$("analysisProgress").textContent=(i+1)+" / "+total;render();
-    try{
-      const bestResult=await askEngine(before.fen(),ANALYSIS_DEPTH,ANALYSIS_MS);
-      if(!bestResult.lines?.length)throw new Error("no-best-line");
-      const after=new Chess(before.fen()),applied=after.move(moveObject(played));
-      if(!applied)throw new Error("played-move-illegal");
-      const afterResult=await askEngine(after.fen(),ANALYSIS_DEPTH,ANALYSIS_MS);
-      const best=bestResult.lines[0],opponentBest=afterResult.lines?.[0];
-      if(!opponentBest)throw new Error("no-after-line");
-
-      const playedScore=-opponentBest.score,loss=Math.max(0,best.score-playedScore);
-      const beforeMaterial=materialBalance(before),afterMaterial=materialBalance(after);
-      const materialDelta=moves[i].color==="w"?afterMaterial-beforeMaterial:beforeMaterial-afterMaterial;
-      const replies=after.moves({verbose:true});
-      const forcing=replies.some(m=>m.captured||m.san.includes("+")||m.san.includes("#"));
-      const sacrifice=materialDelta<=-80&&(replies.some(m=>m.captured)||!!applied.captured);
-      const report=classify(bestResult,played,opponentBest.score,{sacrifice,forcing,materialDelta})||{};
-      report.loss=loss;report.accuracy=accuracyFromLoss(loss);report.score=playedScore;report.best=best.san;
-      report.depth=Math.min(bestResult.depth||0,afterResult.depth||0);
-      report.nodes=(bestResult.nodes||0)+(afterResult.nodes||0);report.pv=best.pv||[];
-      report.pvSan=uciToSanLine(before.fen(),best.pv||[]);report.actualSan=moves[i].san;
-      analysisData.push({...report,san:moves[i].san,color:moves[i].color,
-        whiteScore:moves[i].color==="w"?playedScore:-playedScore});
-    }catch(err){
-      analysisData.push({san:moves[i].san,color:moves[i].color,title:"تعذر التحليل",kind:"",
-        description:"تعذر تحليل هذه النقلة، لكن سيستمر التحليل للنقلات التالية.",whiteScore:0,accuracy:null,candidates:[],pvSan:[]});
-    }
-    analysisIndex=i;render();
-  }
-
-  analysisRunning=false;phase="اكتمل تحليل المباراة";$("analysisProgress").textContent="اكتمل";
-  const counts={brilliant:0,great:0,best:0,excellent:0,good:0,inaccuracy:0,mistake:0,blunder:0};
-  for(const r of analysisData)if(r?.kind)counts[r.kind]=(counts[r.kind]||0)+1;
-  const own=analysisData.filter(x=>x.color===human&&typeof x.accuracy==="number");
-  const opp=analysisData.filter(x=>x.color!==human&&typeof x.accuracy==="number");
-  const avg=a=>a.length?(a.reduce((sum,x)=>sum+x.accuracy,0)/a.length).toFixed(1):"—";
-  $("notice").textContent="اكتمل التحليل · دقتك "+avg(own)+"% · الخصم "+avg(opp)+"% · "+
-    "Brilliant "+counts.brilliant+" · Great "+counts.great+" · Best "+counts.best+" · Good "+counts.good+
-    " · Inaccuracy "+counts.inaccuracy+" · Mistake "+counts.mistake+" · Blunder "+counts.blunder;
-  analysisMode=false;analysisIndex=-1;render();
-}
-function materialBalance(g){
-  const values={p:100,n:320,b:330,r:500,q:900,k:0};let score=0;
-  for(const row of g.board())for(const p of row)if(p)score+=(p.color==="w"?1:-1)*values[p.type];
-  return score;
-}
-
+ const version=epoch;busy=true;$("notice").textContent="";render();
+ try{await task(version);}catch(_){if(version===epoch)$("notice").textContent="لم تكتمل العملية.";}
+ finally{if(version===epoch){busy=false;phase="";if(isOver()){stopClock();finishGame();}save();render();}}}
+function takeHumanTurn(move){if(timedOut||isOver())return;
+ runTask(async v=>{clockTick();if(timedOut)return;await playMove(move);if(isOver())return;await aiTurn(v);});}
 function startNewGame(fen=null){
-  epoch++;busy=false;analysisMode=false;analysisRunning=false;analysisData=[];analysisIndex=-1;selected=null;hintSquares=[];timedOut=false;
-  startFen=fen;customPosition=!!fen;game=new Chess(fen||undefined);lastMatePly=-1;human=$("side").value;flipped=human==="b";
-  resetClock(timeMinutes);save();render();startClock();
-  if(game.turn()!==human&&!game.game_over())runTask(aiTurn);
-}
-function addTime(color,seconds){
-  if(game.game_over()||timedOut||analysisMode)return;
-  clock[color]=Math.min(3600,Math.max(0,clock[color]+seconds));renderClocks();save();
-  $("notice").textContent="تمت إضافة "+(seconds>=60?(seconds/60)+" دقيقة":seconds+" ثانية")+" إلى "+colorName(color)+".";
-}
-$("newBtn").onclick=()=>{if(game.history().length&&!confirm("بدء مباراة جديدة وحذف المباراة الحالية؟"))return;startNewGame(customPosition?startFen:null);};
+ epoch++;resetEngine();busy=false;selected=null;hintSquares=[];lastMove=null;timedOut=false;resigned=null;archivedId=null;phase="";
+ startFen=fen;customPosition=!!fen;game=new Chess(fen||undefined);human=$("side").value;flipped=human==="b";
+ resetClock(timeMinutes);save();render();startClock();
+ if(game.turn()!==human&&!game.game_over())runTask(aiTurn);}
+function addTime(color,s){if(isOver())return;clock[color]=Math.min(3600,Math.max(0,clock[color]+s));renderClocks();save();$("notice").textContent="تمت إضافة "+(s>=60?(s/60)+" دقيقة":s+" ثانية")+" إلى "+colorName(color)+".";}
+function save(){try{localStorage.setItem(STORE,JSON.stringify({startFen,moves:game.history({verbose:true}).map(uciOf),human,level:$("level").value,flipped,clock,timeMinutes,timedOut,resigned,archivedId}));}catch(_){}}
+function restore(){try{const s=JSON.parse(localStorage.getItem(STORE)||"null");if(!s)return;
+ startFen=s.startFen||null;customPosition=!!startFen;game=new Chess(startFen||undefined);
+ for(const u of s.moves){const m=game.move(moveObject(u));if(!m)break;lastMove=[m.from,m.to];}
+ human=s.human||"w";flipped=!!s.flipped;$("side").value=human;$("level").value=s.level||"4";timeMinutes=s.timeMinutes||10;
+ $("timeControl").value=timeMinutes;$("timeValue").textContent=formatClock(timeMinutes*60);clock=s.clock||clock;timedOut=!!s.timedOut;resigned=s.resigned||null;archivedId=s.archivedId||null;}catch(_){}}
+/* ---------- custom position editor ---------- */
+function openEditor(){editorPieces=standardEditorPieces();editorTurn="w";renderEditor();$("customPosition").showModal();}
+function renderEditor(){
+ const tools=$("editorTools");tools.innerHTML="";
+ for(const c of ["w","b"]){const g=document.createElement("div");g.className="editor-group";g.innerHTML='<div class="editor-group-title '+(c==="w"?"red":"black")+'-title">'+(c==="w"?"قطع الأحمر":"قطع الأسود")+'</div>';
+  for(const t of ["k","q","r","b","n","p"]){const b=document.createElement("button");b.type="button";b.className="piece-tool"+(editorSelected===c+t?" active":"");b.innerHTML=pieceSvg(c==="w"?t.toUpperCase():t);b.onclick=()=>{editorSelected=c+t;renderEditor();};g.append(b);}tools.append(g);}
+ const e=document.createElement("button");e.type="button";e.className="erase-tool"+(editorSelected==="x"?" active":"");e.textContent="⌫ ممحاة";e.style.width="auto";e.onclick=()=>{editorSelected="x";renderEditor();};tools.append(e);
+ const bd=$("editorBoard");bd.innerHTML="";
+ for(let r=7;r>=0;r--)for(let f=0;f<8;f++){const sq=String.fromCharCode(97+f)+(r+1),b=document.createElement("button");b.type="button";b.className="editor-sq "+((r+f)%2===0?"dark":"light");
+  const p=editorPieces[sq];if(p)b.innerHTML=pieceSvg(p[0]==="w"?p[1].toUpperCase():p[1]);
+  b.onclick=()=>{if(editorSelected==="x"||editorPieces[sq]===editorSelected)delete editorPieces[sq];else editorPieces[sq]=editorSelected;renderEditor();};bd.append(b);}
+ $("editorTurnW").classList.toggle("active",editorTurn==="w");$("editorTurnB").classList.toggle("active",editorTurn==="b");}
+function validateEditor(){
+ const P=editorPieces,ks={w:0,b:0};
+ for(const sq in P){if(P[sq][1]==="k")ks[P[sq][0]]++;if(P[sq][1]==="p"&&(sq[1]==="1"||sq[1]==="8")){alert("لا يمكن وضع بيدق في الصف الأول أو الأخير.");return null;}}
+ if(ks.w!==1||ks.b!==1){alert("يجب وجود ملك واحد بالضبط لكل طرف.");return null;}
+ let fen="";for(let r=8;r>=1;r--){let e=0;for(const f of "abcdefgh"){const p=P[f+r];if(!p)e++;else{if(e){fen+=e;e=0;}fen+=p[0]==="w"?p[1].toUpperCase():p[1];}}if(e)fen+=e;if(r>1)fen+="/";}
+ let c="";if(P.e1==="wk"){if(P.h1==="wr")c+="K";if(P.a1==="wr")c+="Q";}if(P.e8==="bk"){if(P.h8==="br")c+="k";if(P.a8==="br")c+="q";}
+ fen+=" "+editorTurn+" "+(c||"-")+" - 0 1";
+ try{const g=new Chess(fen);if(g.in_check(editorTurn==="w"?"b":"w")){alert("ملك الطرف الذي ليس عليه الدور في حالة كش، وضع غير قانوني.");return null;}}catch(_){alert("وضع غير صالح.");return null;}
+ return fen;}
+/* ---------- review / analysis ---------- */
+function openReview(rec){
+ const mf=[rec.startFen||new Chess().fen()],g=new Chess(rec.startFen||undefined);
+ for(const m of rec.moves){g.move(moveObject(m.uci));mf.push(g.fen());}
+ RV={rec,main:rec.moves,mf,line:rec.moves.slice(),fens:mf.slice(),idx:rec.moves.length-1,flipped:rec.human==="b",an:rec.analysis?rec.analysis.slice():[],vc:{},sel:null,showBest:null,running:false,token:Symbol()};
+ $("review").hidden=false;document.body.style.overflow="hidden";rvRender();}
+function closeReview(){if(RV)RV.token=null;RV=null;$("review").hidden=true;document.body.style.overflow="";renderArchive();}
+function rvDiv(){let i=0;while(i<RV.line.length&&i<RV.main.length&&RV.line[i].uci===RV.main[i].uci)i++;return i;}
+function rvKind(i,d){if(i<0)return null;if(i<d)return RV.an[i]||null;return RV.vc[RV.fens[i]+"|"+RV.line[i].uci]||null;}
+function rvRender(){
+ if(!RV)return;const d=rvDiv(),i=RV.idx,rec=RV.rec,g=new Chess(RV.fens[i+1]);
+ const rep=rvKind(i,d),mv=i>=0?RV.line[i]:null;
+ if(i>=d&&mv&&!rep)evalVar(i);
+ const lm=mv?[mv.uci.slice(0,2),mv.uci.slice(2,4)]:null;
+ let ws=0;if(g.in_checkmate())ws=(g.turn()==="w"?-1:1)*MATE;else if(rep)ws=rep.ws;else if(g.in_draw())ws=0;else{for(let k=i-1;k>=0;k--){const r=rvKind(k,d);if(r){ws=r.ws;break;}}}
+ const targets=RV.sel?targetsOf(g,RV.sel):[];
+ drawBoard($("rvBoard"),g,{flipped:RV.flipped,selected:RV.sel,targets,last:lm,hint:RV.showBest,badge:rep&&lm?{sq:lm[1],kind:rep.kind}:null,onClick:rvClick});
+ $("rvEval").style.height=wp(Math.max(-1500,Math.min(1500,ws)))+"%";
+ const n=numbered(RV.line,rec.startFen||"");
+ const pop=$("rvPop");
+ if(!mv){pop.style.setProperty("--c","#555");pop.innerHTML='<div><b>الموقف الابتدائي</b><div class="sub">اضغط على أي نقلة في السجل أو استخدم الأسهم للتنقل. يمكنك تحريك قطع الطرفين لتجربة خطوط مختلفة.</div></div>';}
+ else{const lab=(n[i].white?n[i].num+". ":n[i].num+"… ")+mv.san;
+  if(rep){const k=KIND[rep.kind];pop.style.setProperty("--c",KCOL[rep.kind]);
+   pop.innerHTML='<span class="mk big k-'+rep.kind+'">'+k[0]+'</span><div style="flex:1"><b dir="ltr" style="font:700 19px Georgia,serif">'+lab+'</b> <span class="kl">'+k[1]+'</span><div class="sub">'+describe(rep)+'</div>'+
+   (rep.kind!=="best"&&rep.kind!=="great"&&rep.kind!=="brilliant"?'<div class="sub" dir="ltr" style="text-align:left">الخط الأفضل: '+rep.pvSan.slice(0,6).join(" ")+'</div>':'')+'</div><div class="pe">'+fmtEval(rep.ws)+'<small>دقة '+rep.acc.toFixed(0)+'%</small></div>';}
+  else{pop.style.setProperty("--c","#555");pop.innerHTML='<div><b dir="ltr" style="font:700 19px Georgia,serif">'+lab+'</b><div class="sub">'+(i>=d?"جارٍ تقييم النقلة…":"اضغط «تحليل المباراة» لتقييم النقلات.")+'</div></div>';}}
+ if(RV.bestTxt)pop.innerHTML+='<div class="sub" style="width:100%">💡 '+RV.bestTxt+'</div>';
+ // moves list
+ const mk=(arr,from,to,offset,cur)=>{let h="";const n=numbered(arr,rec.startFen||"");for(let k=from;k<to;k++){const m=arr[k],nn=n[k],r=offset===0?RV.an[k]:RV.vc[RV.fens[k]+"|"+m.uci],first=k===from;
+   if(nn.white)h+='<span class="mn">'+nn.num+'.</span>';else if(first)h+='<span class="mn">'+nn.num+'…</span>';
+   h+='<button data-i="'+k+'" data-v="'+offset+'" class="'+(cur===k?"cur":"")+'">'+m.san+(r?'<i class="mk k-'+r.kind+'">'+KIND[r.kind][0]+'</i>':'')+'</button>';}return h;};
+ let h=mk(RV.main,0,RV.main.length,0,i<d?i:-9);
+ if(RV.line.length>d){h+='<div class="vline">خط جانبي:</div>'+mk(RV.line,d,RV.line.length,1,i>=d?i:-9);}
+ const ml=$("rvMoves");ml.innerHTML=h;ml.querySelectorAll("button").forEach(b=>b.onclick=()=>{const k=+b.dataset.i;if(b.dataset.v==="0"){RV.line=RV.main.slice();RV.fens=RV.mf.slice();}RV.idx=k;RV.sel=null;RV.showBest=null;RV.bestTxt="";rvRender();});
+ const cur=ml.querySelector(".cur");if(cur&&cur.scrollIntoView)cur.scrollIntoView({block:"nearest"});
+ $("rvBack").hidden=RV.line.length<=d;
+ // graph
+ const gr=$("rvGraph");gr.innerHTML="";
+ RV.main.forEach((m,k)=>{const r=RV.an[k],b=document.createElement("div");b.className="gb"+(k===i&&i<d?" cur":"");
+  if(r){const v=wp(r.ws)-50;b.innerHTML='<i class="gf '+(v<0?"neg":"")+'" style="height:'+Math.abs(v)+'%"></i>';}
+  b.onclick=()=>{RV.line=RV.main.slice();RV.fens=RV.mf.slice();RV.idx=k;RV.sel=null;RV.showBest=null;RV.bestTxt="";rvRender();};gr.append(b);});
+ // summary
+ const S={w:{n:0,a:0,k:{}},b:{n:0,a:0,k:{}}};RV.an.forEach((r,k)=>{if(!r)return;const c=RV.main[k].color;S[c].n++;S[c].a+=r.acc;S[c].k[r.kind]=(S[c].k[r.kind]||0)+1;});
+ if(S.w.n+S.b.n){let t='<table class="sum"><tr><th></th><th>الأحمر</th><th>الأسود</th></tr><tr><td>الدقة</td><td><b>'+(S.w.n?(S.w.a/S.w.n).toFixed(1)+"%":"—")+'</b></td><td><b>'+(S.b.n?(S.b.a/S.b.n).toFixed(1)+"%":"—")+'</b></td></tr>';
+  for(const k of KORDER)if(S.w.k[k]||S.b.k[k])t+='<tr><td><i class="mk k-'+k+'">'+KIND[k][0]+'</i> '+KIND[k][1]+'</td><td>'+(S.w.k[k]||0)+'</td><td>'+(S.b.k[k]||0)+'</td></tr>';
+  $("rvSummary").innerHTML=t+'</table>';}else $("rvSummary").innerHTML='<p class="note">اضغط «تحليل المباراة» لتقييم كل نقلة وحساب الدقة.</p>';
+ const r=rec.result;$("rvTitle").textContent="مراجعة المباراة · "+r+" · "+rec.reason+" · أنت "+colorName(rec.human);
+ $("rvAnalyse").disabled=RV.running;$("rvDeep").disabled=RV.running;}
+async function evalVar(i){
+ const R=RV,fen=R.fens[i],u=R.line[i].uci,key=fen+"|"+u;if(key in R.vc||R.pend===key)return;R.pend=key;
+ try{const rep=await evalPly(fen,u,1200);if(RV===R)R.vc[key]=rep;}catch(_){if(RV===R)R.vc[key]=null;}
+ if(RV===R){R.pend=null;rvRender();}}
+function rvClick(sq){
+ const g=new Chess(RV.fens[RV.idx+1]),p=g.get(sq);
+ if(RV.sel){const mv=g.moves({square:RV.sel,verbose:true}).filter(m=>m.to===sq);
+  if(mv.length){const from=RV.sel,go=pr=>rvPlay({from,to:sq,promotion:pr});if(mv.some(m=>m.promotion))return askPromotion(g.turn(),go);return go();}}
+ RV.sel=p&&p.color===g.turn()?sq:null;rvRender();}
+function rvPlay(m){
+ const g=new Chess(RV.fens[RV.idx+1]),r=g.move(m);if(!r)return;const u=uciOf(r);RV.sel=null;RV.showBest=null;RV.bestTxt="";
+ if(RV.idx+1<RV.line.length&&RV.line[RV.idx+1].uci===u)RV.idx++;
+ else{RV.line=RV.line.slice(0,RV.idx+1);RV.fens=RV.fens.slice(0,RV.idx+2);RV.line.push({uci:u,san:r.san,color:r.color});RV.fens.push(g.fen());RV.idx++;}
+ rvRender();}
+function rvGo(k){if(!RV)return;RV.idx=Math.max(-1,Math.min(RV.line.length-1,k));RV.sel=null;RV.showBest=null;RV.bestTxt="";rvRender();}
+async function rvBestMove(){
+ const R=RV,fen=R.fens[R.idx+1];R.bestTxt="جارٍ البحث عن أقوى نقلة…";rvRender();
+ try{const r=await askEngine(fen,{depth:30,ms:2200});if(RV!==R||!r.lines.length)return;const b=r.lines[0],san=uciToSan(fen,b.pv.slice(0,6));
+  const ws=b.score*(new Chess(fen).turn()==="w"?1:-1);R.showBest=[b.move.slice(0,2),b.move.slice(2,4)];R.bestTxt="أقوى نقلة: <b dir='ltr'>"+san[0]+"</b> ("+fmtEval(ws)+") — الخط: <span dir='ltr'>"+san.join(" ")+"</span>";}catch(_){if(RV===R)R.bestTxt="تعذّر البحث.";}
+ if(RV===R)rvRender();}
+async function runAnalysis(deep){
+ const R=RV;if(!R||R.running)return;R.running=true;R.an=[];const ms=deep?3800:1400,total=R.main.length;
+ for(let k=0;k<total&&RV===R;k++){
+  $("rvProg").textContent="تحليل النقلة "+(k+1)+" / "+total+"…";
+  try{R.an[k]=await evalPly(R.mf[k],R.main[k].uci,ms);}catch(_){R.an[k]=null;if(RV!==R)return;}
+  R.idx=Math.min(R.idx,R.line.length-1);rvRender();}
+ if(RV!==R)return;R.running=false;$("rvProg").textContent="اكتمل التحليل ✓";
+ R.rec.analysis=R.an;const a=loadArch(),x=a.find(z=>z.id===R.rec.id);if(x){x.analysis=R.an;saveArch(a);}
+ rvRender();}
+function pgnOf(rec){
+ const p=(rec.startFen||"").split(" "),bf=p[1]==="b",n0=+(p[5]||1);let t='[Event "Crimson training"]\n[Result "'+rec.result+'"]\n'+(rec.startFen?'[SetUp "1"]\n[FEN "'+rec.startFen+'"]\n':"")+"\n";
+ return t+rec.moves.map((m,i)=>{const k=i+(bf?1:0);return (m.color==="w"?(n0+Math.floor(k/2))+". ":(i===0?(n0+Math.floor(k/2))+"... ":""))+m.san;}).join(" ")+" "+rec.result;}
+function download(name,text){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"text/plain"}));a.download=name;document.body.append(a);a.click();a.remove();}
+/* ---------- wiring ---------- */
+$("newBtn").onclick=()=>{if(!isOver()&&game.history().length&&!confirm("بدء مباراة جديدة وإنهاء المباراة الحالية؟"))return;startNewGame(customPosition?startFen:null);};
 $("level").onchange=()=>{save();render();};
-$("add30Me").onclick=()=>addTime(human,30);
-$("add30Engine").onclick=()=>addTime(human==="w"?"b":"w",30);
-$("add60Me").onclick=()=>addTime(human,60);
-$("add60Engine").onclick=()=>addTime(human==="w"?"b":"w",60);
+$("add30Me").onclick=()=>addTime(human,30);$("add30Engine").onclick=()=>addTime(human==="w"?"b":"w",30);
+$("add60Me").onclick=()=>addTime(human,60);$("add60Engine").onclick=()=>addTime(human==="w"?"b":"w",60);
 $("timeControl").oninput=()=>{timeMinutes=Number($("timeControl").value);$("timeValue").textContent=formatClock(timeMinutes*60);if(!game.history().length)resetClock(timeMinutes);render();};
 document.querySelectorAll("[data-minutes]").forEach(b=>b.onclick=()=>{$("timeControl").value=b.dataset.minutes;$("timeControl").dispatchEvent(new Event("input"));});
-$("customBtn").onclick=()=>openEditor();
-$("standardBtn").onclick=()=>{startNewGame(null);};
-$("clearEditor").onclick=()=>{editorPieces={};renderEditor();};
-$("standardEditor").onclick=()=>{editorPieces=standardEditorPieces();renderEditor();};
-$("editorTurnW").onclick=()=>{editorTurn="w";renderEditor();};
-$("editorTurnB").onclick=()=>{editorTurn="b";renderEditor();};
+$("customBtn").onclick=openEditor;$("standardBtn").onclick=()=>startNewGame(null);
+$("clearEditor").onclick=()=>{editorPieces={};renderEditor();};$("standardEditor").onclick=()=>{editorPieces=standardEditorPieces();renderEditor();};
+$("editorTurnW").onclick=()=>{editorTurn="w";renderEditor();};$("editorTurnB").onclick=()=>{editorTurn="b";renderEditor();};
 $("closeEditor").onclick=()=>$("customPosition").close();
-$("applyEditor").onclick=()=>{const fen=validateEditor();if(!fen)return;$("customPosition").close();startNewGame(fen);};
+$("applyEditor").onclick=()=>{const f=validateEditor();if(!f)return;$("customPosition").close();startNewGame(f);};
 $("flipBtn").onclick=()=>{flipped=!flipped;save();render();};
-$("undoBtn").onclick=()=>{if(busy||analysisMode)return;game.undo();if(game.turn()!==human&&game.history().length)game.undo();resetClock(timeMinutes);save();render();startClock();};
-$("hintBtn").onclick=()=>{if(busy||game.turn()!==human||game.game_over()||timedOut)return;runTask(async version=>{phase="جارٍ البحث عن تلميح…";render();const result=await askEngine(game.fen(),5,3000);if(version!==epoch)return;const best=result.lines[0];if(best){hintSquares=[best.move.slice(0,2),best.move.slice(2,4)];$("notice").textContent="جرّب "+best.san+".";}});};
-$("deepAnalysisBtn").onclick=analyseWholeGame;
-$("analysisBtn").onclick=()=>{if(analysisData.length){analysisMode=true;analysisIndex=0;render();}else analyseWholeGame();};
-$("exportBtn").onclick=()=>{const result=game.in_checkmate()?(game.turn()==="w"?"0-1":"1-0"):game.in_draw()?"1/2-1/2":"*";game.header("Event","Crimson training","Result",result);const url=URL.createObjectURL(new Blob([game.pgn()],{type:"application/x-chess-pgn"}));const a=document.createElement("a");a.href=url;a.download="crimson-game.pgn";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);};
-restore();
-restartWorker();
-render();
-if (!game.game_over() && game.turn()!==human) {
-  runTask(aiTurn);
-}
+$("undoBtn").onclick=()=>{if(busy||isOver())return;game.undo();if(game.turn()!==human&&game.history().length)game.undo();const h=game.history({verbose:true}),l=h[h.length-1];lastMove=l?[l.from,l.to]:null;resetClock(timeMinutes);save();render();startClock();};
+$("hintBtn").onclick=()=>{if(busy||game.turn()!==human||isOver())return;runTask(async v=>{phase="جارٍ البحث عن تلميح…";render();const r=await askEngine(game.fen(),{depth:8,ms:1200});if(v!==epoch)return;phase="";const b=r.lines[0];if(b){hintSquares=[b.move.slice(0,2),b.move.slice(2,4)];$("notice").textContent="جرّب "+uciToSan(game.fen(),[b.move])[0]+".";}});};
+$("exportBtn").onclick=()=>{if(game.history().length)download("crimson-game.pgn",pgnOf({...makeRecord()}));};
+$("resignBtn").onclick=()=>{if(isOver()||!confirm("هل تريد الاستسلام؟"))return;epoch++;resetEngine();busy=false;phase="";resigned=human;stopClock();finishGame();save();render();};
+$("reviewBtn").onclick=()=>{const r=loadArch().find(x=>x.id===archivedId);if(r)openReview(r);};
+$("rvClose").onclick=closeReview;
+$("rvFirst").onclick=()=>rvGo(-1);$("rvPrev").onclick=()=>rvGo(RV.idx-1);$("rvNext").onclick=()=>rvGo(RV.idx+1);$("rvLast").onclick=()=>rvGo(RV.line.length-1);
+$("rvFlip").onclick=()=>{RV.flipped=!RV.flipped;rvRender();};$("rvBestBtn").onclick=rvBestMove;
+$("rvBack").onclick=()=>{const d=rvDiv();RV.line=RV.main.slice();RV.fens=RV.mf.slice();RV.idx=Math.min(RV.idx,d-1);RV.sel=null;rvRender();};
+$("rvAnalyse").onclick=()=>runAnalysis(false);$("rvDeep").onclick=()=>runAnalysis(true);
+$("rvPgn").onclick=()=>RV&&download("crimson-game.pgn",pgnOf(RV.rec));
+document.addEventListener("keydown",e=>{if(!RV)return;if(e.key==="ArrowLeft")rvGo(RV.idx-1);else if(e.key==="ArrowRight")rvGo(RV.idx+1);else if(e.key==="Home")rvGo(-1);else if(e.key==="End")rvGo(RV.line.length-1);else if(e.key==="Escape")closeReview();});
+restore();render();startClock();
+if(!isOver()&&game.turn()!==human)runTask(aiTurn);else if(isOver())finishGame();
+
 </script>
 </body>
 </html>
